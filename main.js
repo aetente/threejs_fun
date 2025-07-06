@@ -52,7 +52,7 @@ const main = async () => {
       const randomSide = round(pSin(i * 56678) * 2)
 
       for (let d = 0; d < 3; d++) {
-        const sizeD = randInRange(mnbs[d], mxbs[d], pSin(i * randRatio[d]));
+        const sizeD = randInRange(mnbs[d], mxbs[d], pSin(10*i * randRatio[d]));
         subSize.push(sizeD)
 
         // it is a little messed up, maybe there is some easier way to do it
@@ -66,13 +66,18 @@ const main = async () => {
 
       //const geometry = new THREE.BoxGeometry( subSize[0], subSize[0], subSize[0]*2 );
       const geometry = new THREE.ShapeGeometry(birdShape);
-      let clr = {
-        r: 0.8 + pSin(i * 130) * 0.2,
-        g: 0.5 + pSin(i * 150) * 0.3,
-        b: 0.3 + pSin(i * 180) * 0.5
-      }
+
+      // let clr = {
+      //   r: 0.8 + pSin(i * 130) * 0.2,
+      //   g: 0.5 + pSin(i * 150) * 0.3,
+      //   b: 0.3 + pSin(i * 180) * 0.5
+      // }
+
+      const pelleteColor = pallete[(i % pallete.length - 1) + 1]
       //const material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
-      const material = new THREE.MeshLambertMaterial({ color: new THREE.Color(clr.r, clr.g, clr.b) });
+      // const material = new THREE.MeshLambertMaterial({ color: new THREE.Color(clr.r, clr.g, clr.b) });
+      
+      const material = new THREE.MeshLambertMaterial({ color: pelleteColor });
       //const material = new THREE.MeshStandardMaterial({ map: texture, });
       const shape = new THREE.Mesh(geometry, material);
 
@@ -99,10 +104,12 @@ const main = async () => {
   const ambientLight = new THREE.AmbientLight(0xffffff, 0.9);
   scene.add(ambientLight);
 
-  const backColor = new THREE.Color().setRGB(0.7, 0.7, 0.7);
+  // const backColor = new THREE.Color().setRGB(0.7, 0.7, 0.7);
+  const backColor = new THREE.Color(pallete[0]);
+  console.log("backColor", backColor)
   scene.background = backColor
 
-  camera.position.z = 5;
+  camera.position.z = 20;
   let t = 0;
   let pos = {
     x: 0,
@@ -118,7 +125,8 @@ const main = async () => {
     })
   }
 
-  function flyingTriangles(meshArray) {
+  var test = 0;
+  function moveTriangles(meshArray) {
     t += 0.0001;
     const totalShapes = meshArray.length;
     for (let i = 0; i < totalShapes; i++) {
@@ -158,8 +166,15 @@ const main = async () => {
       //cubeChild.position.y += 0;
       //console.log((shScaleX))
       */
+     
+      if (test < 5) {
+        test += 1;
+        console.log("shSize", shScaleX)
+      }
 
-      const zAngle = t * 500 + i / 10
+      const sizeDependingCoef = shScaleX * 4;
+
+      const zAngle = (t * 500 + i / 10) * shScaleX
 
       shapeChild.rotation.z = -zAngle
       shapeChild.position.x -= sin(zAngle) / 100
@@ -195,15 +210,15 @@ const main = async () => {
   }
 
   const meshArray = prepTriangles()
-  const linesArray = prepLines()
+  // const linesArray = prepLines()
 
-  console.log(linesArray)
+  // console.log(linesArray)
 
   function animate() {
     requestAnimationFrame(animate);
 
-    flyingTriangles(meshArray)
-    doLines(linesArray)
+    moveTriangles(meshArray)
+    // doLines(linesArray)
 
     renderer.render(scene, camera);
   }
