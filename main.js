@@ -3,7 +3,7 @@ import * as THREE from 'three';
 import { Vector3 } from 'three';
 import { randInRange, pSin, pCos, distance3D, loadTextureF } from "./utils.js"
 import { heartShape, birdShape } from "./shapes.js"
-import {applyPose, tPoseData, casualPoseData} from "./poses.js"
+import {applyPose, tPoseData, casualPoseData, sittingPoseData, sittingPhonePoseData, leapPoseData, relaxedSittingPhoneData} from "./poses.js"
 //import wall from './assets/textures/wall.jpg';
 
 
@@ -23,6 +23,7 @@ var dynamicsVectors = [
 // 1. Create the Bones
 const root = new THREE.Bone(); // Lower Torso (Root)
 const upperTorso = new THREE.Bone();
+const lowerTorso = new THREE.Bone();
 const head = new THREE.Bone();
 
 const leftShoulder = new THREE.Bone();
@@ -41,12 +42,30 @@ const rightLeg = new THREE.Bone();
 const rightKnee = new THREE.Bone();
 const rightFoot = new THREE.Bone();
 
+root.name = "root";
+upperTorso.name = "upperTorso";
+lowerTorso.name = "lowerTorso";
+head.name = "head";
+leftShoulder.name = "leftShoulder";
+leftElbow.name = "leftElbow";
+leftHand.name = "leftHand";
+rightShoulder.name = "rightShoulder";
+rightElbow.name = "rightElbow";
+rightHand.name = "rightHand";
+leftLeg.name = "leftLeg";
+leftKnee.name = "leftKnee";
+leftFoot.name = "leftFoot";
+rightLeg.name = "rightLeg";
+rightKnee.name = "rightKnee";
+rightFoot.name = "rightFoot";
+
 
 
 // 2. Build the Hierarchy
 root.add(upperTorso);
-root.add(leftLeg);
-root.add(rightLeg);
+// root.add(leftLeg);
+// root.add(rightLeg);
+root.add(lowerTorso);
 
 upperTorso.add(head);
 upperTorso.add(leftShoulder);
@@ -57,6 +76,9 @@ leftElbow.add(leftHand);
 
 rightShoulder.add(rightElbow);
 rightElbow.add(rightHand);
+
+lowerTorso.add(leftLeg);
+lowerTorso.add(rightLeg);
 
 leftLeg.add(leftKnee);
 leftKnee.add(leftFoot);
@@ -322,9 +344,10 @@ const main = async () => {
   }
 
   visualizeSkeleton()
-  applyPose(tPoseData, skeleton)
+  applyPose(relaxedSittingPhoneData, skeleton)
+  // skeleton.bones[0].rotation.y = -Math.PI / 5;
 
-  const meshArray = prepBirds()
+  // const meshArray = prepBirds()
   // const linesArray = prepLines()
 
   // console.log(linesArray)
@@ -332,8 +355,9 @@ const main = async () => {
   function animate() {
     requestAnimationFrame(animate);
 
-    moveShapes(meshArray)
+    // moveShapes(meshArray)
     // doLines(linesArray)
+    skeleton.bones[0].rotation.y += -Math.PI / 100;
 
     renderer.render(scene, camera);
   }
