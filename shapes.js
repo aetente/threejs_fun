@@ -13,6 +13,19 @@ heartShape.bezierCurveTo( x + 7, y, x + 5, y + 5, x + 5, y + 5 );
 const birdShape = new THREE.Shape();
 birdShape.moveTo(0, 0)
 birdShape.lineTo(0.25, 1)
+
+birdShape.lineTo(1.5,1)
+birdShape.lineTo(1.75,1.5)
+birdShape.lineTo(0.25,1.5)
+birdShape.lineTo(0.15,2.25)
+birdShape.lineTo(0.5,2.75)
+
+birdShape.lineTo(-0.5,2.75)
+birdShape.lineTo(-0.15,2.25)
+birdShape.lineTo(-0.25,1.5)
+birdShape.lineTo(-1.75,1.5)
+birdShape.lineTo(-1.5,1)
+
 birdShape.lineTo(-0.25, 1)
 birdShape.lineTo(0, 0)
 

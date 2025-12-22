@@ -1,9 +1,103 @@
-
 import * as THREE from 'three';
+
+import { Vector3 } from 'three';
 import { randInRange, pSin, pCos, distance3D, loadTextureF } from "./utils.js"
 import { heartShape, birdShape } from "./shapes.js"
+import {applyPose, tPoseData, casualPoseData} from "./poses.js"
 //import wall from './assets/textures/wall.jpg';
 
+
+var dynamicsVectors = [
+  {
+    scale: 1,
+    vectors: [new Vector3(0,0,0), new THREE.Vector3(0,1,0)],
+    type: "c"
+  },
+  {
+    scale: 1,
+    vectors: [new THREE.Vector3(1, 0, 0), new THREE.Vector3(1, 1, 0)],
+    type: "l"
+  }
+]
+
+// 1. Create the Bones
+const root = new THREE.Bone(); // Lower Torso (Root)
+const upperTorso = new THREE.Bone();
+const head = new THREE.Bone();
+
+const leftShoulder = new THREE.Bone();
+const leftElbow = new THREE.Bone();
+const leftHand = new THREE.Bone();
+
+const rightShoulder = new THREE.Bone();
+const rightElbow = new THREE.Bone();
+const rightHand = new THREE.Bone();
+
+const leftLeg = new THREE.Bone();
+const leftKnee = new THREE.Bone();
+const leftFoot = new THREE.Bone();
+
+const rightLeg = new THREE.Bone();
+const rightKnee = new THREE.Bone();
+const rightFoot = new THREE.Bone();
+
+
+
+// 2. Build the Hierarchy
+root.add(upperTorso);
+root.add(leftLeg);
+root.add(rightLeg);
+
+upperTorso.add(head);
+upperTorso.add(leftShoulder);
+upperTorso.add(rightShoulder);
+
+leftShoulder.add(leftElbow);
+leftElbow.add(leftHand);
+
+rightShoulder.add(rightElbow);
+rightElbow.add(rightHand);
+
+leftLeg.add(leftKnee);
+leftKnee.add(leftFoot);
+
+rightLeg.add(rightKnee);
+rightKnee.add(rightFoot); // Note: rightKnee.add(rightFoot)
+
+/*
+// 3. Position into T-Pose
+// Vertical offsets
+upperTorso.position.y = 0.5;
+head.position.y = 0.3;
+
+// Arms (Horizontal for T-Pose)
+leftShoulder.position.x = 0.2;
+leftElbow.position.x = 0.3;
+leftHand.position.x = 0.2;
+
+rightShoulder.position.x = -0.2;
+rightElbow.position.x = -0.3;
+rightHand.position.x = -0.2;
+
+// Legs (Vertical)
+leftLeg.position.set(0.1, -0.1, 0);
+leftKnee.position.y = -0.4;
+leftFoot.position.y = -0.4;
+
+rightLeg.position.set(-0.1, -0.1, 0);
+rightKnee.position.y = -0.4;
+rightFoot.position.y = -0.4;
+*/
+
+// 4. Create the Skeleton
+const bones = [
+    root, upperTorso, head, 
+    leftShoulder, leftElbow, leftHand, 
+    rightShoulder, rightElbow, rightHand,
+    leftLeg, leftKnee, leftFoot, 
+    rightLeg, rightKnee, rightFoot
+];
+const skeleton = new THREE.Skeleton(bones);
 
 const main = async () => {
 
@@ -20,6 +114,23 @@ const main = async () => {
     '/assets/textures/wall.jpg'
   );
   texture.colorSpace = THREE.SRGBColorSpace;
+  
+  function doDymanicsLines(lines) {
+    lines.forEach((line,i) => {
+      const material = new THREE.LineBasicMaterial({
+        color: 0x0000ff
+      });
+  
+      const points = [];
+      points.push(new THREE.Vector3(- 1, 0, 0));
+      points.push(new THREE.Vector3(0, 1, 0));
+      points.push(new THREE.Vector3(1, 0, 0));
+  
+      const geometry = new THREE.BufferGeometry().setFromPoints(points);
+  
+      const lineVal = new THREE.Line(geometry, material);
+      })
+  }
 
 
   function prepLines() {
@@ -43,7 +154,7 @@ const main = async () => {
     return lines
   }
 
-  function prepTriangles() {
+  function prepBirds() {
     const meshArray = []
     for (let i = 0; i < countBoxes; i++) {
       const subSize = [];
@@ -126,7 +237,7 @@ const main = async () => {
   }
 
   var test = 0;
-  function moveTriangles(meshArray) {
+  function moveShapes(meshArray) {
     t += 0.0001;
     const totalShapes = meshArray.length;
     for (let i = 0; i < totalShapes; i++) {
@@ -166,11 +277,6 @@ const main = async () => {
       //cubeChild.position.y += 0;
       //console.log((shScaleX))
       */
-     
-      if (test < 5) {
-        test += 1;
-        console.log("shSize", shScaleX)
-      }
 
       const sizeDependingCoef = shScaleX * 4;
 
@@ -208,8 +314,17 @@ const main = async () => {
       positionAttribute.needsUpdate = true;
     }
   }
+  
+  const visualizeSkeleton = () => {
+    const helper = new THREE.SkeletonHelper(root);
+    scene.add(helper);
+    scene.add(root);
+  }
 
-  const meshArray = prepTriangles()
+  visualizeSkeleton()
+  applyPose(tPoseData, skeleton)
+
+  const meshArray = prepBirds()
   // const linesArray = prepLines()
 
   // console.log(linesArray)
@@ -217,7 +332,7 @@ const main = async () => {
   function animate() {
     requestAnimationFrame(animate);
 
-    moveTriangles(meshArray)
+    moveShapes(meshArray)
     // doLines(linesArray)
 
     renderer.render(scene, camera);
