@@ -3,7 +3,7 @@ import * as THREE from 'three';
 import { Vector3 } from 'three';
 import { randInRange, pSin, pCos, distance3D, loadTextureF } from "./utils.js"
 import { heartShape, birdShape } from "./shapes.js"
-import {applyPose, tPoseData, casualPoseData, sittingPoseData, sittingPhonePoseData, leapPoseData, relaxedSittingPhoneData} from "./poses.js"
+import {applyPose, tPoseData, casualPoseData, sittingPoseData, sittingPhonePoseData, leapPoseData, relaxedSittingPhoneData, relaxedSittingPhoneAnglesData} from "./poses.js"
 //import wall from './assets/textures/wall.jpg';
 
 
@@ -87,31 +87,30 @@ leftLeg.add(leftKnee);
 leftKnee.add(leftFoot);
 
 rightLeg.add(rightKnee);
-rightKnee.add(rightFoot); // Note: rightKnee.add(rightFoot)
+rightKnee.add(rightFoot);
 
 /*
-// 3. Position into T-Pose
-// Vertical offsets
-upperTorso.position.y = 0.5;
-head.position.y = 0.3;
+root.add(upperTorso);
+root.add(head);
+root.add(leftShoulder);
+root.add(rightShoulder);
 
-// Arms (Horizontal for T-Pose)
-leftShoulder.position.x = 0.2;
-leftElbow.position.x = 0.3;
-leftHand.position.x = 0.2;
+upperTorso.add(lowerTorso)
 
-rightShoulder.position.x = -0.2;
-rightElbow.position.x = -0.3;
-rightHand.position.x = -0.2;
+leftShoulder.add(leftElbow);
+leftElbow.add(leftHand);
 
-// Legs (Vertical)
-leftLeg.position.set(0.1, -0.1, 0);
-leftKnee.position.y = -0.4;
-leftFoot.position.y = -0.4;
+rightShoulder.add(rightElbow);
+rightElbow.add(rightHand);
 
-rightLeg.position.set(-0.1, -0.1, 0);
-rightKnee.position.y = -0.4;
-rightFoot.position.y = -0.4;
+lowerTorso.add(leftLeg);
+lowerTorso.add(rightLeg);
+
+leftLeg.add(leftKnee);
+leftKnee.add(leftFoot);
+
+rightLeg.add(rightKnee);
+rightKnee.add(rightFoot);
 */
 
 // 4. Create the Skeleton
@@ -347,8 +346,8 @@ const main = async () => {
   }
 
   visualizeSkeleton()
-  //applyPose(tPoseData, skeleton)
-  applyPose(relaxedSittingPhoneData, skeleton)
+  applyPose(tPoseData, skeleton)
+  applyPose(relaxedSittingPhoneAnglesData, skeleton)
   // skeleton.bones[0].rotation.y = -Math.PI / 5;
 
   // const meshArray = prepBirds()
