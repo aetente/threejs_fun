@@ -157,14 +157,15 @@ const leapPoseData = [
 ];
 
 const relaxedSittingPhoneData = [
+    //{ name: "root", pos: new THREE.Vector3(0,0,0), rot: new THREE.Euler(0.5,0,0)},
     // 1. Core - Comfortable seated tilt
-    { name: 'lowerTorso', pos: new THREE.Vector3(0, -0.5, 0), rot: new THREE.Euler(-0.5, 0, 0) },
-    { name: 'upperTorso', pos: new THREE.Vector3(0, 0.5, 0), rot: new THREE.Euler(0.5, 0, 0) },
+    { name: 'lowerTorso', pos: new THREE.Vector3(0, -0.2, -0.2), rot: new THREE.Euler(0.1, 0, 0) },
+    { name: 'upperTorso', pos: new THREE.Vector3(0, 0.3, 0.2), rot: new THREE.Euler(0, 0, 0) },
     { name: 'head', pos: new THREE.Vector3(0, 0.3, 0), rot: new THREE.Euler(0.4, 0.3, 0) },
 
     // 2. Left Arm - Leaning on armrest, holding phone
     // Shoulder is out to the side, elbow bent up
-    { name: 'leftShoulder', pos: new THREE.Vector3(0.2, 0, 0), rot: new THREE.Euler(0.4, 0, -0.6) },
+    { name: 'leftShoulder', pos: new THREE.Vector3(0.2, -0.1, 0), rot: new THREE.Euler(0.4, -0.5, -0.6) },
     { name: 'leftElbow', pos: new THREE.Vector3(0.3, 0, 0), rot: new THREE.Euler(0, 0, -2.0) },
     { name: 'leftHand', pos: new THREE.Vector3(0.2, 0, 0), rot: new THREE.Euler(0.5, 0, 0.5) },
 
@@ -175,12 +176,12 @@ const relaxedSittingPhoneData = [
 
     // 4. Left Leg - Regular sitting, slightly forward
     { name: 'leftLeg', pos: new THREE.Vector3(0.12, -0.05, 0), rot: new THREE.Euler(1.3, 0.1, 0) },
-    { name: 'leftKnee', pos: new THREE.Vector3(0, -0.5, 0), rot: new THREE.Euler(-1.1, 0, 0) },
+    { name: 'leftKnee', pos: new THREE.Vector3(0, -0.5, 0), rot: new THREE.Euler(-0.5, 0, 0) },
     { name: 'leftFoot', pos: new THREE.Vector3(0, -0.4, 0), rot: new THREE.Euler(0.2, 0, 0) },
 
     // 5. Right Leg - Regular sitting, slightly forward
     { name: 'rightLeg', pos: new THREE.Vector3(-0.12, -0.05, 0), rot: new THREE.Euler(1.3, -0.1, 0) },
-    { name: 'rightKnee', pos: new THREE.Vector3(0, -0.5, 0), rot: new THREE.Euler(-1.1, 0, 0) },
+    { name: 'rightKnee', pos: new THREE.Vector3(0, -0.5, 0), rot: new THREE.Euler(-0.5, 0, 0) },
     { name: 'rightFoot', pos: new THREE.Vector3(0, -0.4, 0), rot: new THREE.Euler(0.2, 0, 0) }
 ];
 

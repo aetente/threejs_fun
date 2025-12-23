@@ -62,14 +62,17 @@ rightFoot.name = "rightFoot";
 
 
 // 2. Build the Hierarchy
-root.add(upperTorso);
+//root.add(upperTorso);
 // root.add(leftLeg);
 // root.add(rightLeg);
 root.add(lowerTorso);
 
+lowerTorso.add(upperTorso)
+
 upperTorso.add(head);
 upperTorso.add(leftShoulder);
 upperTorso.add(rightShoulder);
+//upperTorso.add(lowerTorso)
 
 leftShoulder.add(leftElbow);
 leftElbow.add(leftHand);
@@ -113,7 +116,7 @@ rightFoot.position.y = -0.4;
 
 // 4. Create the Skeleton
 const bones = [
-    root, upperTorso, head, 
+    root, upperTorso, lowerTorso, head, 
     leftShoulder, leftElbow, leftHand, 
     rightShoulder, rightElbow, rightHand,
     leftLeg, leftKnee, leftFoot, 
@@ -344,6 +347,7 @@ const main = async () => {
   }
 
   visualizeSkeleton()
+  //applyPose(tPoseData, skeleton)
   applyPose(relaxedSittingPhoneData, skeleton)
   // skeleton.bones[0].rotation.y = -Math.PI / 5;
 
