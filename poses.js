@@ -14,37 +14,35 @@ function applyPose(poseData, skeleton) {
     skeleton.update();
 }
 
-
-// Define your pose data
-const myPose = [
-    { name: 'lowerTorso', position: new THREE.Vector3(0, 1, 0) },
-    { name: 'leftShoulder', position: new THREE.Vector3(0.2, 0.5, 0) },
-    { name: 'rightShoulder', position: new THREE.Vector3(-0.2, 0.5, 0) },
-    { name: 'head', position: new THREE.Vector3(0, 0.3, 0) }
-    // ... add other bones as needed
-];
+function rotatePose(angle, pose) {
+    pose.forEach(bone => {
+        bone.rot += angle
+    })
+    return pose
+}
 
 // T-POSE: Perfect symmetry, arms out
 const tPoseData = [
-    { name: 'lowerTorso', pos: new THREE.Vector3(0, 0, 0), rot: new THREE.Euler(0, 0, 0) },
-    { name: 'upperTorso', pos: new THREE.Vector3(0, 0.5, 0), rot: new THREE.Euler(0, 0, 0) },
-    { name: 'head', pos: new THREE.Vector3(0, 0.3, 0), rot: new THREE.Euler(0, 0, 0) },
+    
+    { name: 'head', pos: new THREE.Vector3(0, 0.2, 0) },
+    { name: 'upperTorso', pos: new THREE.Vector3(0, -0.5, 0) },
+    { name: 'lowerTorso', pos: new THREE.Vector3(0, -0.3, 0) },
 
-    { name: 'leftShoulder', pos: new THREE.Vector3(0.2, 0, 0), rot: new THREE.Euler(0, 0, 0) },
-    { name: 'leftElbow', pos: new THREE.Vector3(0.3, 0, 0), rot: new THREE.Euler(0, 0, 0) },
-    { name: 'leftHand', pos: new THREE.Vector3(0.2, 0, 0), rot: new THREE.Euler(0, 0, 0) },
+    { name: 'leftShoulder', pos: new THREE.Vector3(0.2, 0, 0) },
+    { name: 'leftElbow', pos: new THREE.Vector3(0.6, 0, 0) },
+    { name: 'leftHand', pos: new THREE.Vector3(0.6, 0, 0) },
 
-    { name: 'rightShoulder', pos: new THREE.Vector3(-0.2, 0, 0), rot: new THREE.Euler(0, 0, 0) },
-    { name: 'rightElbow', pos: new THREE.Vector3(-0.3, 0, 0), rot: new THREE.Euler(0, 0, 0) },
-    { name: 'rightHand', pos: new THREE.Vector3(-0.2, 0, 0), rot: new THREE.Euler(0, 0, 0) },
+    { name: 'rightShoulder', pos: new THREE.Vector3(-0.2, 0, 0) },
+    { name: 'rightElbow', pos: new THREE.Vector3(-0.6, 0, 0) },
+    { name: 'rightHand', pos: new THREE.Vector3(-0.6, 0, 0) },
 
-    { name: 'leftLeg', pos: new THREE.Vector3(0.1, -0.1, 0), rot: new THREE.Euler(0, 0, 0) },
-    { name: 'leftKnee', pos: new THREE.Vector3(0, -0.4, 0), rot: new THREE.Euler(0, 0, 0) },
-    { name: 'leftFoot', pos: new THREE.Vector3(0, -0.4, 0), rot: new THREE.Euler(0, 0, 0) },
+    { name: 'leftLeg', pos: new THREE.Vector3(0.2, -0.2, 0) },
+    { name: 'leftKnee', pos: new THREE.Vector3(0, -0.6, 0) },
+    { name: 'leftFoot', pos: new THREE.Vector3(0, -0.8, 0) },
 
-    { name: 'rightLeg', pos: new THREE.Vector3(-0.1, -0.1, 0), rot: new THREE.Euler(0, 0, 0) },
-    { name: 'rightKnee', pos: new THREE.Vector3(0, -0.4, 0), rot: new THREE.Euler(0, 0, 0) },
-    { name: 'rightFoot', pos: new THREE.Vector3(0, -0.4, 0), rot: new THREE.Euler(0, 0, 0) }
+    { name: 'rightLeg', pos: new THREE.Vector3(-0.2, -0.2, 0) },
+    { name: 'rightKnee', pos: new THREE.Vector3(0, -0.6, 0) },
+    { name: 'rightFoot', pos: new THREE.Vector3(0, -0.8, 0) }
 ];
 
 // CASUAL POSE: Weight shifted, relaxed arms, slight twist
@@ -186,33 +184,33 @@ const relaxedSittingPhoneData = [
 ];
 
 const relaxedSittingPhoneAnglesData = [
-    //{ name: "root", pos: new THREE.Vector3(0,0,0), rot: new THREE.Euler(0.5,0,0)},
+    //{ name: "root", rot: new THREE.Euler(0,0,0)},
     // 1. Core - Comfortable seated tilt
     { name: 'lowerTorso', rot: new THREE.Euler(0.1, 0, 0) },
-    { name: 'upperTorso', rot: new THREE.Euler(0, 0, 0) },
+    { name: 'upperTorso', rot: new THREE.Euler(0.5, 0, 0) },
     { name: 'head', rot: new THREE.Euler(0.4, 0.3, 0) },
 
     // 2. Left Arm - Leaning on armrest, holding phone
     // Shoulder is out to the side, elbow bent up
-    { name: 'leftShoulder', rot: new THREE.Euler(0.4, -0.5, -0.6) },
+    { name: 'leftShoulder', rot: new THREE.Euler(1.8, -0.5, -0.6) },
     { name: 'leftElbow', rot: new THREE.Euler(0, 0, -2.0) },
     { name: 'leftHand', rot: new THREE.Euler(0.5, 0, 0.5) },
 
     // 3. Right Arm - Relaxed on the right armrest
-    { name: 'rightShoulder', rot: new THREE.Euler(0.2, 0, 0.6) },
+    { name: 'rightShoulder', rot: new THREE.Euler(0.8, 0, 0.6) },
     { name: 'rightElbow', rot: new THREE.Euler(0, 0, 0.8) },
     { name: 'rightHand', rot: new THREE.Euler(0, 0, 0) },
 
     // 4. Left Leg - Regular sitting, slightly forward
-    { name: 'leftLeg', rot: new THREE.Euler(1.3, 0.1, 0) },
+    { name: 'leftLeg', rot: new THREE.Euler(0.5, 0.1, 0) },
     { name: 'leftKnee', rot: new THREE.Euler(-0.5, 0, 0) },
     { name: 'leftFoot', rot: new THREE.Euler(0.2, 0, 0) },
 
     // 5. Right Leg - Regular sitting, slightly forward
-    { name: 'rightLeg', rot: new THREE.Euler(1.3, -0.1, 0) },
+    { name: 'rightLeg', rot: new THREE.Euler(0.5, -0.1, 0) },
     { name: 'rightKnee', rot: new THREE.Euler(-0.5, 0, 0) },
     { name: 'rightFoot', rot: new THREE.Euler(0.2, 0, 0) }
 ];
 
 
-export {applyPose, tPoseData, casualPoseData, sittingPoseData, sittingPhonePoseData, leapPoseData, relaxedSittingPhoneData, relaxedSittingPhoneAnglesData}
+export {applyPose, tPoseData, casualPoseData, sittingPoseData, sittingPhonePoseData, leapPoseData, relaxedSittingPhoneData, relaxedSittingPhoneAnglesData, rotatePose}

@@ -3,7 +3,7 @@ import * as THREE from 'three';
 import { Vector3 } from 'three';
 import { randInRange, pSin, pCos, distance3D, loadTextureF } from "./utils.js"
 import { heartShape, birdShape } from "./shapes.js"
-import {applyPose, tPoseData, casualPoseData, sittingPoseData, sittingPhonePoseData, leapPoseData, relaxedSittingPhoneData, relaxedSittingPhoneAnglesData} from "./poses.js"
+import {applyPose, tPoseData, casualPoseData, sittingPoseData, sittingPhonePoseData, leapPoseData, relaxedSittingPhoneData, relaxedSittingPhoneAnglesData, rotatePose} from "./poses.js"
 //import wall from './assets/textures/wall.jpg';
 
 
@@ -65,6 +65,7 @@ rightFoot.name = "rightFoot";
 //root.add(upperTorso);
 // root.add(leftLeg);
 // root.add(rightLeg);
+/*
 root.add(lowerTorso);
 
 lowerTorso.add(upperTorso)
@@ -88,8 +89,9 @@ leftKnee.add(leftFoot);
 
 rightLeg.add(rightKnee);
 rightKnee.add(rightFoot);
+*/
 
-/*
+
 root.add(upperTorso);
 root.add(head);
 root.add(leftShoulder);
@@ -111,7 +113,7 @@ leftKnee.add(leftFoot);
 
 rightLeg.add(rightKnee);
 rightKnee.add(rightFoot);
-*/
+
 
 // 4. Create the Skeleton
 const bones = [
@@ -347,8 +349,9 @@ const main = async () => {
 
   visualizeSkeleton()
   applyPose(tPoseData, skeleton)
+  rotatePose(new THREE.Euler(0,1,0), relaxedSittingPhoneAnglesData)
   applyPose(relaxedSittingPhoneAnglesData, skeleton)
-  // skeleton.bones[0].rotation.y = -Math.PI / 5;
+  // skeleton.bones[0].rotation.x = -Math.PI / 5;
 
   // const meshArray = prepBirds()
   // const linesArray = prepLines()
