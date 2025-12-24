@@ -3,6 +3,7 @@ import * as THREE from 'three';
 import { Vector3 } from 'three';
 import { randInRange, pSin, pCos, distance3D, loadTextureF } from "./utils.js"
 import { heartShape, birdShape } from "./shapes.js"
+import { LineMaterial } from 'three/addons/lines/LineMaterial.js';
 import {applyPose, tPoseData, casualPoseData, sittingPoseData, sittingPhonePoseData, leapPoseData, relaxedSittingPhoneData, relaxedSittingPhoneAnglesData, rotatePose} from "./poses.js"
 //import wall from './assets/textures/wall.jpg';
 
@@ -60,38 +61,6 @@ rightKnee.name = "rightKnee";
 rightFoot.name = "rightFoot";
 
 
-
-// 2. Build the Hierarchy
-//root.add(upperTorso);
-// root.add(leftLeg);
-// root.add(rightLeg);
-/*
-root.add(lowerTorso);
-
-lowerTorso.add(upperTorso)
-
-upperTorso.add(head);
-upperTorso.add(leftShoulder);
-upperTorso.add(rightShoulder);
-//upperTorso.add(lowerTorso)
-
-leftShoulder.add(leftElbow);
-leftElbow.add(leftHand);
-
-rightShoulder.add(rightElbow);
-rightElbow.add(rightHand);
-
-lowerTorso.add(leftLeg);
-lowerTorso.add(rightLeg);
-
-leftLeg.add(leftKnee);
-leftKnee.add(leftFoot);
-
-rightLeg.add(rightKnee);
-rightKnee.add(rightFoot);
-*/
-
-
 root.add(upperTorso);
 root.add(head);
 root.add(leftShoulder);
@@ -114,6 +83,30 @@ leftKnee.add(leftFoot);
 rightLeg.add(rightKnee);
 rightKnee.add(rightFoot);
 
+
+// root.add(lowerTorso);
+
+// lowerTorso.add(upperTorso)
+
+// upperTorso.add(head);
+// upperTorso.add(leftShoulder);
+// upperTorso.add(rightShoulder);
+
+
+// leftShoulder.add(leftElbow);
+// leftElbow.add(leftHand);
+
+// rightShoulder.add(rightElbow);
+// rightElbow.add(rightHand);
+
+// lowerTorso.add(leftLeg);
+// lowerTorso.add(rightLeg);
+
+// leftLeg.add(leftKnee);
+// leftKnee.add(leftFoot);
+
+// rightLeg.add(rightKnee);
+// rightKnee.add(rightFoot);
 
 // 4. Create the Skeleton
 const bones = [
@@ -241,12 +234,12 @@ const main = async () => {
   const ambientLight = new THREE.AmbientLight(0xffffff, 0.9);
   scene.add(ambientLight);
 
-  // const backColor = new THREE.Color().setRGB(0.7, 0.7, 0.7);
-  const backColor = new THREE.Color(pallete[0]);
+  const backColor = new THREE.Color().setRGB(0.01, 0.01, 0.01);
+  // const backColor = new THREE.Color(pallete[0]);
   console.log("backColor", backColor)
   scene.background = backColor
 
-  camera.position.z = 20;
+  camera.position.z = 4;
   let t = 0;
   let pos = {
     x: 0,
@@ -347,11 +340,97 @@ const main = async () => {
     scene.add(root);
   }
 
+  function curls() {
+    const group = new THREE.Group();
+    const numLines = 100;
+    const numSegments = 10;
+    const segmentLength = 0.5; // Length of each individual segment
+
+    for (let i = 0; i < numLines; i++) {
+        const points = [];
+        // Starting point for each line (staggered slightly so they don't overlap)
+        const scaleSize = 1
+        let currentPos = new THREE.Vector3(
+          Math.sin(i/numLines*Math.PI+Math.PI/2) * scaleSize,
+          Math.cos(i/numLines*Math.PI+Math.PI/2) * scaleSize,
+          Math.cos(i) * scaleSize
+        );
+        points.push(currentPos.clone());
+
+        let previousDirection = new THREE.Vector2(0, 0);
+
+        for (let j = 0; j < numSegments; j++) {
+
+            // Generate a random unit vector (direction)
+            let segmentGrow = (Math.sin(i + 10)*10 + j / numSegments) *0
+            let segmentDecrease = (numSegments - j) / numSegments
+            let segmentAngle = 10*j;
+            const randomDirection = new THREE.Vector2(
+                // Math.sin(10*(i+j)),
+                // Math.sin(10*(i+j)),
+                // Math.sin(10*(i+j))
+                
+                segmentGrow + 1,
+                segmentGrow + 1
+
+                // 0.1+segmentGrow * (Math.random() - 0.5),
+                // 0.1+segmentGrow * (Math.random() - 0.5),
+                // 0.1+segmentGrow * (Math.random() - 0.5)
+
+                // 0.1+segmentGrow * (Math.sin(10*(i+j))),
+                // 0.1+segmentGrow * (Math.sin(10*(i+j))),
+                // 0.1+segmentGrow * (Math.sin(10*(i+j)))
+                
+                // 1,1,1
+                
+                // segmentAngle,segmentAngle,segmentAngle
+            );
+            let nextDirection = previousDirection.clone().add(randomDirection);
+            console.log(segmentGrow, randomDirection, previousDirection, nextDirection)
+            previousDirection = nextDirection.clone();
+
+            // Calculate the next point's position
+            // const nextPos = new THREE.Vector3()
+            //     .copy(currentPos)
+            //     .add(nextDirection.multiplyScalar(segmentLength));
+            const nextPos = new THREE.Vector3()
+
+            nextPos.x = currentPos.x + Math.sin(nextDirection.x) * Math.cos(nextDirection.y) * segmentLength
+            nextPos.y = currentPos.y + Math.cos(nextDirection.x) * Math.cos(nextDirection.y) * segmentLength
+            nextPos.z = currentPos.z + Math.sin(nextDirection.y) * segmentLength
+
+            points.push(nextPos.clone());
+            currentPos.copy(nextPos); // Move the "cursor" to the new point
+        }
+
+        // Create Geometry and Material for the line
+        const geometry = new THREE.BufferGeometry().setFromPoints(points);
+        const randomColorIndex = Math.floor(Math.random() * hairPallete.length);
+        const material = 
+        new THREE.LineBasicMaterial({
+        // new LineMaterial({
+          color: hairPallete[randomColorIndex],
+					linewidth: 5, // in world units with size attenuation, pixels otherwise
+					// vertexColors: true,
+
+					// dashed: false,
+					alphaToCoverage: true,
+        });
+
+        const line = new THREE.Line(geometry, material);
+        group.add(line);
+    }
+
+    scene.add(group);
+  }
+
   visualizeSkeleton()
   applyPose(tPoseData, skeleton)
-  rotatePose(new THREE.Euler(0,1,0), relaxedSittingPhoneAnglesData)
+  // rotatePose(relaxedSittingPhoneAnglesData, new THREE.Euler(0,0,0))
   applyPose(relaxedSittingPhoneAnglesData, skeleton)
-  // skeleton.bones[0].rotation.x = -Math.PI / 5;
+  skeleton.bones[0].rotation.y = -Math.PI / 5;
+
+  curls()
 
   // const meshArray = prepBirds()
   // const linesArray = prepLines()
@@ -363,7 +442,7 @@ const main = async () => {
 
     // moveShapes(meshArray)
     // doLines(linesArray)
-    skeleton.bones[0].rotation.y += -Math.PI / 100;
+    // skeleton.bones[0].rotation.y += -Math.PI / 100;
 
     renderer.render(scene, camera);
   }

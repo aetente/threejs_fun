@@ -14,9 +14,13 @@ function applyPose(poseData, skeleton) {
     skeleton.update();
 }
 
-function rotatePose(angle, pose) {
+function rotatePose(pose, angle) {
     pose.forEach(bone => {
-        bone.rot += angle
+        if (!bone.rot) bone.rot = new THREE.Euler(0, 0, 0)
+        bone.rot.x += angle.x
+        bone.rot.y += angle.y
+        bone.rot.z += angle.z
+        // bone.rot += angle
     })
     return pose
 }
@@ -184,10 +188,10 @@ const relaxedSittingPhoneData = [
 ];
 
 const relaxedSittingPhoneAnglesData = [
-    //{ name: "root", rot: new THREE.Euler(0,0,0)},
+    { name: "root", rot: new THREE.Euler(0,0,0)},
     // 1. Core - Comfortable seated tilt
-    { name: 'lowerTorso', rot: new THREE.Euler(0.1, 0, 0) },
-    { name: 'upperTorso', rot: new THREE.Euler(0.5, 0, 0) },
+    { name: 'lowerTorso', rot: new THREE.Euler(0.10, 0, 0) },
+    { name: 'upperTorso', rot: new THREE.Euler(0.8, 0, 0) },
     { name: 'head', rot: new THREE.Euler(0.4, 0.3, 0) },
 
     // 2. Left Arm - Leaning on armrest, holding phone

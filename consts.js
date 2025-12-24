@@ -14,3 +14,11 @@ const pallete = [
   "#F08A5D",
   "#F9ED69"
 ]
+
+const hairPallete = [
+  "#2d170e",
+  "#4d2d1a",
+  "#6d4730",
+  "#a97e6d",
+  "#cc9f88"
+]
