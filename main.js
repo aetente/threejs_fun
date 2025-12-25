@@ -7,6 +7,8 @@ import { LineMaterial } from 'three/addons/lines/LineMaterial.js';
 import {applyPose, tPoseData, casualPoseData, sittingPoseData, sittingPhonePoseData, leapPoseData, relaxedSittingPhoneData, relaxedSittingPhoneAnglesData, rotatePose} from "./poses.js"
 //import wall from './assets/textures/wall.jpg';
 
+const {sin, cos, PI, random, pow} = Math;
+
 
 var dynamicsVectors = [
   {
@@ -340,64 +342,98 @@ const main = async () => {
     scene.add(root);
   }
 
-  function curls() {
+  function curls(offsetVal) {
+    const offset = offsetVal || new THREE.Vector3(0,0,0)
     const group = new THREE.Group();
-    const numLines = 100;
-    const numSegments = 10;
-    const segmentLength = 0.5; // Length of each individual segment
+    const numLines = 70;
+    const numSegments = 40;
+    
 
     for (let i = 0; i < numLines; i++) {
+        const segmentLength = 0.01 + random()*0.01;
         const points = [];
         // Starting point for each line (staggered slightly so they don't overlap)
-        const scaleSize = 1
+        const scaleSize = 0.1
+        const k = i/numLines
+        const azimuth = 
+        // 0
+        sin(k * PI * 2) * PI * 0.5
+          - PI * 0.4
+        const phi = sin(k * PI * 2) * PI * 0.9
         let currentPos = new THREE.Vector3(
-          Math.sin(i/numLines*Math.PI+Math.PI/2) * scaleSize,
-          Math.cos(i/numLines*Math.PI+Math.PI/2) * scaleSize,
-          Math.cos(i) * scaleSize
+          sin(azimuth) * scaleSize + offset.x,
+          cos(azimuth) * scaleSize + offset.y,
+          0 + offset.z
+          // cos(azimuth) * scaleSize
         );
         points.push(currentPos.clone());
 
         let previousDirection = new THREE.Vector2(0, 0);
-
+        let previousAngle = new THREE.Vector2(0,0);
+        const curveDirection = random() > 0.5 ? 1 : -1
         for (let j = 0; j < numSegments; j++) {
 
             // Generate a random unit vector (direction)
-            let segmentGrow = (Math.sin(i + 10)*10 + j / numSegments) *0
+            const segmentGrow = j/numSegments
+            let segmentGrow2 = (Math.sin(i + 10)*10 + j / numSegments) *0
+            const segmentExp = (100+i/10)  *pow(segmentGrow, 1.2)
             let segmentDecrease = (numSegments - j) / numSegments
             let segmentAngle = 10*j;
+            let adjustAngle = new THREE.Vector2(
+              curveDirection * segmentExp * 0.003,
+              curveDirection * segmentExp * 0.003
+            )
+            let nextAngle = previousAngle.clone()
+            nextAngle.add(adjustAngle)
+            previousAngle = nextAngle.clone()
             const randomDirection = new THREE.Vector2(
-                // Math.sin(10*(i+j)),
-                // Math.sin(10*(i+j)),
+                //Math.sin(10*(i+j)),
+                //Math.sin(10*(i+j)),
                 // Math.sin(10*(i+j))
                 
-                segmentGrow + 1,
-                segmentGrow + 1
+                //segmentGrow + 1,
+                //segmentGrow + 1
 
                 // 0.1+segmentGrow * (Math.random() - 0.5),
                 // 0.1+segmentGrow * (Math.random() - 0.5),
                 // 0.1+segmentGrow * (Math.random() - 0.5)
 
-                // 0.1+segmentGrow * (Math.sin(10*(i+j))),
-                // 0.1+segmentGrow * (Math.sin(10*(i+j))),
+                 1*segmentExp * (Math.sin(0.5*(i+j))),
+                 1*segmentExp * (Math.sin(0.5*(i+j))),
                 // 0.1+segmentGrow * (Math.sin(10*(i+j)))
+                //0.3,0.3
                 
                 // 1,1,1
                 
                 // segmentAngle,segmentAngle,segmentAngle
             );
-            let nextDirection = previousDirection.clone().add(randomDirection);
-            console.log(segmentGrow, randomDirection, previousDirection, nextDirection)
+            
+            let nextDirection = previousDirection.clone().add(nextAngle);
+            
             previousDirection = nextDirection.clone();
+            var adjustDirectionX =
+            2.5/2*PI - sin(j/10)
+            //PI
+            let adjustDirection = new THREE.Vector2(
+              adjustDirectionX,
+              adjustDirectionX
+            )
+            nextDirection.add(adjustDirection)
 
+            //console.log(previousDirection, nextDirection)
             // Calculate the next point's position
             // const nextPos = new THREE.Vector3()
             //     .copy(currentPos)
             //     .add(nextDirection.multiplyScalar(segmentLength));
             const nextPos = new THREE.Vector3()
 
-            nextPos.x = currentPos.x + Math.sin(nextDirection.x) * Math.cos(nextDirection.y) * segmentLength
-            nextPos.y = currentPos.y + Math.cos(nextDirection.x) * Math.cos(nextDirection.y) * segmentLength
-            nextPos.z = currentPos.z + Math.sin(nextDirection.y) * segmentLength
+            //nextPos.x = currentPos.x + Math.sin(nextDirection.x) * Math.cos(nextDirection.y) * segmentLength
+            //nextPos.y = currentPos.y + Math.cos(nextDirection.x) * Math.cos(nextDirection.y) * segmentLength
+            //nextPos.z = currentPos.z + Math.sin(nextDirection.y) * segmentLength
+            
+            nextPos.x = currentPos.x + sin(nextDirection.x) * segmentLength
+            nextPos.y = currentPos.y + cos(nextDirection.x) * segmentLength
+            nextPos.z = currentPos.z + sin(nextDirection.y) * segmentLength
 
             points.push(nextPos.clone());
             currentPos.copy(nextPos); // Move the "cursor" to the new point
@@ -423,6 +459,19 @@ const main = async () => {
 
     scene.add(group);
   }
+  
+  function coat1(startVal, endVal) {
+    const start = startVal || new THREE.Vector3(0,0,0)
+    const end = endVal || new THREE.Vector3(0,0,0)
+    const amountOfRects = 30;
+    for (let i = 0; i < amountOfRects; i++) {
+      const lerpVal = i/amountOfRects
+      const currentPos = start.lerp(end, lerpVal)
+      const patchSize = 0.1 + random() * 0.2
+      const geometry = new THREE.PlaneGeometry(patchSize, patchSize);
+      
+    }
+  }
 
   visualizeSkeleton()
   applyPose(tPoseData, skeleton)
@@ -430,7 +479,8 @@ const main = async () => {
   applyPose(relaxedSittingPhoneAnglesData, skeleton)
   skeleton.bones[0].rotation.y = -Math.PI / 5;
 
-  curls()
+
+  curls(skeleton.getBoneByName("head").position)
 
   // const meshArray = prepBirds()
   // const linesArray = prepLines()
