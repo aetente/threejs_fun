@@ -241,7 +241,7 @@ const main = async () => {
   console.log("backColor", backColor)
   scene.background = backColor
 
-  camera.position.z = 4;
+  camera.position.z = 10;
   let t = 0;
   let pos = {
     x: 0,
@@ -342,18 +342,19 @@ const main = async () => {
     scene.add(root);
   }
 
-  function curls(offsetVal) {
-    const offset = offsetVal || new THREE.Vector3(0,0,0)
+  function curls(offsetVal, scaleVal) {
+    const offset = offsetVal.clone() || new THREE.Vector3(0,0,0)
+    const scale = scaleVal || 1
     const group = new THREE.Group();
     const numLines = 70;
     const numSegments = 40;
     
 
     for (let i = 0; i < numLines; i++) {
-        const segmentLength = 0.01 + random()*0.01;
+        const segmentLength = (0.01 + random()*0.01) * scale;
         const points = [];
         // Starting point for each line (staggered slightly so they don't overlap)
-        const scaleSize = 0.1
+        const scaleSize = 0.1 * scale
         const k = i/numLines
         const azimuth = 
         // 0
@@ -459,28 +460,159 @@ const main = async () => {
 
     scene.add(group);
   }
+
+  function simpleCoat(pointsArray, options) {
+    const scale = options?.scale || 1
+    // const start = startVal.clone() || new THREE.Vector3(0,0,0)
+    // const end = endVal.clone() || new THREE.Vector3(0,0,0)
+    const radius = options?.radius || 0;
+    const radius2 = options?.radius2 || radius;
+    const color = options?.color || 0x000000
   
-  function coat1(startVal, endVal) {
-    const start = startVal || new THREE.Vector3(0,0,0)
-    const end = endVal || new THREE.Vector3(0,0,0)
-    const amountOfRects = 30;
-    for (let i = 0; i < amountOfRects; i++) {
-      const lerpVal = i/amountOfRects
-      const currentPos = start.lerp(end, lerpVal)
-      const patchSize = 0.1 + random() * 0.2
-      const geometry = new THREE.PlaneGeometry(patchSize, patchSize);
-      
-    }
+
+    const coatShape = new THREE.Shape();
+    coatShape.moveTo( pointsArray[0].x, pointsArray[0].y );
+    pointsArray.forEach(point => {
+      coatShape.lineTo( point.x, point.y );
+    })
+    coatShape.lineTo( pointsArray[0].x, pointsArray[0].y );
+    const extrudeSettings = {
+      steps: 2,
+      depth: radius,
+      bevelEnabled: false,
+    };
+    const extrudeGeometry = new THREE.ExtrudeGeometry(coatShape, extrudeSettings);
+    const extrudeMaterial = new THREE.MeshBasicMaterial({ color });
+    const extrudeMesh = new THREE.Mesh(extrudeGeometry, extrudeMaterial);
+    extrudeMesh.position.set(0, 0, 0);
+    extrudeMesh.rotation.set(0, 0, 0);
+    extrudeMesh.scale.set(scale, scale, scale);
+    scene.add(extrudeMesh);
+  
   }
+  
+  function coat1(pointsArray, options) {
+    const shapesArray = []
+    const scale = options?.scale || 1
+    // const start = startVal.clone() || new THREE.Vector3(0,0,0)
+    // const end = endVal.clone() || new THREE.Vector3(0,0,0)
+    const amountOfRects = options?.amountOfRects || 300;
+    const radius = options?.radius || 0;
+    const radius2 = options?.radius2 || radius;
+
+    var colorRange = 0.5;
+    var expSpeed = 1.4;
+	  
+    var sc=200;
+
+    for (let i = 0; i < amountOfRects; i++) {
+      const xRes = sin(t)
+      const yRes = cos(t)
+
+      //red
+      let red = colorRange/(1+pow(expSpeed,-sc*i/(cos((xRes+yRes)*1100)*300)));
+      //green
+      let green = colorRange/(1+pow(expSpeed,-sc*i/(cos((xRes+yRes)*1300)*300)));
+      //blue
+      let blue = colorRange/(1+pow(expSpeed,-sc*i/(cos((xRes+yRes)*1200)*300)));
+
+      const lerpVal = i/amountOfRects
+      // console.log(lerpVal)
+      const currentRadius = THREE.MathUtils.lerp(radius, radius2, lerpVal)
+      const randomOffset = new THREE.Vector3(
+        currentRadius * (random() - 0.5),
+        currentRadius * (random() - 0.5),
+        currentRadius * (random() - 0.5)
+      )
+      // const currentPos = start.clone().lerp(end, lerpVal)
+      // console.log(currentPos, lerpVal)
+      // currentPos.add(randomOffset)
+      const patchSize = (0.01 + random() * 0.02) * scale
+      const geometry = new THREE.PlaneGeometry(patchSize, patchSize);
+      const material = new THREE.MeshLambertMaterial({
+        color: new THREE.Color().setRGB( red, green, blue ),
+        opacity: 0.1,
+        transparent: true
+      });
+      //const material = new THREE.MeshStandardMaterial({ map: texture, });
+      const currentPos = getRandomPointBetweenPoints(pointsArray)
+      const shape = new THREE.Mesh(geometry, material);
+      shape.position.set(currentPos.x, currentPos.y, currentPos.z);
+      shape.rotateZ(random() * PI * 2);
+      shape.rotateX(random() * PI * 2);
+      shape.rotateY(random() * PI * 2);
+      shapesArray.push(shape)
+      scene.add(shape);
+    }
+    return shapesArray
+  }
+
+  function getRandomPointBetweenPoints(pointArray) {
+    const weights = pointArray.map(() => random());
+    const totalWeight = weights.reduce((sum, w) => sum + w, 0);
+
+    const result = new THREE.Vector3(0, 0, 0);
+
+    pointArray.forEach((point, i) => {
+        const normalizedWeight = weights[i] / totalWeight;
+        result.addScaledVector(point, normalizedWeight);
+    });
+
+    return result;
+}
 
   visualizeSkeleton()
   applyPose(tPoseData, skeleton)
   // rotatePose(relaxedSittingPhoneAnglesData, new THREE.Euler(0,0,0))
   applyPose(relaxedSittingPhoneAnglesData, skeleton)
-  skeleton.bones[0].rotation.y = -Math.PI / 5;
+  skeleton.bones[0].rotation.y = -PI / 8 + PI;
 
+  const headPosition = new THREE.Vector3()
+  skeleton.getBoneByName("head").getWorldPosition(headPosition)
 
-  curls(skeleton.getBoneByName("head").position)
+  curls(headPosition.add(new THREE.Vector3(0, 0.2, 0)) , 1.5)
+
+  const leftElbowPosition = new THREE.Vector3()
+  skeleton.getBoneByName("leftElbow").getWorldPosition(leftElbowPosition)
+  const leftHandPosition = new THREE.Vector3()
+  skeleton.getBoneByName("leftHand").getWorldPosition(leftHandPosition)
+
+  const rightElbowPosition = new THREE.Vector3()
+  skeleton.getBoneByName("rightElbow").getWorldPosition(rightElbowPosition)
+  const rightHandPosition = new THREE.Vector3()
+  skeleton.getBoneByName("rightHand").getWorldPosition(rightHandPosition)
+
+  const leftShoulderPosition = new THREE.Vector3()
+  skeleton.getBoneByName("leftShoulder").getWorldPosition(leftShoulderPosition)
+  const rightShoulderPosition = new THREE.Vector3()
+  skeleton.getBoneByName("rightShoulder").getWorldPosition(rightShoulderPosition)
+
+  const upperTorsoPosition = new THREE.Vector3()
+  skeleton.getBoneByName("upperTorso").getWorldPosition(upperTorsoPosition)
+  const lowerTorsoPosition = new THREE.Vector3()
+  skeleton.getBoneByName("lowerTorso").getWorldPosition(lowerTorsoPosition)
+
+  const leftLegPosition = new THREE.Vector3()
+  skeleton.getBoneByName("leftLeg").getWorldPosition(leftLegPosition)
+  const rightLegPosition = new THREE.Vector3()
+  skeleton.getBoneByName("rightLeg").getWorldPosition(rightLegPosition)
+
+  const rootPosition = new THREE.Vector3()
+  skeleton.getBoneByName("root").getWorldPosition(rootPosition)
+
+  const torsoWidth = 0.3;
+  const leftUpperTorsoPosition = new THREE.Vector3(upperTorsoPosition.x - torsoWidth / 2, upperTorsoPosition.y, upperTorsoPosition.z);
+  const rightUpperTorsoPosition = new THREE.Vector3(upperTorsoPosition.x + torsoWidth / 2, upperTorsoPosition.y, upperTorsoPosition.z);
+
+  simpleCoat([rootPosition, leftShoulderPosition, leftUpperTorsoPosition, rightUpperTorsoPosition, rightShoulderPosition], {scale: 1, color: 0x333333, radius: 0.5, radius2: 0.1})
+  simpleCoat([leftUpperTorsoPosition, leftLegPosition, rightLegPosition, rightUpperTorsoPosition], {scale: 1, color: 0x333333, radius: 0.5, radius2: 0.1})
+  coat1([rootPosition, upperTorsoPosition, lowerTorsoPosition, leftShoulderPosition, rightShoulderPosition], {scale: 10, amountOfRects: 1000, radius: 0.5, radius2: 0.1})
+  // coat1(upperTorsoPosition, lowerTorsoPosition, {scale: 5, amountOfRects: 10})
+  // coat1(leftShoulderPosition, leftElbowPosition, {scale: 2})
+  // coat1(rightShoulderPosition, rightElbowPosition, {scale: 2})
+  // coat1(rightElbowPosition, rightHandPosition, {scale: 2})
+  // coat1(leftElbowPosition, leftHandPosition, {scale: 2})
+
 
   // const meshArray = prepBirds()
   // const linesArray = prepLines()
@@ -498,7 +630,7 @@ const main = async () => {
   }
 
   animate();
-  //renderer.render( scene, camera );
+  // renderer.render( scene, camera );
 }
 
 main()
