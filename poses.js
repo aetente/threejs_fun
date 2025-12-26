@@ -195,24 +195,24 @@ const relaxedSittingPhoneAnglesData = [
     { name: 'head', rot: new THREE.Euler(0.4, 0.3, 0) },
 
     // 2. Right Arm - Relaxed on the right armrest
-    { name: 'leftShoulder', rot: new THREE.Euler(-0.8, 0, -0.6) },
+    { name: 'leftShoulder', rot: new THREE.Euler(0.8, 0, -0.6) },
     { name: 'leftElbow', rot: new THREE.Euler(0, 0, -0.8) },
     { name: 'leftHand', rot: new THREE.Euler(0, 0, 0) },
 
     // 3. Left Arm - Leaning on armrest, holding phone
     // Shoulder is out to the side, elbow bent up
-    { name: 'rightShoulder', rot: new THREE.Euler(-1.8, -0.5, 0.6) },
-    { name: 'rightElbow', rot: new THREE.Euler(0, 0, 2.0) },
+    { name: 'rightShoulder', rot: new THREE.Euler(1.1, -0.5, 0.6) },
+    { name: 'rightElbow', rot: new THREE.Euler(0, 0, -1.0) },
     { name: 'rightHand', rot: new THREE.Euler(-0.5, 0, -0.5) },
 
     // 4. Left Leg - Regular sitting, slightly forward
-    { name: 'leftLeg', rot: new THREE.Euler(0.5, 0.1, 0) },
-    { name: 'leftKnee', rot: new THREE.Euler(-0.5, 0, 0) },
+    { name: 'leftLeg', rot: new THREE.Euler(1.5, 0.1, 0) },
+    { name: 'leftKnee', rot: new THREE.Euler(-1.5, 0, 0) },
     { name: 'leftFoot', rot: new THREE.Euler(0.2, 0, 0) },
 
     // 5. Right Leg - Regular sitting, slightly forward
-    { name: 'rightLeg', rot: new THREE.Euler(0.5, -0.1, 0) },
-    { name: 'rightKnee', rot: new THREE.Euler(-0.5, 0, 0) },
+    { name: 'rightLeg', rot: new THREE.Euler(1.5, -0.1, 0) },
+    { name: 'rightKnee', rot: new THREE.Euler(-1.5, 0, 0) },
     { name: 'rightFoot', rot: new THREE.Euler(0.2, 0, 0) }
 ];
 
