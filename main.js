@@ -4,12 +4,14 @@ import { Vector3 } from 'three';
 import { randInRange, pSin, pCos, distance3D, loadTextureF } from "./utils.js"
 import { heartShape, birdShape } from "./shapes.js"
 import { LineMaterial } from 'three/addons/lines/LineMaterial.js';
-import {applyPose, tPoseData, casualPoseData, sittingPoseData, sittingPhonePoseData, leapPoseData, relaxedSittingPhoneData, relaxedSittingPhoneAnglesData, rotatePose} from "./poses.js"
+import { Line2 } from 'three/addons/lines/Line2.js';
+import { LineGeometry } from 'three/addons/lines/LineGeometry.js';
+import {applyPose, tPoseData, casualPoseData, sittingPoseData, sittingPhonePoseData, leapPoseData, relaxedSittingPhoneData, relaxedSittingPhoneAnglesData, rotatePose, sittingLegsClose} from "./poses.js"
 //import wall from './assets/textures/wall.jpg';
 
 const {sin, cos, PI, random, pow} = Math;
 
-
+console.log("LineMaterial loaded:", LineMaterial);
 var dynamicsVectors = [
   {
     scale: 1,
@@ -124,6 +126,8 @@ const main = async () => {
 
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 0.1, 1000);
+
+  camera.position.z = 10;
 
   const renderer = new THREE.WebGLRenderer();
   renderer.setSize(window.innerWidth, window.innerHeight);
@@ -240,8 +244,6 @@ const main = async () => {
   // const backColor = new THREE.Color(pallete[0]);
   console.log("backColor", backColor)
   scene.background = backColor
-
-  camera.position.z = 4;
   let t = 0;
   let pos = {
     x: 0,
@@ -441,20 +443,26 @@ const main = async () => {
         }
 
         // Create Geometry and Material for the line
-        const geometry = new THREE.BufferGeometry().setFromPoints(points);
+        // const geometry = new THREE.BufferGeometry().setFromPoints(points);
+        const flatPath = points.flatMap(v => [v.x, v.y, v.z]);
+        // console.log("flatPath", flatPath)
+        const geometry = new LineGeometry();
+        geometry.setPositions(flatPath);
+        // console.log("geometry", geometry)
         const randomColorIndex = Math.floor(Math.random() * hairPallete.length);
         const material = 
-        new THREE.LineBasicMaterial({
-        // new LineMaterial({
+        // new THREE.LineBasicMaterial({
+        new LineMaterial({
           color: hairPallete[randomColorIndex],
-					linewidth: 5, // in world units with size attenuation, pixels otherwise
+					linewidth: 2, // in world units with size attenuation, pixels otherwise
 					// vertexColors: true,
 
 					// dashed: false,
 					alphaToCoverage: true,
+          resolution: new THREE.Vector2(window.innerWidth, window.innerHeight)
         });
 
-        const line = new THREE.Line(geometry, material);
+        const line = new Line2(geometry, material);
         group.add(line);
     }
 
@@ -562,6 +570,64 @@ const main = async () => {
     return result;
   }
 
+  function getPointBetweenPoints(pointArray, lerpFactor = 0) {
+    const n = pointArray.length;
+    if (n === 0) return new THREE.Vector3();
+    if (n === 1) return pointArray[0].clone();
+
+    // 1. Clamp factor between 0 and 1 to prevent overshooting
+    const t = THREE.MathUtils.clamp(lerpFactor, 0, 1);
+
+    const result = new THREE.Vector3(0, 0, 0);
+    const weights = [];
+    let totalWeight = 0;
+
+    // 2. Calculate a "Gaussian-style" weight for each point
+    // Each point 'i' has a target peak at (i / (n-1))
+    for (let i = 0; i < n; i++) {
+        const peak = i / (n - 1);
+        // The 'influence' decreases as the distance from the peak increases
+        // Using a power function (like 1 / (1 + dist*dist)) creates a smooth blend
+        const distance = Math.abs(t - peak);
+        const weight = Math.pow(1 - distance, 8); // Higher power = sharper focus on points
+        
+        weights.push(weight);
+        totalWeight += weight;
+    }
+
+    // 3. Sum the weighted points
+    pointArray.forEach((point, i) => {
+        const normalizedWeight = weights[i] / totalWeight;
+        result.addScaledVector(point, normalizedWeight);
+    });
+
+    return result;
+  }
+
+  function getRectangleCorners(posA, posB, width) {
+    const halfWidth = width / 2;
+
+    // 1. Get the direction vector from A to B
+    const dir = new THREE.Vector3().subVectors(posB, posA);
+
+    // 2. Get the perpendicular direction in the XY plane
+    // We normalize it so we can scale it by halfWidth
+    const perpDir = new THREE.Vector3(-dir.y, dir.x, 0).normalize();
+
+    // 3. Calculate the 4 corners
+    const corners = [
+        // Corners near Point A
+        new THREE.Vector3().copy(posA).addScaledVector(perpDir, halfWidth),  // Corner 1
+        new THREE.Vector3().copy(posA).addScaledVector(perpDir, -halfWidth), // Corner 2
+
+        // Corners near Point B
+        new THREE.Vector3().copy(posB).addScaledVector(perpDir, -halfWidth), // Corner 3
+        new THREE.Vector3().copy(posB).addScaledVector(perpDir, halfWidth)   // Corner 4
+    ];
+
+    return corners;
+  }
+
   function getPerpendicularPoint(posA, posB, distance = 1) {
     // 1. Get the direction from A to B
     const dir = new THREE.Vector3().subVectors(posB, posA);
@@ -581,11 +647,11 @@ const main = async () => {
     return new THREE.Vector3().copy(posA).add(perpDir);
   }
 
-  // visualizeSkeleton()
+  visualizeSkeleton()
   applyPose(tPoseData, skeleton)
   // rotatePose(relaxedSittingPhoneAnglesData, new THREE.Euler(0,0,0))
-  applyPose(relaxedSittingPhoneAnglesData, skeleton)
-  skeleton.bones[0].rotation.y = PI / 3 + PI;
+  applyPose(sittingLegsClose, skeleton)
+  // skeleton.bones[0].rotation.y = PI / 3 + PI;
 
   const headPosition = new THREE.Vector3()
   skeleton.getBoneByName("head").getWorldPosition(headPosition)
@@ -629,78 +695,37 @@ const main = async () => {
   const rootPosition = new THREE.Vector3()
   skeleton.getBoneByName("root").getWorldPosition(rootPosition)
 
-  const torsoWidth = 0.3;
-  const leftUpperTorsoPosition = new THREE.Vector3(upperTorsoPosition.x - torsoWidth / 2, upperTorsoPosition.y, upperTorsoPosition.z);
-  const rightUpperTorsoPosition = new THREE.Vector3(upperTorsoPosition.x + torsoWidth / 2, upperTorsoPosition.y, upperTorsoPosition.z);
+  const torsoWidth = 0.2;
+  const leftUpperTorsoPosition = new THREE.Vector3(upperTorsoPosition.x + torsoWidth / 2, upperTorsoPosition.y, upperTorsoPosition.z);
+  const rightUpperTorsoPosition = new THREE.Vector3(upperTorsoPosition.x - torsoWidth / 2, upperTorsoPosition.y, upperTorsoPosition.z);
 
-  const offsetLeftShoulderPosition = getPerpendicularPoint(leftShoulderPosition, leftElbowPosition, -0.1);
-  const offsetLeftElbowPosition = getPerpendicularPoint(leftElbowPosition, leftShoulderPosition, 0.1);
-  const offsetRightShoulderPosition = getPerpendicularPoint(rightShoulderPosition, rightElbowPosition, -0.1);
-  const offsetRightElbowPosition = getPerpendicularPoint(rightElbowPosition, rightShoulderPosition, 0.1);
-  const offsetLeftHandPosition = getPerpendicularPoint(leftHandPosition, leftElbowPosition, 0.1);
-  const offsetRightHandPosition = getPerpendicularPoint(rightHandPosition, rightElbowPosition, 0.1);
+  const rightShouldRectangle = getRectangleCorners(rightShoulderPosition, rightElbowPosition, 0.1);
+  const rightHandReactangle = getRectangleCorners(rightHandPosition, rightElbowPosition, 0.1);
 
-  const offsetLeftLegPosition = getPerpendicularPoint(leftLegPosition, leftKneePosition, -0.1);
-  const offsetLeftKneePosition = getPerpendicularPoint(leftKneePosition, leftLegPosition, 0.1);
-  const offsetRightLegPosition = getPerpendicularPoint(rightLegPosition, rightKneePosition, -0.1);
-  const offsetRightKneePosition = getPerpendicularPoint(rightKneePosition, rightLegPosition, 0.1);
+  const leftShouldRectangle = getRectangleCorners(leftShoulderPosition, leftElbowPosition, 0.1);
+  const leftHandReactangle = getRectangleCorners(leftHandPosition, leftElbowPosition, 0.1);
+
+  const rightLegRectangle = getRectangleCorners(rightLegPosition, rightKneePosition, 0.1);
+  const rightFootReactangle = getRectangleCorners(rightFootPosition, rightKneePosition, 0.1);
+
+  const leftLegRectangle = getRectangleCorners(leftLegPosition, leftKneePosition, 0.1);
+  const leftFootReactangle = getRectangleCorners(leftFootPosition, leftKneePosition, 0.1);
+
   
-  const offsetLeftFootPosition = getPerpendicularPoint(leftFootPosition, leftKneePosition, 0.1);
-  const offsetRightFootPosition = getPerpendicularPoint(rightFootPosition, rightKneePosition, 0.1);
 
 
   basicCloth([rootPosition, leftShoulderPosition, leftUpperTorsoPosition, rightUpperTorsoPosition, rightShoulderPosition], {scale: 1, color: 0x333f33, radius: 0.5, radius2: 0.1})
   basicCloth([leftUpperTorsoPosition, leftLegPosition, rightLegPosition, rightUpperTorsoPosition], {scale: 1, color: 0x333333, radius: 0.5, radius2: 0.1})
-  basicCloth([
-    rightShoulderPosition,
-    rightElbowPosition,
-    offsetRightElbowPosition,
-    offsetRightShoulderPosition,
-  ], {scale: 1, color: 0x3f3333, radius: 0.5, radius2: 0.1})
-  basicCloth([
-    leftShoulderPosition,
-    leftElbowPosition,
-    offsetLeftElbowPosition,
-    offsetLeftShoulderPosition
-  ], {scale: 1, color: 0x33333f, radius: 0.5, radius2: 0.1})
-  basicCloth([
-    rightElbowPosition,
-    rightHandPosition,
-    offsetRightHandPosition,
-    offsetRightElbowPosition,
-  ], {scale: 1, color: 0x30333f, radius: 0.5, radius2: 0.1})
-  basicCloth([
-    leftElbowPosition,
-    leftHandPosition,
-    offsetLeftHandPosition,
-    offsetLeftElbowPosition
-  ], {scale: 1, color: 0xf33f33, radius: 0.5, radius2: 0.1})
+  basicCloth(rightShouldRectangle, {scale: 1, color: 0x3f3333, radius: 0.5, radius2: 0.1})
+  basicCloth(leftShouldRectangle, {scale: 1, color: 0x33333f, radius: 0.5, radius2: 0.1})
+  basicCloth(rightHandReactangle, {scale: 1, color: 0x30333f, radius: 0.5, radius2: 0.1})
+  basicCloth(leftHandReactangle, {scale: 1, color: 0xf33f33, radius: 0.5, radius2: 0.1})
 
-  basicCloth([
-    leftLegPosition,
-    leftKneePosition,
-    offsetLeftKneePosition,
-    offsetLeftLegPosition
-  ], {scale: 1, color: 0xdff300, radius: 0.5, radius2: 0.1})
-  basicCloth([
-    rightLegPosition,
-    rightKneePosition,
-    offsetRightKneePosition,
-    offsetRightLegPosition
-  ], {scale: 1, color: 0xf3f333, radius: 0.5, radius2: 0.1})
+  basicCloth(rightLegRectangle, {scale: 1, color: 0xdff300, radius: 0.5, radius2: 0.1})
+  basicCloth(rightFootReactangle, {scale: 1, color: 0xf3f333, radius: 0.5, radius2: 0.1})
 
-  basicCloth([
-    leftKneePosition,
-    leftFootPosition,
-    offsetLeftFootPosition,
-    offsetLeftKneePosition
-  ], {scale: 1, color: 0xf3f333, radius: 0.5, radius2: 0.1})
-  basicCloth([
-    rightKneePosition,
-    rightFootPosition,
-    offsetRightFootPosition,
-    offsetRightKneePosition
-  ], {scale: 1, color: 0xdff300, radius: 0.5, radius2: 0.1})
+  basicCloth(leftLegRectangle, {scale: 1, color: 0xf3f333, radius: 0.5, radius2: 0.1})
+  basicCloth(leftFootReactangle, {scale: 1, color: 0xdff300, radius: 0.5, radius2: 0.1})
 
   // coat1([rootPosition, upperTorsoPosition, lowerTorsoPosition, leftShoulderPosition, rightShoulderPosition], {scale: 10, amountOfRects: 1000, radius: 0.5, radius2: 0.1})
   // coat1(upperTorsoPosition, lowerTorsoPosition, {scale: 5, amountOfRects: 10})
