@@ -11,7 +11,12 @@ import {applyPose, tPoseData, casualPoseData, sittingPoseData, sittingPhonePoseD
 
 const {sin, cos, PI, random, pow} = Math;
 
-console.log("LineMaterial loaded:", LineMaterial);
+
+const palletePos = [
+  new THREE.Vector3(0,0,0),
+  new THREE.Vector3(2,0,0),
+]
+
 var dynamicsVectors = [
   {
     scale: 1,
@@ -125,12 +130,22 @@ const skeleton = new THREE.Skeleton(bones);
 const main = async () => {
 
   const scene = new THREE.Scene();
-  const camera = new THREE.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 0.1, 1000);
+  // const camera = new THREE.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 0.1, 1000);
+  
+  const camera = new THREE.PerspectiveCamera(35, 1, 0.1, 1000);
 
-  camera.position.z = 10;
+  const totalWidth = 3000
+  const totalHeight = 3000
 
-  const renderer = new THREE.WebGLRenderer();
-  renderer.setSize(window.innerWidth, window.innerHeight);
+  camera.position.z = 4;
+  camera.position.x = 0.3
+
+  const renderer = new THREE.WebGLRenderer({
+    antialias: true,
+    preserveDrawingBuffer: true // Required for capturing the image
+  });
+  // renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setSize(3000,3000)
   document.body.appendChild(renderer.domElement);
 
 
@@ -155,6 +170,35 @@ const main = async () => {
   
       const lineVal = new THREE.Line(geometry, material);
       })
+  }
+
+  function fillStarsBackground () {
+    const maxStars = 10000
+    const stars = []
+    const backgroundSize = 4.4
+    const divideBackground = 10
+    const cellSize = backgroundSize / divideBackground
+
+    for (let x = 0; x < divideBackground; x++) {
+      for (let y = 0; y < divideBackground; y++) {
+        
+      }
+    }
+
+    for (let i = 0; i < maxStars; i++) {
+      const randomSunsetPaletteIndex = floor(random() * sunsetPallete2.length);
+      const material = new THREE.MeshBasicMaterial({
+        color: sunsetPallete2[randomSunsetPaletteIndex]
+      });
+      const size = psin(i * 2333) * 0.003 + 0.002
+      const startGeometry = new THREE.CircleGeometry(size, 32);
+      const star = new THREE.Mesh(startGeometry, material);
+
+      star.position.set(sin(i*3456 - 8) * 2.2, cos(i*123) * 2.2, -1);
+      scene.add(star);
+      stars.push(star)
+    }
+
   }
 
 
@@ -234,13 +278,16 @@ const main = async () => {
     return meshArray
   }
 
-  const light = new THREE.DirectionalLight(0xffffff, 1);
+  const light = new THREE.DirectionalLight(0xff0000, 1);
   light.position.set(2, 2, 2);
   scene.add(light);
-  const ambientLight = new THREE.AmbientLight(0xffffff, 0.9);
-  scene.add(ambientLight);
+  const ambientLight = new THREE.AmbientLight(0xffffff, 0);
+  // scene.add(ambientLight);
 
-  const backColor = new THREE.Color().setRGB(0.7, 0.7, 0.7);
+  // const backColor = new THREE.Color().setRGB(0.01, 0.01, 0.01);
+  // const backColor = new THREE.Color("#2d196e");
+  // const backColor = new THREE.Color("#120b2c");
+  const backColor = new THREE.Color("rgba(20, 20, 20, 1)");
   // const backColor = new THREE.Color(pallete[0]);
   console.log("backColor", backColor)
   scene.background = backColor
@@ -439,7 +486,7 @@ const main = async () => {
             nextPos.z = currentPos.z + sin(nextDirection.y) * segmentLength
 
             points.push(nextPos.clone());
-            currentPos.copy(nextPos); // Move the "cursor" to the new point
+            currentPos.copy(nextPos);
         }
 
         // Create Geometry and Material for the line
@@ -454,11 +501,12 @@ const main = async () => {
         // new THREE.LineBasicMaterial({
         new LineMaterial({
           color: hairPallete[randomColorIndex],
-					linewidth: 2, // in world units with size attenuation, pixels otherwise
+					linewidth: 8, // in world units with size attenuation, pixels otherwise
 					// vertexColors: true,
-
+          // depthTest: true,
+          // depthWrite: true,
 					// dashed: false,
-					alphaToCoverage: true,
+					// alphaToCoverage: true,
           resolution: new THREE.Vector2(window.innerWidth, window.innerHeight)
         });
 
@@ -469,13 +517,58 @@ const main = async () => {
     scene.add(group);
   }
 
+  function drawHand(position, options) {
+    const color = options?.color || 0xffffff
+    const scale = options?.scale || 1
+    const offset = options?.offset || new THREE.Vector3(0,0,0)
+    const rotation = options?.rotation || new THREE.Vector3(0,0,0)
+    const handSize = options?.handSize || new THREE.Vector3(1,1,0.1)
+
+    const geometry = new THREE.BoxGeometry(handSize.x, handSize.y, handSize.z);
+    const material = new THREE.MeshBasicMaterial({ color });
+    const mesh = new THREE.Mesh(geometry, material);
+    mesh.position.set(position.x, position.y, position.z);
+    mesh.rotation.set(rotation.x, rotation.y, rotation.z);
+    mesh.scale.set(scale, scale, scale);
+    mesh.position.add(offset);
+    scene.add(mesh);
+    
+  }
+
+  function linesPatterns(pointsArray, options) {
+    const amountOfLines = options?.amountOfLines || 10
+    const color = options?.color || 0xffffff
+    const scale = options?.scale || 1
+    const offset = options?.offset || new THREE.Vector3(0,0,0)
+    const rotation = options?.rotation || 0
+    const lineLength = options?.lineLength || 1
+    const lineWidth = options?.lineWidth || 2
+    const dashSize = options?.dashSize || 0
+    const gapSize = options?.gapSize || 0
+
+    
+    for (let i = 0; i < amountOfLines; i++) {
+      const lerpFactor = i/amountOfLines
+      const startPoint = lerpAlongPath(pointsArray, i/amountOfLines).add(offset)
+      const direction = new THREE.Vector3(
+        Math.cos(rotation),
+        Math.sin(rotation),
+        0
+      )
+      const endPoint = startPoint.clone().add(direction.multiplyScalar(lineLength))
+      const points = [startPoint, endPoint]
+
+      drawLine(points, {color, lineWidth, dashSize, gapSize})
+    }
+
+  }
+
   function basicCloth(pointsArray, options) {
     const scale = options?.scale || 1
     // const start = startVal.clone() || new THREE.Vector3(0,0,0)
     // const end = endVal.clone() || new THREE.Vector3(0,0,0)
-    const radius = options?.radius || 0;
-    const radius2 = options?.radius2 || radius;
     const color = options?.color || 0x000000
+    const offset = options?.offset || new THREE.Vector3(0,0,-0.1)
   
 
     const coatShape = new THREE.Shape();
@@ -485,20 +578,296 @@ const main = async () => {
     })
     coatShape.lineTo( pointsArray[0].x, pointsArray[0].y );
     const extrudeSettings = {
-      steps: 2,
-      depth: radius,
+      steps: 1,
+      depth: 0.2,
       bevelEnabled: false,
+      bevelThickness: 0.5,
+      bevelSize: 2,
+      bevelOffset: -2,
+      bevelSegments: 3
     };
     const extrudeGeometry = new THREE.ExtrudeGeometry(coatShape, extrudeSettings);
     const extrudeMaterial = new THREE.MeshBasicMaterial({ color });
     const extrudeMesh = new THREE.Mesh(extrudeGeometry, extrudeMaterial);
-    extrudeMesh.position.set(0, 0, 0);
+    extrudeMesh.position.set(offset.x, offset.y, offset.z);
     extrudeMesh.rotation.set(0, 0, 0);
     extrudeMesh.scale.set(scale, scale, scale);
     scene.add(extrudeMesh);
   
   }
   
+  function crazyCloth1(pointsArray, options) {
+    var shape=
+    [[-200,0,163,183,219],
+    [0,-200,246,175,175],
+    [200,0,167,82,112],
+    [0,200,19,14,73]];
+    const scale = options?.scale || 1
+    const amountOfDots = options?.amountOfDots || 300;
+    const offset = options?.offset || new THREE.Vector3(0,0,0);
+    for (let i =0; i < amountOfDots; i++) {
+      const lerpFactor = i/amountOfDots
+      const accordingArrayIndex = Math.floor(lerpFactor*shape.length)
+      const currentPoint = lerpAlongPath(pointsArray, lerpFactor).add(offset)
+      const coolDotLerpFactor = sin(i * 3333) * 0.5 + 0.5;
+      const coolDot = lerpAlongPath(pointsArray, coolDotLerpFactor).add(offset)
+      const points = [currentPoint, coolDot]
+      const flatPath = points.flatMap(v => [v.x, v.y, v.z]);
+      const geometry = new LineGeometry();
+      geometry.setPositions(flatPath);
+
+      const qOfDiscr = amountOfDots
+      
+      const red = Math.floor((i)*(pointsArray[((accordingArrayIndex+1)%pointsArray.length)].x-pointsArray[accordingArrayIndex].x)/qOfDiscr+pointsArray[accordingArrayIndex].x)+Math.floor(240*Math.sin(i*accordingArrayIndex*i/10)*Math.cos(i*accordingArrayIndex*i/10));
+      const green = Math.floor((i)*(pointsArray[((accordingArrayIndex+1)%pointsArray.length)].y-pointsArray[accordingArrayIndex].y)/qOfDiscr+pointsArray[accordingArrayIndex].y)+Math.floor(100*Math.sin(i*i*i/10.1));
+      const blue = Math.floor((i)*(pointsArray[((accordingArrayIndex+1)%pointsArray.length)].z-pointsArray[accordingArrayIndex],z)/qOfDiscr+pointsArray[accordingArrayIndex].z)+Math.floor(100*Math.sin(i*i*i/10.2));
+      
+      const material = 
+      new LineMaterial({
+        color: new THREE.Color(red, green, blue),
+        linewidth: 2, // in world units with size attenuation, pixels otherwise
+        // vertexColors: true,
+        // depthTest: true,
+        // depthWrite: true,
+        // dashed: false,
+        alphaToCoverage: true,
+        opacity: 0.5,
+        resolution: new THREE.Vector2(window.innerWidth, window.innerHeight)
+      });
+
+      const line = new Line2(geometry, material);
+      scene.add(line);
+    }
+  }
+
+  function snapTo90Degrees(angle) {
+    const TWO_PI = Math.PI * 2;
+    const HALF_PI = Math.PI / 2;
+
+    // ((a % n) + n) % n to handle negative angles correctly
+    let normalized = ((angle % TWO_PI) + TWO_PI) % TWO_PI;
+    let snappedSlot = Math.round(normalized / HALF_PI);
+
+    let result = snappedSlot * HALF_PI;
+
+    return result % TWO_PI;
+  }
+
+  function fractionValue(value, step) {
+    const result = Math.floor(value / step) * step;
+    return result;
+  }
+
+  function isPointInPolygon(point, polygon) {
+    const x = point.x;
+    const y = point.y;
+    let inside = false;
+
+    // Loop through each edge of the polygon
+    for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
+        const xi = polygon[i].x, yi = polygon[i].y;
+        const xj = polygon[j].x, yj = polygon[j].y;
+
+        // Check if the ray from the point intersects with the edge (i, j)
+        const intersect = ((yi > y) !== (yj > y)) &&
+            (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
+        
+        if (intersect) inside = !inside;
+    }
+
+    return inside;
+  }
+
+  function drawLine(points, options) {
+    const lineWidth = options?.lineWidth || 1;
+    const color = options?.color || 0xffffff;
+    const dashSize = options?.dashSize || 0;
+    const gapSize = options?.gapSize || 0;
+
+    const flatPath = points.flatMap(v => [v.x, v.y, v.z]);
+    // console.log("flatPath", flatPath)
+    const geometry = new LineGeometry();
+    if (flatPath.length < 2) return
+    geometry.setPositions(flatPath);
+    const material = 
+    new LineMaterial({
+      color,
+      linewidth: lineWidth,
+      resolution: new THREE.Vector2(window.innerWidth, window.innerHeight),
+      dashed: dashSize > 0 && gapSize > 0,
+      dashSize,
+      gapSize,
+    });
+    material.resolution.set(totalWidth, totalHeight);
+    material.needsUpdate = true;
+
+    const line = new Line2(geometry, material);
+    scene.add(line);
+  }
+
+  function psin(x) {
+    return (sin(x) + 1) / 2
+  }
+
+  function brokenPattern1(pointsArray, options) {
+    let limit = options?.limit || 500;
+    const scale = options?.scale || 1;
+    const offset = options?.offset || new THREE.Vector3(0,0,0.1);
+    const initPoint = options?.initPoint || getRandomPointBetweenPoints(pointsArray);
+    const initAngle = (options?.initAngle || random() * PI * 2)
+    let scaleSize = 0.05 * scale
+    let points = [];
+    let angleVal = 0;
+    let previousAngle = initAngle;
+    let previousPos = initPoint;
+    const idByPos = previousPos.x + previousPos.y + previousPos.z
+    const lineWidth = 3;
+    
+    for (let i = 0; i < limit; i++) {
+      // scaleSize = (psin(sin(i*2)/10) * 0.1 + 0.05) * scale
+      const angleCap = PI / 4
+      const angleChange = sin( sin(i/50 + idByPos) * PI) * angleCap
+      // const angleChange = sin(i/10 + idByPos) * angleCap
+      // const angleChange = 0
+      // const angleChange = sin(i/1000) * angleCap
+      angleVal = previousAngle+angleChange
+      scaleSize = abs(angleVal/PI/3) * 0.01 * scale;
+      previousAngle = angleVal;
+      // console.log("after", angleVal)
+      const currentPos = new THREE.Vector3(
+        sin(angleVal) * scaleSize,
+        cos(angleVal) * scaleSize,
+        0
+      );
+      let nextPos = previousPos.clone().add(currentPos);
+      let resetPoint = false
+      const isInPolygon = isPointInPolygon(nextPos, pointsArray);
+      if (!isInPolygon) {
+        resetPoint = random() < 0.1
+        if (resetPoint) {
+          points = []
+          nextPos = getRandomPointBetweenPoints(pointsArray);
+          const circleRadius = 0.01 * random() + 0.02;
+          const circle = new THREE.CircleGeometry(circleRadius);
+          const randomSunsetPaletteIndex = floor(random() * sunsetPallete2.length);
+          const material = new THREE.MeshBasicMaterial( { color: sunsetPallete2[randomSunsetPaletteIndex], transparent: true, opacity: 0.4 } );
+          const shape = new THREE.Mesh( circle, material );
+          shape.position.set(nextPos.x, nextPos.y, nextPos.z + 0.2);
+          scene.add( shape );
+
+          const ring = new THREE.RingGeometry(circleRadius - 0.001, circleRadius, 32);
+          const ringMaterial = new THREE.MeshBasicMaterial({ color: 0x000000, side: THREE.DoubleSide });
+          const ringMesh = new THREE.Mesh(ring, ringMaterial);
+          ringMesh.position.set(shape.position.x, shape.position.y, shape.position.z + 0.01);
+          scene.add(ringMesh);
+        }
+      }
+      
+      if (!resetPoint) {
+        
+        const lerpFactorForGradient = THREE.MathUtils.inverseLerp(palletePos[0].x, palletePos[1].x, nextPos.x) % 1;
+        // console.log(nextPos.x, lerpFactorForGradient)
+        // const sunsetPalleteIndex = lerpFactorForGradient * (sunsetPallete.length - 1);
+        const sunsetPalleteIndex = psin(angleVal / angleCap * PI * 2) * (sunsetPallete2.length - 1);
+        const color = sunsetPallete2[Math.floor(sunsetPalleteIndex)];
+        const previousPosWithOffset = previousPos.clone().add(offset);
+        const nextPosWithOffset = nextPos.clone().add(offset);
+        drawLine([previousPosWithOffset, nextPosWithOffset], {lineWidth, color});
+      }
+
+      previousPos.copy(nextPos);
+
+
+      points.push(nextPos.clone());
+
+      // const circle = new THREE.CircleGeometry(0.002 * random() + 0.002, 32);
+      // const material = new THREE.MeshBasicMaterial( { color: 0xffffff } );
+      // const shape = new THREE.Mesh( circle, material );
+      // const randomOffset = new THREE.Vector3(random() - 0.5, random() - 0.5, random() - 0.5).multiplyScalar(0.1);
+      // shape.position.set(nextPos.x + randomOffset.x, nextPos.y + randomOffset.y, nextPos.z + randomOffset.z);
+      // scene.add( shape );
+    }
+    // drawLine(points, {lineWidth});
+  }
+
+  function pattern1(pointsArray, options) {
+    let limit = options?.limit || 500;
+    const scale = options?.scale || 1;
+    const offset = options?.offset || new THREE.Vector3(0,0,0.1);
+    const initPoint = options?.initPoint || getRandomPointBetweenPoints(pointsArray);
+    const initAngle = (options?.initAngle || random() * PI * 2)
+    let scaleSize = 0.05 * scale
+    let points = [];
+    let angleVal = 0;
+    let previousAngle = initAngle;
+    let previousPos = initPoint;
+    const idByPos = previousPos.x + previousPos.y + previousPos.z
+    const lineWidth = 1;
+    
+    for (let i = 0; i < limit; i++) {
+      // scaleSize = (psin(sin(i*2)/10) * 0.1 + 0.05) * scale
+      const angleCap = PI / 4
+      // const angleChange = sin( sin(i + idByPos) * PI) * angleCap
+      // const angleChange = sin(i/10 + idByPos) * angleCap
+      const angleChange = 0
+      angleVal = previousAngle+angleChange
+      scaleSize = abs(angleVal/PI/3) * 0.1 * scale;
+      // scaleSize = (1 - abs(angleVal/angleCap / 2) + 0.05) * 0.1 * scale
+      // console.log("before", angleVal)
+      // angleVal = snapTo90Degrees(angleVal)
+      // angleVal = fractionValue(angleVal, PI / 2);
+      // if (i !== 0 && angleVal === previousAngle) {
+      //   limit++;
+      //   previousAngle = angleVal;
+      //   continue;
+      // }
+      previousAngle = angleVal;
+      // console.log("after", angleVal)
+      const currentPos = new THREE.Vector3(
+        sin(angleVal) * scaleSize,
+        cos(angleVal) * scaleSize,
+        0
+        // cos(azimuth) * scaleSize
+      );
+      let nextPos = previousPos.clone().add(currentPos);
+      const isInPolygon = isPointInPolygon(nextPos, pointsArray);
+      if (!isInPolygon) {
+        points = []
+        nextPos = getRandomPointBetweenPoints(pointsArray);
+        const circle = new THREE.CircleGeometry(0.002 * random() + 0.02, 32);
+        const material = new THREE.MeshBasicMaterial( { color: 0xff0000 } );
+        const shape = new THREE.Mesh( circle, material );
+        shape.position.set(nextPos.x, nextPos.y, nextPos.z + 0.2);
+        scene.add( shape );
+      }
+      
+      if (isInPolygon) {
+        
+        const lerpFactorForGradient = THREE.MathUtils.inverseLerp(palletePos[0].x, palletePos[1].x, nextPos.x) % 1;
+        // console.log(nextPos.x, lerpFactorForGradient)
+        // const sunsetPalleteIndex = lerpFactorForGradient * (sunsetPallete.length - 1);
+        const sunsetPalleteIndex = psin(angleVal / angleCap * PI * 2) * (sunsetPallete2.length - 1);
+        const color = sunsetPallete2[Math.floor(sunsetPalleteIndex)];
+        const previousPosWithOffset = previousPos.clone().add(offset);
+        const nextPosWithOffset = nextPos.clone().add(offset);
+        drawLine([previousPosWithOffset, nextPosWithOffset], {lineWidth: i == 0 ? 5 : lineWidth, color: i === 0 ? 0x00ff00 : color});
+      }
+
+      previousPos.copy(nextPos);
+
+
+      points.push(nextPos.clone());
+
+      // const circle = new THREE.CircleGeometry(0.002 * random() + 0.002, 32);
+      // const material = new THREE.MeshBasicMaterial( { color: 0xffffff } );
+      // const shape = new THREE.Mesh( circle, material );
+      // const randomOffset = new THREE.Vector3(random() - 0.5, random() - 0.5, random() - 0.5).multiplyScalar(0.1);
+      // shape.position.set(nextPos.x + randomOffset.x, nextPos.y + randomOffset.y, nextPos.z + randomOffset.z);
+      // scene.add( shape );
+    }
+    // drawLine(points, {lineWidth});
+  }
+
   function coat1(pointsArray, options) {
     const shapesArray = []
     const scale = options?.scale || 1
@@ -507,8 +876,10 @@ const main = async () => {
     const amountOfRects = options?.amountOfRects || 300;
     const radius = options?.radius || 0;
     const radius2 = options?.radius2 || radius;
+    const opacity = options?.opacity || 0.1;
+    const offset = options?.offset || new THREE.Vector3(0,0,0);
 
-    var colorRange = 0.5;
+    var colorRange = 0.9;
     var expSpeed = 1.4;
 	  
     var sc=200;
@@ -530,7 +901,7 @@ const main = async () => {
       const randomOffset = new THREE.Vector3(
         currentRadius * (random() - 0.5),
         currentRadius * (random() - 0.5),
-        currentRadius * (random() - 0.5) + 0.4
+        currentRadius * (random() - 0.5)
       )
       // const currentPos = start.clone().lerp(end, lerpVal)
       // console.log(currentPos, lerpVal)
@@ -539,12 +910,12 @@ const main = async () => {
       const geometry = new THREE.PlaneGeometry(patchSize, patchSize);
       const material = new THREE.MeshLambertMaterial({
         color: new THREE.Color().setRGB( red, green, blue ),
-        opacity: 0.1,
+        opacity,
         transparent: true
       });
       //const material = new THREE.MeshStandardMaterial({ map: texture, });
       const currentPos = getRandomPointBetweenPoints(pointsArray)
-      currentPos.add(randomOffset)
+      currentPos.add(randomOffset).add(offset)
       const shape = new THREE.Mesh(geometry, material);
       shape.position.set(currentPos.x, currentPos.y, currentPos.z);
       shape.rotateZ(random() * PI * 2);
@@ -555,6 +926,19 @@ const main = async () => {
     }
     return shapesArray
   }
+
+  function face1(position) {
+    facePallete.forEach((color, i) => {
+      const scaleStripe = 0.08
+      const planeSize = 10
+      const geometry = new THREE.PlaneGeometry( planeSize, scaleStripe );
+      const material = new THREE.MeshBasicMaterial( { color } );
+      const shape = new THREE.Mesh( geometry, material );
+      shape.position.set(position.x + planeSize/2, position.y - i*scaleStripe, position.z);
+      scene.add( shape );
+    })
+  }
+
 
   function getRandomPointBetweenPoints(pointArray) {
     const weights = pointArray.map(() => random());
@@ -647,7 +1031,66 @@ const main = async () => {
     return new THREE.Vector3().copy(posA).add(perpDir);
   }
 
-  visualizeSkeleton()
+  function lerpAlongPath(points, t) {
+    if (points.length === 0) return new THREE.Vector3();
+    if (points.length === 1) return points[0].clone();
+
+    // 1. Clamp t to ensure it stays within bounds
+    t = Math.max(0, Math.min(1, t));
+
+    // 2. Calculate which segment we are in
+    // If there are 4 points, there are 3 segments (0-1, 1-2, 2-3)
+    const segmentCount = points.length - 1;
+    const progress = t * segmentCount; 
+    const index = Math.floor(progress); // The starting dot of the segment
+
+    // 3. Handle the very end of the path (t = 1)
+    if (index >= segmentCount) {
+        return points[points.length - 1].clone();
+    }
+
+    // 4. Calculate local t for this specific segment (0 to 1)
+    const localT = progress - index;
+
+    // 5. Lerp between the start and end of that segment
+    const startNode = points[index];
+    const endNode = points[index + 1];
+
+    return new THREE.Vector3().lerpVectors(startNode, endNode, localT);
+  }
+
+  function getAngle360(v1, v2, normal) {
+    let angle = v1.angleTo(v2);
+
+    // 2. Use cross product to check direction relative to the normal
+    const cross = new THREE.Vector3().crossVectors(v1, v2);
+    
+    // 3. If the cross product points opposite to our normal, it's > 180 degrees
+    if (normal.dot(cross) < 0) {
+        angle = Math.PI * 2 - angle;
+    }
+
+    return angle
+  }
+
+  function getAngleXYfrom3D(v1, v2) {
+    const v12d = new THREE.Vector2(v1.x, v1.y);
+    const v22d = new THREE.Vector2(v2.x, v2.y);
+    return getAngle2DRadians(v12d, v22d);
+  }
+
+  function getAngle2DRadians(v1, v2) {
+    // .angle() returns Math.atan2(y, x) in the range (-PI, PI]
+    let angle = v1.angle() - v2.angle();
+
+    // Normalize the result to the [0, 2 * PI) range
+    if (angle > Math.PI) angle -= Math.PI * 2;
+    if (angle <= -Math.PI) angle += Math.PI * 2;
+
+    return angle;
+  }
+
+  // visualizeSkeleton()
   applyPose(tPoseData, skeleton)
   // rotatePose(relaxedSittingPhoneAnglesData, new THREE.Euler(0,0,0))
   applyPose(sittingLegsClose, skeleton)
@@ -656,17 +1099,21 @@ const main = async () => {
   const headPosition = new THREE.Vector3()
   skeleton.getBoneByName("head").getWorldPosition(headPosition)
 
-  curls(headPosition.add(new THREE.Vector3(0, 0.2, 0)) , 1.5)
 
   const leftElbowPosition = new THREE.Vector3()
   skeleton.getBoneByName("leftElbow").getWorldPosition(leftElbowPosition)
   const leftHandPosition = new THREE.Vector3()
   skeleton.getBoneByName("leftHand").getWorldPosition(leftHandPosition)
+  const copyLeftHandPosition = leftHandPosition.clone()
+  const leftHandRotation = skeleton.getBoneByName("leftHand").rotation
+  console.log("leftHandRotation", leftHandRotation)
 
   const rightElbowPosition = new THREE.Vector3()
   skeleton.getBoneByName("rightElbow").getWorldPosition(rightElbowPosition)
   const rightHandPosition = new THREE.Vector3()
   skeleton.getBoneByName("rightHand").getWorldPosition(rightHandPosition)
+  const copyRightHandPosition = rightHandPosition.clone()
+  const rightHandRotation = skeleton.getBoneByName("rightHand").rotation
 
   const leftShoulderPosition = new THREE.Vector3()
   skeleton.getBoneByName("leftShoulder").getWorldPosition(leftShoulderPosition)
@@ -695,9 +1142,10 @@ const main = async () => {
   const rootPosition = new THREE.Vector3()
   skeleton.getBoneByName("root").getWorldPosition(rootPosition)
 
-  const torsoWidth = 0.2;
+  const torsoWidth = 0.3;
   const leftUpperTorsoPosition = new THREE.Vector3(upperTorsoPosition.x + torsoWidth / 2, upperTorsoPosition.y, upperTorsoPosition.z);
   const rightUpperTorsoPosition = new THREE.Vector3(upperTorsoPosition.x - torsoWidth / 2, upperTorsoPosition.y, upperTorsoPosition.z);
+  
 
   const rightShouldRectangle = getRectangleCorners(rightShoulderPosition, rightElbowPosition, 0.1);
   const rightHandReactangle = getRectangleCorners(rightHandPosition, rightElbowPosition, 0.1);
@@ -710,30 +1158,68 @@ const main = async () => {
 
   const leftLegRectangle = getRectangleCorners(leftLegPosition, leftKneePosition, 0.1);
   const leftFootReactangle = getRectangleCorners(leftFootPosition, leftKneePosition, 0.1);
-
   
+  const upperTorsoShape = [rootPosition, leftShoulderPosition, leftUpperTorsoPosition, rightUpperTorsoPosition, rightShoulderPosition]
+  const lowerTorsoShape = [leftUpperTorsoPosition, leftLegPosition, rightLegPosition, rightUpperTorsoPosition]
+
+  fillStarsBackground()
+
+  curls(headPosition.clone().add(new THREE.Vector3(0, 0.2, 0.6)) , 1.3)
+  face1(headPosition.clone().add(new THREE.Vector3(-0.1, 0.25, 0.5)))
 
 
-  basicCloth([rootPosition, leftShoulderPosition, leftUpperTorsoPosition, rightUpperTorsoPosition, rightShoulderPosition], {scale: 1, color: 0x333f33, radius: 0.5, radius2: 0.1})
-  basicCloth([leftUpperTorsoPosition, leftLegPosition, rightLegPosition, rightUpperTorsoPosition], {scale: 1, color: 0x333333, radius: 0.5, radius2: 0.1})
-  basicCloth(rightShouldRectangle, {scale: 1, color: 0x3f3333, radius: 0.5, radius2: 0.1})
-  basicCloth(leftShouldRectangle, {scale: 1, color: 0x33333f, radius: 0.5, radius2: 0.1})
-  basicCloth(rightHandReactangle, {scale: 1, color: 0x30333f, radius: 0.5, radius2: 0.1})
-  basicCloth(leftHandReactangle, {scale: 1, color: 0xf33f33, radius: 0.5, radius2: 0.1})
+  // crazyCloth1(upperTorsoShape, {offset: new THREE.Vector3(0, 0, 1)})
+  // crazyCloth1(lowerTorsoShape, {offset: new THREE.Vector3(0, 0, 1)})
+  // crazyCloth1(rightShouldRectangle, {offset: new THREE.Vector3(0, 0, 1)})
+  // crazyCloth1(leftShouldRectangle, {offset: new THREE.Vector3(0, 0, 1)})
+  // crazyCloth1(rightHandReactangle, {offset: new THREE.Vector3(0, 0, 1)})
+  // crazyCloth1(leftHandReactangle, {offset: new THREE.Vector3(0, 0, 1)})
 
-  basicCloth(rightLegRectangle, {scale: 1, color: 0xdff300, radius: 0.5, radius2: 0.1})
-  basicCloth(rightFootReactangle, {scale: 1, color: 0xf3f333, radius: 0.5, radius2: 0.1})
+  linesPatterns([leftShoulderPosition, rootPosition, rightShoulderPosition], {rotation: -PI/3, offset: new THREE.Vector3(0, 0, 0.3)})
+  linesPatterns(leftShouldRectangle, {rotation: -PI/20, lineLength: 0.4, offset: new THREE.Vector3(0, 0, 0.3)})
+  linesPatterns(leftHandReactangle, {rotation: PI/20, lineLength: 0.4, offset: new THREE.Vector3(0, 0, 1)})
+  linesPatterns(leftShouldRectangle, {rotation: -PI/3, amountOfLines: 40, offset: new THREE.Vector3(0, 0, -0.3)})
 
-  basicCloth(leftLegRectangle, {scale: 1, color: 0xf3f333, radius: 0.5, radius2: 0.1})
-  basicCloth(leftFootReactangle, {scale: 1, color: 0xdff300, radius: 0.5, radius2: 0.1})
+  linesPatterns(rightShouldRectangle, {rotation: PI/1.6, lineLength: 0.4, offset: new THREE.Vector3(0, 0, 0.3)})
+  linesPatterns(rightHandReactangle, {rotation: PI/20, lineLength: 0.4, offset: new THREE.Vector3(0, 0, 1)})
 
-  // coat1([rootPosition, upperTorsoPosition, lowerTorsoPosition, leftShoulderPosition, rightShoulderPosition], {scale: 10, amountOfRects: 1000, radius: 0.5, radius2: 0.1})
+  linesPatterns(leftLegRectangle, {rotation: PI/2.5, offset: new THREE.Vector3(0, 0, 0.3), color: "#000000"})
+  linesPatterns(leftFootReactangle, {rotation: PI/1.5, amountOfLines: 20, offset: new THREE.Vector3(0, 0, 0.3), color: "#000000"})
+  linesPatterns(rightLegRectangle, {rotation: PI * 1.1, lineLength: 0.7, amountOfLines: 20, offset: new THREE.Vector3(0, 0, 0.3), color: "#000000"})
+  linesPatterns(rightFootReactangle, {rotation: -PI/4, amountOfLines: 20, offset: new THREE.Vector3(0, 0, 0.3), color: "#000000"})
+
+  basicCloth(upperTorsoShape, {color: 0x333f33})
+  basicCloth(lowerTorsoShape, {color: 0x333f33})
+  basicCloth(rightShouldRectangle, {color: 0x333f33})
+  basicCloth(leftShouldRectangle, {color: 0x333f33})
+  basicCloth(rightHandReactangle, {color: 0x333f33})
+  basicCloth(leftHandReactangle, {color: 0x333f33})
+  basicCloth(rightLegRectangle, {color: 0xdfc300})
+  basicCloth(rightFootReactangle, {color: 0xf3e333})
+  basicCloth(leftLegRectangle, {color: 0xf3e333})
+  basicCloth(leftFootReactangle, {color: 0xdfc300})
+  // basicCloth([...leftLegRectangle, ...leftFootReactangle], {color: 0xf3f333})
+
+  // coat1(upperTorsoShape, {scale: 10, amountOfRects: 100, radius: 0.1, radius2: 0.05, opacity: 0.5, offset: new THREE.Vector3(0, 0, 1)})
   // coat1(upperTorsoPosition, lowerTorsoPosition, {scale: 5, amountOfRects: 10})
   // coat1(leftShoulderPosition, leftElbowPosition, {scale: 2})
   // coat1(rightShoulderPosition, rightElbowPosition, {scale: 2})
   // coat1(rightElbowPosition, rightHandPosition, {scale: 2})
   // coat1(leftElbowPosition, leftHandPosition, {scale: 2})
 
+  brokenPattern1(upperTorsoShape, {initPoint: rootPosition, initAngle: getAngleXYfrom3D(rootPosition, upperTorsoPosition) + PI / 2})
+  brokenPattern1(lowerTorsoShape, {initPoint: lowerTorsoPosition, initAngle: getAngleXYfrom3D(lowerTorsoPosition , rootPosition) + PI / 2})
+  brokenPattern1(rightShouldRectangle, {initPoint: rightShoulderPosition, initAngle: getAngleXYfrom3D(rightShoulderPosition, rightElbowPosition)})
+  brokenPattern1(leftShouldRectangle, {initPoint: leftElbowPosition, initAngle: getAngleXYfrom3D(leftElbowPosition, leftShoulderPosition)})
+  brokenPattern1(rightHandReactangle, {initPoint: rightHandPosition, initAngle: getAngleXYfrom3D(rightHandPosition,rightElbowPosition)})
+  brokenPattern1(leftHandReactangle, {initPoint: leftHandPosition, initAngle: getAngleXYfrom3D(leftHandPosition,leftElbowPosition)})
+  brokenPattern1(rightLegRectangle, {initPoint: rightKneePosition, initAngle: getAngleXYfrom3D(rightKneePosition,rightLegPosition)})
+  brokenPattern1(rightFootReactangle, {initPoint: rightFootPosition, initAngle: getAngleXYfrom3D(rightFootPosition,rightKneePosition)})
+  brokenPattern1(leftLegRectangle, {initPoint: leftKneePosition, initAngle: getAngleXYfrom3D(leftKneePosition, leftLegPosition) + PI / 2})
+  brokenPattern1(leftFootReactangle, {initPoint: leftFootPosition, initAngle: getAngleXYfrom3D(leftFootPosition,leftKneePosition) + PI / 2})
+
+  drawHand(copyRightHandPosition, {color: "#F9DEC9", rotation: rightHandRotation, handSize: new THREE.Vector3(0.1, 0.2, 0.01), offset: new THREE.Vector3(0.05, -0.1, 0)});
+  drawHand(copyLeftHandPosition, {color: "#F9DEC9", rotation: leftHandRotation, handSize: new THREE.Vector3(0.1, 0.2, 0.01), offset: new THREE.Vector3(0.1, -0.05, 0)});
 
   // const meshArray = prepBirds()
   // const linesArray = prepLines()

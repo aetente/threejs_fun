@@ -22,3 +22,25 @@ const hairPallete = [
   "#a97e6d",
   "#cc9f88"
 ]
+
+const facePallete = [
+  "#F9DEC9",
+  "#3F88C5",
+  "#E9AFA3",
+  "#F9DEC9"
+]
+
+const sunsetPallete = [
+  "#fecd98",
+  "#0453CA",
+  "#f9605c",
+  "#3c416b"
+]
+
+const sunsetPallete2 = [
+  "#eeaf61",
+  "#fb9062",
+  "#ee5d6c",
+  "#ce4993",
+  "#6a0d83"
+]
