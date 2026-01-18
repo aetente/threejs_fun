@@ -8,6 +8,9 @@ const mxbs = [0.2, 0.2, 0.2]; //maximum box size
 const dclr = { r: 0.9, g: 0.9, b: 0.9 }; // default color
 const randRatio = [24647, 53774, 33784]; // ratio/seeds for random numbers for xyz
 
+const totalWidth = 3000
+const totalHeight = 3000
+
 const pallete = [
   "#6A2C70",
   "#B83B5E",
@@ -44,3 +47,20 @@ const sunsetPallete2 = [
   "#ce4993",
   "#6a0d83"
 ]
+
+export {
+  dbs,
+  zs,
+  countBoxes,
+  mnbs,
+  mxbs,
+  dclr,
+  randRatio,
+  totalWidth,
+  totalHeight,
+  pallete,
+  hairPallete,
+  facePallete,
+  sunsetPallete,
+  sunsetPallete2
+}
