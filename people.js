@@ -13,7 +13,7 @@ import {
   fillStarsBackground,
   face1,
   coat1,
-  pattern1,
+  testPattern1,
   brokenPattern1,
 } from "./backupFunctions.js"
 

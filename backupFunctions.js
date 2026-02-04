@@ -418,7 +418,7 @@ function brokenPattern1(scene, pointsArray, options) {
   // drawLine(points, {lineWidth});
 }
 
-function pattern1(scene, pointsArray, options) {
+function testPattern1(scene, pointsArray, options) {
   let limit = options?.limit || 500;
   const scale = options?.scale || 1;
   const offset = options?.offset || new THREE.Vector3(0,0,0.1);
@@ -576,7 +576,7 @@ export {
   fillStarsBackground,
   face1,
   coat1,
-  pattern1,
+  testPattern1,
   brokenPattern1,
   drawLine
 }

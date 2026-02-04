@@ -48,6 +48,13 @@ const sunsetPallete2 = [
   "#6a0d83"
 ]
 
+const testPalette1 = [
+  "#111F35",
+  "#8A244B",
+  "#D02752",
+  
+]
+
 export {
   dbs,
   zs,
@@ -62,5 +69,6 @@ export {
   hairPallete,
   facePallete,
   sunsetPallete,
-  sunsetPallete2
+  sunsetPallete2,
+  testPalette1
 }

@@ -19,6 +19,8 @@ import {
 }
 from "./consts.js"
 
+import {pattern1} from "./patterns.js"
+
 const {sin, cos, PI, random, pow} = Math;
 
 const main = async () => {
@@ -148,7 +150,8 @@ const main = async () => {
   // const backColor = new THREE.Color().setRGB(0.01, 0.01, 0.01);
   // const backColor = new THREE.Color("#2d196e");
   // const backColor = new THREE.Color("#120b2c");
-  const backColor = new THREE.Color("rgba(20, 20, 20, 1)");
+  //const backColor = new THREE.Color("rgba(20, 20, 20, 1)");
+  const backColor = new THREE.Color("#F63049")
   // const backColor = new THREE.Color(pallete[0]);
   console.log("backColor", backColor)
   scene.background = backColor
@@ -251,12 +254,23 @@ const main = async () => {
     scene.add(helper);
     scene.add(root);
   }
+  
+  const testGround = () => {
+    const testPoints = [
+      new Vector3(0,0,0),
+      new Vector3(0,1,0),
+      new Vector3(1,1,0),
+      new Vector3(1,0,0)
+    ]
+    pattern1(scene, testPoints)
+  }
 
   // lisa(scene)
 
   function animate() {
-    requestAnimationFrame(animate);
+    //requestAnimationFrame(animate);
 
+    testGround()
     // moveShapes(meshArray)
     // doLines(linesArray)
     // skeleton.bones[0].rotation.y += -Math.PI / 100;

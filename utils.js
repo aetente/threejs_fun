@@ -1,4 +1,25 @@
 import * as THREE from 'three';
+import { LineMaterial } from 'three/addons/lines/LineMaterial.js';
+import { Line2 } from 'three/addons/lines/Line2.js';
+import { LineGeometry } from 'three/addons/lines/LineGeometry.js';
+
+import {
+  dbs,
+  zs,
+  countBoxes,
+  mnbs,
+  mxbs,
+  dclr,
+  randRatio,
+  totalWidth,
+  totalHeight,
+  pallete,
+  hairPallete,
+  facePallete,
+  sunsetPallete,
+  sunsetPallete2
+}
+from "./consts.js"
 
 const {sin, cos, PI, random, pow} = Math;
 
@@ -223,6 +244,33 @@ function getPointBetweenPoints(pointArray, lerpFactor = 0) {
   return result;
 }
 
+function drawLine(scene, points, options) {
+  const lineWidth = options?.lineWidth || 1;
+  const color = options?.color || 0xffffff;
+  const dashSize = options?.dashSize || 0;
+  const gapSize = options?.gapSize || 0;
+
+  const flatPath = points.flatMap(v => [v.x, v.y, v.z]);
+  // console.log("flatPath", flatPath)
+  const geometry = new LineGeometry();
+  if (flatPath.length < 2) return
+  geometry.setPositions(flatPath);
+  const material = 
+  new LineMaterial({
+    color,
+    linewidth: lineWidth,
+    resolution: new THREE.Vector2(window.innerWidth, window.innerHeight),
+    dashed: dashSize > 0 && gapSize > 0,
+    dashSize,
+    gapSize,
+  });
+  material.resolution.set(totalWidth, totalHeight);
+  material.needsUpdate = true;
+
+  const line = new Line2(geometry, material);
+  scene.add(line);
+}
+
 
 export {
   randInRange,
@@ -241,5 +289,6 @@ export {
   lerpAlongPath,
   getRandomPointBetweenPoints,
   getPerpendicularPoint,
-  getPointBetweenPoints
+  getPointBetweenPoints,
+  drawLine
 }
