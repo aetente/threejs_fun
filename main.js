@@ -255,7 +255,7 @@ const main = async () => {
     scene.add(root);
   }
   
-  const testGround = () => {
+  const testGround = async () => {
     const testPoints = [
       new Vector3(0,0,0),
       new Vector3(0,1,0),
