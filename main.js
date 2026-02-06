@@ -6,6 +6,9 @@ import { heartShape, birdShape } from "./shapes.js"
 import { lisa } from './people.js';
 //import wall from './assets/textures/wall.jpg';
 
+import { FontLoader } from 'three/addons/loaders/FontLoader.js';
+import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
+
 import {
   dbs,
   zs,
@@ -254,6 +257,23 @@ const main = async () => {
     scene.add(helper);
     scene.add(root);
   }
+
+
+
+  const doText = async () => {
+    const fontLoader = new FontLoader();
+    const font = await fontLoader.loadAsync('assets/fonts/helvetiker_regular.typeface.json');
+    const textGeometry = new TextGeometry('Hello three.js!', {
+      font: font,
+      size: 80,
+      height: 5,
+      curveSegments: 12
+    })
+    const material = new THREE.MeshBasicMaterial({ color: 0xffffff });
+    const textMesh = new THREE.Mesh(textGeometry, material);
+    scene.add(textMesh);
+    console.log("textMesh", textMesh)
+  }
   
   const testGround = async () => {
     const testPoints = [
@@ -262,6 +282,7 @@ const main = async () => {
       new Vector3(1,1,0),
       new Vector3(1,0,0)
     ]
+    doText()
     pattern1(scene, testPoints)
   }
 
