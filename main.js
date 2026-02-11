@@ -34,7 +34,7 @@ const main = async () => {
   const camera = new THREE.PerspectiveCamera(35, 1, 0.1, 1000);
 
   camera.position.z = 4;
-  camera.position.x = 0.3
+  camera.position.x = 0
 
   const renderer = new THREE.WebGLRenderer({
     antialias: true,
@@ -262,28 +262,42 @@ const main = async () => {
 
   const doText = async () => {
     const fontLoader = new FontLoader();
-    const font = await fontLoader.loadAsync('assets/fonts/helvetiker_regular.typeface.json');
+    const font = await fontLoader.loadAsync('/assets/fonts/helvetiker_regular.typeface.json');
+    
     const textGeometry = new TextGeometry('Hello three.js!', {
       font: font,
-      size: 80,
-      height: 5,
-      curveSegments: 12
-    })
+      size: 5,         // Reduced size
+      height: 1,       // Reduced height
+      curveSegments: 12,
+      bevelEnabled: false // Turn off bevel for now to simplify
+    });
+
+    textGeometry.center(); // Center the text on its own axis
+
     const material = new THREE.MeshBasicMaterial({ color: 0xffffff });
     const textMesh = new THREE.Mesh(textGeometry, material);
+
+    // Position it far enough away to see it
+    textMesh.position.z = -10; 
     scene.add(textMesh);
+
     console.log("textMesh", textMesh)
   }
   
   const testGround = async () => {
     const testPoints = [
       new Vector3(0,0,0),
-      new Vector3(0,1,0),
-      new Vector3(1,1,0),
-      new Vector3(1,0,0)
+      new Vector3(0,0.2,0),
+      new Vector3(0.2,0.2,0),
+      new Vector3(0.2,0,0)
     ]
-    doText()
-    pattern1(scene, testPoints)
+    const middlePoint = testPoints.reduce((a,c) => a.add(c),new Vector3(0,0,0))
+    testPoints.forEach(p => p.y -= 1)
+    //await doText()
+    pattern1(scene, testPoints, {
+      initAngle: 0,
+      refPoint: middlePoint
+    })
   }
 
   // lisa(scene)
