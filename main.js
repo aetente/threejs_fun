@@ -292,11 +292,14 @@ const main = async () => {
       new Vector3(0.2,0,0)
     ]
     const middlePoint = testPoints.reduce((a,c) => a.add(c),new Vector3(0,0,0))
-    testPoints.forEach(p => p.y -= 1)
+    testPoints.forEach(p => p.y += 0.5)
     //await doText()
     pattern1(scene, testPoints, {
       initAngle: 0,
-      refPoint: middlePoint
+      //refPoint: middlePoint, 
+      refPoint: new Vector3(0,-1,0),
+      desiredAngle: -PI,
+      angleToRef: true
     })
   }
 

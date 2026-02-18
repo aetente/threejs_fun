@@ -32,20 +32,27 @@ import {
 }
 from "./consts.js"
 
-const { sin, cos, PI, random, pow, floor, abs, sqrt } = Math;
+const { sin, cos, PI, random, pow, floor, abs, sqrt, max, min } = Math;
+const p2 = PI*2
+
+function norm(x, base, spread) {
+  return base^(-(x*x)/spread)
+}
 
 function pattern1(scene, pointsArray, options) {
-  let limit = options?.limit || 50;
-  let maxLines = options?.maxLines || 100
+  let limit = options?.limit || 20;
+  let maxLines = options?.maxLines || 200
   const scale = options?.scale || 1;
   const offset = options?.offset || new THREE.Vector3(0, 0, 0.1);
   const initPoint = options?.initPoint || getRandomPointBetweenPoints(pointsArray);
   const refPoint = options?.refPoint || new Vector3(0,0,0)
   const initAngle = options?.initAngle || 0
+  let desiredAngle = options?.desiredAngle || 0;
   let scaleSize = 0.05 * scale
   let points = [];
   let angleVal = 0;
   let previousAngle = initAngle;
+  const angleToRef = options?.angleToRef || false
   
   const lineWidth = 5;
   
@@ -57,18 +64,26 @@ function pattern1(scene, pointsArray, options) {
     previousAngle = initAngle
     for (let j = 0; j < maxLines; j++) {
       // scaleSize = (psin(sin(i*2)/10) * 0.1 + 0.05) * scale
-      const jScale = sin(j/maxLines * PI)
+      const indexId = sin((i+j)/10)
+      const jScale = sin(j/maxLines * p2  + indexId)
       const distToRef = previousPos.distanceTo(refPoint)+1
       const angleCap = PI/3.5
       //const angleChange = sin( sin(20*i + idByPos) * angleCap) * angleCap
-      const indexId = sin((i+j)/10)
+      
       const angleChange = jScale* sin(
-        sin(5*sin(indexId*PI)/distToRef + idByPos)
-        * angleCap
+        sin(2*sin(indexId*PI)/distToRef + idByPos)
+        * PI
       ) * angleCap
       //const angleChange = sin(i + idByPos) * angleCap
       //const angleChange = 0
+      
+      //const correctAngle = angleChange + ((desiredAngle - angleChange)%p2)/1
+      let distFactor = min(1,1/(2*distToRef-1))
       angleVal = previousAngle + angleChange
+      if (angleToRef) {
+        desiredAngle = previousPos.angleTo(refPoint)
+      }
+      angleVal = angleVal + (desiredAngle - angleVal)/2 * (distFactor)
       scaleSize = psin(angleVal / PI / 3) * 0.1 * scale /1.4;
       previousAngle = angleVal;
       const currentPos = new THREE.Vector3(
