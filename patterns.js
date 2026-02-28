@@ -42,7 +42,7 @@ function norm(x, base, spread) {
 function pattern1(scene, pointsArray, options) {
   let limit = options?.limit || 20;
   let maxLines = options?.maxLines || 200
-  const scale = options?.scale || 1;
+  const scale = options?.scale || 2;
   const offset = options?.offset || new THREE.Vector3(0, 0, 0.1);
   const initPoint = options?.initPoint || getRandomPointBetweenPoints(pointsArray);
   const refPoint = options?.refPoint || new Vector3(0,0,0)
@@ -54,7 +54,7 @@ function pattern1(scene, pointsArray, options) {
   let previousAngle = initAngle;
   const angleToRef = options?.angleToRef || false
   
-  const lineWidth = 5;
+  const lineWidth = 3;
   
   for (let i = 0; i < limit; i++) {
     const iScale = i/limit

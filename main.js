@@ -33,7 +33,7 @@ const main = async () => {
   
   const camera = new THREE.PerspectiveCamera(35, 1, 0.1, 1000);
 
-  camera.position.z = 4;
+  camera.position.z = 10;
   camera.position.x = 0
 
   const renderer = new THREE.WebGLRenderer({
@@ -292,7 +292,7 @@ const main = async () => {
       new Vector3(0.2,0,0)
     ]
     const middlePoint = testPoints.reduce((a,c) => a.add(c),new Vector3(0,0,0))
-    testPoints.forEach(p => p.y += 0.5)
+    testPoints.forEach(p => p.y -= 2)
     //await doText()
     pattern1(scene, testPoints, {
       initAngle: 0,
@@ -309,6 +309,7 @@ const main = async () => {
     //requestAnimationFrame(animate);
 
     testGround()
+    lisa(scene)
     // moveShapes(meshArray)
     // doLines(linesArray)
     // skeleton.bones[0].rotation.y += -Math.PI / 100;

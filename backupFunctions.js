@@ -171,7 +171,7 @@ function curls(scene, offsetVal, scaleVal) {
       // new THREE.LineBasicMaterial({
       new LineMaterial({
         color: hairPallete[randomColorIndex],
-        linewidth: 8, // in world units with size attenuation, pixels otherwise
+        linewidth: 6, // in world units with size attenuation, pixels otherwise
         // vertexColors: true,
         // depthTest: true,
         // depthWrite: true,
@@ -233,7 +233,7 @@ function drawLine(scene, points, options) {
 }
 
 function linesPatterns(scene, pointsArray, options) {
-  const amountOfLines = options?.amountOfLines || 10
+  const amountOfLines = options?.amountOfLines || 40
   const color = options?.color || 0xffffff
   const scale = options?.scale || 1
   const offset = options?.offset || new THREE.Vector3(0,0,0)
@@ -338,7 +338,7 @@ function crazyCloth1(pointsArray, options) {
 }
 
 function brokenPattern1(scene, pointsArray, options) {
-  let limit = options?.limit || 500;
+  let limit = options?.limit || 3000;
   const scale = options?.scale || 1;
   const offset = options?.offset || new THREE.Vector3(0,0,0.1);
   const initPoint = options?.initPoint || getRandomPointBetweenPoints(pointsArray);
@@ -384,10 +384,10 @@ function brokenPattern1(scene, pointsArray, options) {
         scene.add( shape );
 
         const ring = new THREE.RingGeometry(circleRadius - 0.001, circleRadius, 32);
-        const ringMaterial = new THREE.MeshBasicMaterial({ color: 0x000000, side: THREE.DoubleSide });
+        const ringMaterial = new THREE.MeshBasicMaterial({ color: 0x00000000, side: THREE.DoubleSide });
         const ringMesh = new THREE.Mesh(ring, ringMaterial);
         ringMesh.position.set(shape.position.x, shape.position.y, shape.position.z + 0.01);
-        scene.add(ringMesh);
+        // scene.add(ringMesh);
       }
     }
     

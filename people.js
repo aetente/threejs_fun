@@ -194,7 +194,7 @@ function lisa(scene) {
   const upperTorsoShape = [rootPosition, leftShoulderPosition, leftUpperTorsoPosition, rightUpperTorsoPosition, rightShoulderPosition]
   const lowerTorsoShape = [leftUpperTorsoPosition, leftLegPosition, rightLegPosition, rightUpperTorsoPosition]
 
-  fillStarsBackground(scene)
+  // fillStarsBackground(scene)
   
   curls(scene, headPosition.clone().add(new THREE.Vector3(0, 0.2, 0.6)) , 1.3)
   face1(scene, headPosition.clone().add(new THREE.Vector3(-0.1, 0.25, 0.5)))
@@ -220,16 +220,16 @@ function lisa(scene) {
   linesPatterns(scene, rightLegRectangle, {rotation: PI * 1.1, lineLength: 0.7, amountOfLines: 20, offset: new THREE.Vector3(0, 0, 0.3), color: "#000000"})
   linesPatterns(scene, rightFootReactangle, {rotation: -PI/4, amountOfLines: 20, offset: new THREE.Vector3(0, 0, 0.3), color: "#000000"})
 
-  basicCloth(scene, upperTorsoShape, {color: 0x333f33})
-  basicCloth(scene, lowerTorsoShape, {color: 0x333f33})
-  basicCloth(scene, rightShouldRectangle, {color: 0x333f33})
-  basicCloth(scene, leftShouldRectangle, {color: 0x333f33})
-  basicCloth(scene, rightHandReactangle, {color: 0x333f33})
-  basicCloth(scene, leftHandReactangle, {color: 0x333f33})
-  basicCloth(scene, rightLegRectangle, {color: 0xdfc300})
-  basicCloth(scene, rightFootReactangle, {color: 0xf3e333})
-  basicCloth(scene, leftLegRectangle, {color: 0xf3e333})
-  basicCloth(scene, leftFootReactangle, {color: 0xdfc300})
+  // basicCloth(scene, upperTorsoShape, {color: 0x333f33})
+  // basicCloth(scene, lowerTorsoShape, {color: 0x333f33})
+  // basicCloth(scene, rightShouldRectangle, {color: 0x333f33})
+  // basicCloth(scene, leftShouldRectangle, {color: 0x333f33})
+  // basicCloth(scene, rightHandReactangle, {color: 0x333f33})
+  // basicCloth(scene, leftHandReactangle, {color: 0x333f33})
+  // basicCloth(scene, rightLegRectangle, {color: 0xdfc300})
+  // basicCloth(scene, rightFootReactangle, {color: 0xf3e333})
+  // basicCloth(scene, leftLegRectangle, {color: 0xf3e333})
+  // basicCloth(scene, leftFootReactangle, {color: 0xdfc300})
   // basicCloth([...leftLegRectangle, ...leftFootReactangle], {color: 0xf3f333})
 
   // coat1(upperTorsoShape, {scale: 10, amountOfRects: 100, radius: 0.1, radius2: 0.05, opacity: 0.5, offset: new THREE.Vector3(0, 0, 1)})
@@ -250,8 +250,8 @@ function lisa(scene) {
   brokenPattern1(scene, leftLegRectangle, {initPoint: leftKneePosition, initAngle: getAngleXYfrom3D(leftKneePosition, leftLegPosition) + PI / 2})
   brokenPattern1(scene, leftFootReactangle, {initPoint: leftFootPosition, initAngle: getAngleXYfrom3D(leftFootPosition,leftKneePosition) + PI / 2})
 
-  drawHand(scene, copyRightHandPosition, {color: "#F9DEC9", rotation: rightHandRotation, handSize: new THREE.Vector3(0.1, 0.2, 0.01), offset: new THREE.Vector3(0.05, -0.1, 0)});
-  drawHand(scene, copyLeftHandPosition, {color: "#F9DEC9", rotation: leftHandRotation, handSize: new THREE.Vector3(0.1, 0.2, 0.01), offset: new THREE.Vector3(0.1, -0.05, 0)});
+  // drawHand(scene, copyRightHandPosition, {color: "#F9DEC9", rotation: rightHandRotation, handSize: new THREE.Vector3(0.1, 0.2, 0.01), offset: new THREE.Vector3(0.05, -0.1, 0)});
+  // drawHand(scene, copyLeftHandPosition, {color: "#F9DEC9", rotation: leftHandRotation, handSize: new THREE.Vector3(0.1, 0.2, 0.01), offset: new THREE.Vector3(0.1, -0.05, 0)});
 }
 
 export { initSkeleton, lisa }
