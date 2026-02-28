@@ -40,7 +40,7 @@ function norm(x, base, spread) {
 }
 
 function pattern1(scene, pointsArray, options) {
-  let limit = options?.limit || 200;
+  let limit = options?.limit || 20;
   let maxLines = options?.maxLines || 200
   const scale = options?.scale || 1;
   const offset = options?.offset || new THREE.Vector3(0, 0, 0.1);
