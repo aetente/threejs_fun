@@ -285,20 +285,35 @@ const main = async () => {
   }
   
   const testGround = async () => {
+    const scaleRect = 2
     const testPoints = [
       new Vector3(0,0,0),
-      new Vector3(0,0.2,0),
-      new Vector3(0.2,0.2,0),
-      new Vector3(0.2,0,0)
+      new Vector3(0,scaleRect*2,0),
+      new Vector3(scaleRect,scaleRect*2,0),
+      new Vector3(scaleRect,0,0)
     ]
     const middlePoint = testPoints.reduce((a,c) => a.add(c),new Vector3(0,0,0))
-    testPoints.forEach(p => p.y -= 2)
+    //testPoints.forEach(p => )
+    testPoints.forEach(p => {
+      p.x -= 2;
+      p.y -= 2;
+    })
     //await doText()
     pattern1(scene, testPoints, {
-      initAngle: 0,
+      initAngle: -PI,
       //refPoint: middlePoint, 
-      refPoint: new Vector3(0,-1,0),
-      desiredAngle: -PI,
+      refPoint: new Vector3(2,-4,0),
+      desiredAngle: PI,
+      avoidPoints: [
+        {
+          point: new Vector3(0,0,0),
+          weight: 2
+        },
+        //{
+        //  point: new Vector3(-2, 1, 0),
+        //  weight: 1
+        //}
+      ],
       angleToRef: true
     })
   }
@@ -309,7 +324,7 @@ const main = async () => {
     //requestAnimationFrame(animate);
 
     testGround()
-    lisa(scene)
+    //lisa(scene)
     // moveShapes(meshArray)
     // doLines(linesArray)
     // skeleton.bones[0].rotation.y += -Math.PI / 100;

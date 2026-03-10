@@ -40,8 +40,8 @@ function norm(x, base, spread) {
 }
 
 function pattern1(scene, pointsArray, options) {
-  let limit = options?.limit || 20;
-  let maxLines = options?.maxLines || 200
+  let limit = options?.limit || 180;
+  let maxLines = options?.maxLines || 100
   const scale = options?.scale || 2;
   const offset = options?.offset || new THREE.Vector3(0, 0, 0.1);
   const initPoint = options?.initPoint || getRandomPointBetweenPoints(pointsArray);
@@ -54,14 +54,18 @@ function pattern1(scene, pointsArray, options) {
   let previousAngle = initAngle;
   const angleToRef = options?.angleToRef || false
   
-  const lineWidth = 3;
+  const lineWidth = options?.lineWidth || 5;
+  
+  const avoidPoints = options?.avoidPoints || null
   
   for (let i = 0; i < limit; i++) {
     const iScale = i/limit
     let nextPos = getRandomPointBetweenPoints(pointsArray);
     let previousPos = getRandomPointBetweenPoints(pointsArray);
+    const initPos = previousPos.clone()
     const idByPos = previousPos.x + previousPos.y + previousPos.z
     previousAngle = initAngle
+    const randomDir = random() > 0.5 ? 1 : -1
     for (let j = 0; j < maxLines; j++) {
       // scaleSize = (psin(sin(i*2)/10) * 0.1 + 0.05) * scale
       const indexId = sin((i+j)/10)
@@ -78,12 +82,28 @@ function pattern1(scene, pointsArray, options) {
       //const angleChange = 0
       
       //const correctAngle = angleChange + ((desiredAngle - angleChange)%p2)/1
-      let distFactor = min(1,1/(2*distToRef-1))
+      //let distFactor = min(1,1/(2*distToRef-1))
+      let distFactor = 1
       angleVal = previousAngle + angleChange
       if (angleToRef) {
         desiredAngle = previousPos.angleTo(refPoint)
       }
+      const avoidAngles = []
       angleVal = angleVal + (desiredAngle - angleVal)/2 * (distFactor)
+      if (avoidPoints) {
+        avoidPoints.forEach((ap, ip) => {
+          const distToAvoidPoint = previousPos.distanceTo(ap.point)
+          const fromDistance = ap.weight || 1
+          let avoidFactor = max(0, fromDistance - distToAvoidPoint)/fromDistance
+          avoidFactor = pow(avoidFactor, 1)
+          let angleToAvoidPoint = previousPos.angleTo(ap.point)
+          //console.log(angleToAvoidPoint)
+          const posDir = initPos.y > ap.point.y ? -1 : 1
+          const avoidAngle = (previousPos.angleTo(ap.point) + posDir*PI) * avoidFactor
+          
+          angleVal += avoidAngle
+        })
+      }
       scaleSize = psin(angleVal / PI / 3) * 0.1 * scale /1.4;
       previousAngle = angleVal;
       const currentPos = new THREE.Vector3(

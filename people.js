@@ -119,6 +119,10 @@ function initSkeleton () {
   return skeleton
 }
 
+function testPerson(scene) {
+  const skeleton = initSkeleton()
+}
+
 function lisa(scene) {
 
   const skeleton = initSkeleton()
