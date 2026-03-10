@@ -54,7 +54,7 @@ function pattern1(scene, pointsArray, options) {
   let previousAngle = initAngle;
   const angleToRef = options?.angleToRef || false
   
-  const lineWidth = options?.lineWidth || 5;
+  const lineWidth = options?.lineWidth || 2;
   
   const avoidPoints = options?.avoidPoints || null
   

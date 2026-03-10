@@ -41,7 +41,7 @@ const main = async () => {
     preserveDrawingBuffer: true // Required for capturing the image
   });
   // renderer.setSize(window.innerWidth, window.innerHeight);
-  renderer.setSize(3000,3000)
+  renderer.setSize(totalWidth,totalHeight)
   document.body.appendChild(renderer.domElement);
 
 

@@ -8,8 +8,8 @@ const mxbs = [0.2, 0.2, 0.2]; //maximum box size
 const dclr = { r: 0.9, g: 0.9, b: 0.9 }; // default color
 const randRatio = [24647, 53774, 33784]; // ratio/seeds for random numbers for xyz
 
-const totalWidth = 3000
-const totalHeight = 3000
+const totalWidth = 1024
+const totalHeight = 1024
 
 const pallete = [
   "#6A2C70",
