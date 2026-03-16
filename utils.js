@@ -271,6 +271,30 @@ function drawLine(scene, points, options) {
   scene.add(line);
 }
 
+function saveImage(renderer) {
+    // 1. Get the canvas element
+    const canvas = renderer.domElement;
+
+    // 2. Convert the canvas to a Blob (asynchronously)
+    canvas.toBlob((blob) => {
+        // 3. Create a temporary anchor element for download
+        const link = document.createElement('a');
+        document.body.appendChild(link); // Firefox requires the link to be in the body
+
+        // 4. Set the download URL and filename
+        link.href = window.URL.createObjectURL(blob);
+        link.download = 'threejs-screenshot.png'; // Set the desired file name
+
+        // 5. Trigger the download
+        link.click();
+
+        // 6. Clean up the temporary elements
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(link.href); // Free up memory
+    }, 'image/png'); // Specify the image format (e.g., 'image/jpeg', 'image/png')
+}
+
+
 
 export {
   randInRange,
@@ -290,5 +314,6 @@ export {
   getRandomPointBetweenPoints,
   getPerpendicularPoint,
   getPointBetweenPoints,
-  drawLine
+  drawLine,
+  saveImage
 }

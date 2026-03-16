@@ -24,6 +24,8 @@ from "./consts.js"
 
 import {pattern1} from "./patterns.js"
 
+import {saveImage} from "./utils.js"
+
 const {sin, cos, PI, random, pow} = Math;
 
 const main = async () => {
@@ -258,7 +260,21 @@ const main = async () => {
     scene.add(root);
   }
 
-
+  const generateAvoidPoints = () => {
+    const avoidPoints = []
+    const amountOfPoints = 20
+    for (let i = 0; i < amountOfPoints; i++) {
+      const avoidPoint = {
+        point: new Vector3(
+          randInRange(-3,3,random()),
+          randInRange(-2,2,random()),
+          0),
+        weight: 0.5
+      }
+      avoidPoints.push(avoidPoint)
+    }
+    return avoidPoints
+  }
 
   const doText = async () => {
     const fontLoader = new FontLoader();
@@ -285,18 +301,19 @@ const main = async () => {
   }
   
   const testGround = async () => {
+    const avoidPoints = generateAvoidPoints()
     const scaleRect = 2
     const testPoints = [
       new Vector3(0,0,0),
-      new Vector3(0,scaleRect*2,0),
-      new Vector3(scaleRect,scaleRect*2,0),
+      new Vector3(0,scaleRect*3,0),
+      new Vector3(scaleRect,scaleRect*3,0),
       new Vector3(scaleRect,0,0)
     ]
     const middlePoint = testPoints.reduce((a,c) => a.add(c),new Vector3(0,0,0))
     //testPoints.forEach(p => )
     testPoints.forEach(p => {
-      p.x -= 2;
-      p.y -= 2;
+      p.x -= 4;
+      p.y -= 3;
     })
     //await doText()
     pattern1(scene, testPoints, {
@@ -304,16 +321,17 @@ const main = async () => {
       //refPoint: middlePoint, 
       refPoint: new Vector3(2,-4,0),
       desiredAngle: PI,
-      avoidPoints: [
+      avoidPoints: avoidPoints,
+      /*[
         {
           point: new Vector3(0,0,0),
-          weight: 2
+          weight: 5
         },
-        //{
-        //  point: new Vector3(-2, 1, 0),
-        //  weight: 1
-        //}
-      ],
+        {
+          point: new Vector3(-1, 1, 0),
+          weight: 0
+        }
+      ],*/
       angleToRef: true
     })
   }
@@ -330,9 +348,11 @@ const main = async () => {
     // skeleton.bones[0].rotation.y += -Math.PI / 100;
 
     renderer.render(scene, camera);
+    
   }
 
   animate();
+  //saveImage(renderer)
   // renderer.render( scene, camera );
 }
 

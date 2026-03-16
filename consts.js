@@ -55,6 +55,13 @@ const testPalette1 = [
   
 ]
 
+const flowersPalette1 = [
+  "#FF7132",
+  "#FBBE01",
+  "#8D6ADA",
+  "#FA65B1"
+]
+
 export {
   dbs,
   zs,
@@ -70,5 +77,6 @@ export {
   facePallete,
   sunsetPallete,
   sunsetPallete2,
-  testPalette1
+  testPalette1,
+  flowersPalette1
 }

@@ -10,7 +10,8 @@ import {
   psin,
   lerpAlongPath,
   getRandomPointBetweenPoints,
-  drawLine
+  drawLine,
+  randInRange
 } from './utils.js';
 
 import {
@@ -28,7 +29,8 @@ import {
   facePallete,
   sunsetPallete,
   sunsetPallete2,
-  testPalette1
+  testPalette1,
+  flowersPalette1
 }
 from "./consts.js"
 
@@ -40,7 +42,7 @@ function norm(x, base, spread) {
 }
 
 function pattern1(scene, pointsArray, options) {
-  let limit = options?.limit || 180;
+  let limit = options?.limit || 100;
   let maxLines = options?.maxLines || 100
   const scale = options?.scale || 2;
   const offset = options?.offset || new THREE.Vector3(0, 0, 0.1);
@@ -58,7 +60,10 @@ function pattern1(scene, pointsArray, options) {
   
   const avoidPoints = options?.avoidPoints || null
   
+  
+  
   for (let i = 0; i < limit; i++) {
+    const insidePoints = []
     const iScale = i/limit
     let nextPos = getRandomPointBetweenPoints(pointsArray);
     let previousPos = getRandomPointBetweenPoints(pointsArray);
@@ -92,14 +97,20 @@ function pattern1(scene, pointsArray, options) {
       angleVal = angleVal + (desiredAngle - angleVal)/2 * (distFactor)
       if (avoidPoints) {
         avoidPoints.forEach((ap, ip) => {
+          const maxReflect = PI
           const distToAvoidPoint = previousPos.distanceTo(ap.point)
           const fromDistance = ap.weight || 1
           let avoidFactor = max(0, fromDistance - distToAvoidPoint)/fromDistance
+          if (avoidFactor > 0 && !insidePoints[ip]) {
+            insidePoints[ip] = random() > 0.5 ? -1 : 1;
+          } else if (avoidFactor <= 0) {
+            insidePoints[ip] = 0
+          }
           avoidFactor = pow(avoidFactor, 1)
           let angleToAvoidPoint = previousPos.angleTo(ap.point)
           //console.log(angleToAvoidPoint)
           const posDir = initPos.y > ap.point.y ? -1 : 1
-          const avoidAngle = (previousPos.angleTo(ap.point) + posDir*PI) * avoidFactor
+          const avoidAngle = (previousPos.angleTo(ap.point) + insidePoints[ip]*maxReflect) * avoidFactor
           
           angleVal += avoidAngle
         })
@@ -118,16 +129,27 @@ function pattern1(scene, pointsArray, options) {
       const previousPosWithOffset = previousPos.clone().add(offset);
       const nextPosWithOffset = nextPos.clone().add(offset);
       drawLine(scene, [previousPosWithOffset, nextPosWithOffset], { lineWidth: i == 0 ? 5 : lineWidth, color: i === 0 ? 0xffffff : color });
+      const amountOfFlowers = floor(random()*32)
+      if (random() > 0.99 && amountOfFlowers > 0) {
+        for (let ri = 0; ri < amountOfFlowers; ri++) {
+          const flowerSize = randInRange(0.01, 0.04, amountOfFlowers/32)
+          //(0.04 * random() + 0.02)/amountOfFlowers
+          const circle = new THREE.CircleGeometry(flowerSize, 32);
+          const flowerColor = flowersPalette1[floor(random()*flowersPalette1.length)]
+          const material = new THREE.MeshBasicMaterial({ color: "#111F35" });
+          const shape = new THREE.Mesh(circle, material);
+        const newX = random()* 0.4+ nextPos.x  
+        const newY = random()* 0.4+ nextPos.y  
+        shape.position.set(newX, newY, nextPos.z);
+          scene.add(shape);
+        }
+      }
       
       previousPos.copy(nextPos);
       points.push(nextPos.clone());
     }
     points = []
-    const circle = new THREE.CircleGeometry(0.002 * random() + 0.02, 32);
-    const material = new THREE.MeshBasicMaterial({ color: 0xff0000 });
-    const shape = new THREE.Mesh(circle, material);
-      shape.position.set(nextPos.x, nextPos.y, nextPos.z + 0.2);
-    //scene.add(shape);
+   
   }
 }
 
