@@ -46,7 +46,7 @@ function norm(x, base, spread) {
 
 function pattern1(scene, pointsArray, options) {
   let limit = options?.limit || 1;
-  let maxLines = options?.maxLines || 1
+  let maxLines = options?.maxLines || 100
   const scale = options?.scale || 2;
   const offset = options?.offset || new THREE.Vector3(0, 0, 0.1);
   const initPoint = options?.initPoint || getRandomPointBetweenPoints(pointsArray);
@@ -104,11 +104,18 @@ function pattern1(scene, pointsArray, options) {
         const dx = refPoint.x - previousPos.x;
         const dy = refPoint.y - previousPos.y;
 
-        const angleRadians = Math.atan2(dy, dx); 
+        let angleRadians = Math.atan2(dy, -dx);
+        // if (angleRadians < 0) {
+        //   angleRadians += 4 * Math.PI;
+        // } 
         desiredAngle =
-        angleRadians - PI/2
-        //(angleRadians + 3*PI/2) % (2*PI)
-        //previousPosV2.angleTo(refPointV2) + PI/2
+        // angleRadians
+        // angleRadians - PI/2
+        (angleRadians + 3*PI/2) % (2*PI)
+        // previousPosV2.angleTo(refPointV2)
+        // if (desiredAngle < 0) {
+        //   desiredAngle += 2 * PI;
+        // }
 
         console.log(previousPosV2, refPointV2, desiredAngle)
 

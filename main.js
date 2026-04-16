@@ -300,6 +300,14 @@ const main = async () => {
 
     console.log("textMesh", textMesh)
   }
+
+  function drawCircle(pos, color, radius) {
+    const circleGeometry = new THREE.CircleGeometry(radius, 16);
+    const circleMaterial = new THREE.MeshBasicMaterial({ color: color });
+    const circleMesh = new THREE.Mesh(circleGeometry, circleMaterial);
+    circleMesh.position.set(pos.x, pos.y, pos.z);
+    scene.add(circleMesh);
+  }
   
   const testGround = async () => {
     const avoidPoints = generateAvoidPoints()
@@ -313,21 +321,24 @@ const main = async () => {
     const middlePoint = testPoints.reduce((a,c) => a.add(c),new Vector3(0,0,0))
     //testPoints.forEach(p => )
     const testPointsOffset =
-      new Vector3(-1,0,0)
+      new Vector3(-2,-1,0)
+    drawCircle(testPointsOffset, 0xff0000, 0.1)
     testPoints.forEach(p => {
       p.x += testPointsOffset.x;
       p.y += testPointsOffset.y;
       p.z += testPointsOffset.z
     })
     //await doText()
+    const refPoint = new Vector3(2,0,0)
     const theAngle = 
-      0
+      refPoint.angleTo(testPointsOffset)
       //-PI/2
       //2.0671854475079234
+    drawCircle(refPoint, 0x00ff00, 0.1)
     pattern1(scene, testPoints, {
       initAngle: theAngle,
       //refPoint: middlePoint, 
-      refPoint: new Vector3(1,0,0),
+      refPoint: refPoint,
       desiredAngle: theAngle,
       //avoidPoints: avoidPoints,
       /*[
