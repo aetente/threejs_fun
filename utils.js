@@ -294,6 +294,12 @@ function saveImage(renderer) {
     }, 'image/png'); // Specify the image format (e.g., 'image/jpeg', 'image/png')
 }
 
+const signedAngle = (vec1, vec2) => {
+  let angle = vec1.clone().angleTo(vec2.clone());
+  let cross = new THREE.Vector3().crossVectors(vec1, vec2);
+  if (cross.z < 0) angle = Math.PI * 2 - angle; // Adjust based on plane
+  return angle
+}
 
 
 export {
@@ -315,5 +321,6 @@ export {
   getPerpendicularPoint,
   getPointBetweenPoints,
   drawLine,
-  saveImage
+  saveImage,
+  signedAngle
 }

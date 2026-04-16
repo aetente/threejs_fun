@@ -11,7 +11,8 @@ import {
   lerpAlongPath,
   getRandomPointBetweenPoints,
   drawLine,
-  randInRange
+  randInRange,
+  signedAngle
 } from './utils.js';
 
 import {
@@ -30,7 +31,9 @@ import {
   sunsetPallete,
   sunsetPallete2,
   testPalette1,
-  flowersPalette1
+  flowersPalette1,
+  testPalette2,
+  flowersPalette2
 }
 from "./consts.js"
 
@@ -42,12 +45,13 @@ function norm(x, base, spread) {
 }
 
 function pattern1(scene, pointsArray, options) {
-  let limit = options?.limit || 100;
-  let maxLines = options?.maxLines || 100
+  let limit = options?.limit || 1;
+  let maxLines = options?.maxLines || 1
   const scale = options?.scale || 2;
   const offset = options?.offset || new THREE.Vector3(0, 0, 0.1);
   const initPoint = options?.initPoint || getRandomPointBetweenPoints(pointsArray);
   const refPoint = options?.refPoint || new Vector3(0,0,0)
+  const refPointV2 = new THREE.Vector2(refPoint?.x || 0, refPoint?.y || 0)
   const initAngle = options?.initAngle || 0
   let desiredAngle = options?.desiredAngle || 0;
   let scaleSize = 0.05 * scale
@@ -63,6 +67,7 @@ function pattern1(scene, pointsArray, options) {
   
   
   for (let i = 0; i < limit; i++) {
+    
     const insidePoints = []
     const iScale = i/limit
     let nextPos = getRandomPointBetweenPoints(pointsArray);
@@ -73,6 +78,7 @@ function pattern1(scene, pointsArray, options) {
     const randomDir = random() > 0.5 ? 1 : -1
     for (let j = 0; j < maxLines; j++) {
       // scaleSize = (psin(sin(i*2)/10) * 0.1 + 0.05) * scale
+      const previousPosV2 = new THREE.Vector2(previousPos.x, previousPos.y)
       const indexId = sin((i+j)/10)
       const jScale = sin(j/maxLines * p2  + indexId)
       const distToRef = previousPos.distanceTo(refPoint)+1
@@ -88,13 +94,33 @@ function pattern1(scene, pointsArray, options) {
       
       //const correctAngle = angleChange + ((desiredAngle - angleChange)%p2)/1
       //let distFactor = min(1,1/(2*distToRef-1))
-      let distFactor = 1
+      //let distFactor = 1
+      let distFactor = max(1*min(1, distToRef - 1),0)
       angleVal = previousAngle + angleChange
       if (angleToRef) {
-        desiredAngle = previousPos.angleTo(refPoint)
+        
+        desiredAngle = signedAngle( previousPosV2, refPointV2)
+        // Angle of point B relative to point A
+        const dx = refPoint.x - previousPos.x;
+        const dy = refPoint.y - previousPos.y;
+
+        const angleRadians = Math.atan2(dy, dx); 
+        desiredAngle =
+        angleRadians - PI/2
+        //(angleRadians + 3*PI/2) % (2*PI)
+        //previousPosV2.angleTo(refPointV2) + PI/2
+
+        console.log(previousPosV2, refPointV2, desiredAngle)
+
+        //j % 50 == 0 && 
+        //console.log(desiredAngle, previousPosV2)
       }
       const avoidAngles = []
-      angleVal = angleVal + (desiredAngle - angleVal)/2 * (distFactor)
+      angleVal = 
+      //desiredAngle
+      angleVal + (desiredAngle - angleVal%(2*PI))/2
+      //*2
+      * (distFactor)
       if (avoidPoints) {
         avoidPoints.forEach((ap, ip) => {
           const maxReflect = PI
@@ -116,6 +142,7 @@ function pattern1(scene, pointsArray, options) {
         })
       }
       scaleSize = psin(angleVal / PI / 3) * 0.1 * scale /1.4;
+      if (j == 0) scaleSize = 0.5
       previousAngle = angleVal;
       const currentPos = new THREE.Vector3(
         sin(angleVal) * scaleSize,
@@ -124,8 +151,8 @@ function pattern1(scene, pointsArray, options) {
       );
       nextPos = previousPos.clone().add(currentPos);
         
-      const sunsetPalleteIndex = psin(angleVal / angleCap * PI * 2) * (testPalette1.length - 1);
-      const color = testPalette1[Math.floor(sunsetPalleteIndex)];
+      const sunsetPalleteIndex = psin(angleVal / angleCap * PI * 2) * (testPalette2.length - 1);
+      const color = testPalette2[Math.floor(sunsetPalleteIndex)];
       const previousPosWithOffset = previousPos.clone().add(offset);
       const nextPosWithOffset = nextPos.clone().add(offset);
       drawLine(scene, [previousPosWithOffset, nextPosWithOffset], { lineWidth: i == 0 ? 5 : lineWidth, color: i === 0 ? 0xffffff : color });
@@ -135,12 +162,12 @@ function pattern1(scene, pointsArray, options) {
           const flowerSize = randInRange(0.01, 0.04, amountOfFlowers/32)
           //(0.04 * random() + 0.02)/amountOfFlowers
           const circle = new THREE.CircleGeometry(flowerSize, 32);
-          const flowerColor = flowersPalette1[floor(random()*flowersPalette1.length)]
-          const material = new THREE.MeshBasicMaterial({ color: "#111F35" });
+          const flowerColor = flowersPalette2[floor(random()*flowersPalette2.length)]
+          const material = new THREE.MeshBasicMaterial({ color: flowerColor });
           const shape = new THREE.Mesh(circle, material);
         const newX = random()* 0.4+ nextPos.x  
         const newY = random()* 0.4+ nextPos.y  
-        shape.position.set(newX, newY, nextPos.z);
+        shape.position.set(newX, newY, nextPos.z + 0.2);
           scene.add(shape);
         }
       }

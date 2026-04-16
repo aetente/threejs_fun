@@ -156,7 +156,8 @@ const main = async () => {
   // const backColor = new THREE.Color("#2d196e");
   // const backColor = new THREE.Color("#120b2c");
   //const backColor = new THREE.Color("rgba(20, 20, 20, 1)");
-  const backColor = new THREE.Color("#F63049")
+  //const backColor = new THREE.Color("#F63049")
+  const backColor = new THREE.Color("#3c5601")
   // const backColor = new THREE.Color(pallete[0]);
   console.log("backColor", backColor)
   scene.background = backColor
@@ -262,7 +263,7 @@ const main = async () => {
 
   const generateAvoidPoints = () => {
     const avoidPoints = []
-    const amountOfPoints = 20
+    const amountOfPoints = 3
     for (let i = 0; i < amountOfPoints; i++) {
       const avoidPoint = {
         point: new Vector3(
@@ -302,26 +303,33 @@ const main = async () => {
   
   const testGround = async () => {
     const avoidPoints = generateAvoidPoints()
-    const scaleRect = 2
+    const scaleRect = 0.2
     const testPoints = [
       new Vector3(0,0,0),
-      new Vector3(0,scaleRect*3,0),
-      new Vector3(scaleRect,scaleRect*3,0),
-      new Vector3(scaleRect,0,0)
+      new Vector3(0,scaleRect,0),
+      new Vector3(1*scaleRect,scaleRect,0),
+      new Vector3(1*scaleRect,0,0)
     ]
     const middlePoint = testPoints.reduce((a,c) => a.add(c),new Vector3(0,0,0))
     //testPoints.forEach(p => )
+    const testPointsOffset =
+      new Vector3(-1,0,0)
     testPoints.forEach(p => {
-      p.x -= 4;
-      p.y -= 3;
+      p.x += testPointsOffset.x;
+      p.y += testPointsOffset.y;
+      p.z += testPointsOffset.z
     })
     //await doText()
+    const theAngle = 
+      0
+      //-PI/2
+      //2.0671854475079234
     pattern1(scene, testPoints, {
-      initAngle: -PI,
+      initAngle: theAngle,
       //refPoint: middlePoint, 
-      refPoint: new Vector3(2,-4,0),
-      desiredAngle: PI,
-      avoidPoints: avoidPoints,
+      refPoint: new Vector3(1,0,0),
+      desiredAngle: theAngle,
+      //avoidPoints: avoidPoints,
       /*[
         {
           point: new Vector3(0,0,0),

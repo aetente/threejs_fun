@@ -55,11 +55,23 @@ const testPalette1 = [
   
 ]
 
+const testPalette2 = [
+  "#5e8162",
+  "#64890f",
+  
+]
+
 const flowersPalette1 = [
   "#FF7132",
   "#FBBE01",
   "#8D6ADA",
   "#FA65B1"
+]
+
+const flowersPalette2 = [
+  "#c5c278",
+  "#95a4a5",
+  "#ffffff"
 ]
 
 export {
@@ -78,5 +90,7 @@ export {
   sunsetPallete,
   sunsetPallete2,
   testPalette1,
-  flowersPalette1
+  flowersPalette1,
+  testPalette2,
+  flowersPalette2
 }
