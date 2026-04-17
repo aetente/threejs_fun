@@ -45,8 +45,8 @@ function norm(x, base, spread) {
 }
 
 function pattern1(scene, pointsArray, options) {
-  let limit = options?.limit || 10;
-  let maxLines = options?.maxLines || 100
+  let limit = options?.limit || 70;
+  let maxLines = options?.maxLines || 110
   const scale = options?.scale || 2;
   const offset = options?.offset || new THREE.Vector3(0, 0, 0.1);
   const initPoint = options?.initPoint || getRandomPointBetweenPoints(pointsArray);
@@ -128,17 +128,17 @@ function pattern1(scene, pointsArray, options) {
         }
 
         previousDesiredAngle = desiredAngle
-        console.log(previousPosV2, refPointV2, desiredAngle)
+        // console.log(previousPosV2, refPointV2, desiredAngle)
 
         //j % 50 == 0 && 
         //console.log(desiredAngle, previousPosV2)
       }
       const avoidAngles = []
       angleVal = 
-      //desiredAngle
-      angleVal + (desiredAngle - angleVal%(2*PI))/2
-      //*2
-      * (distFactor)
+        //desiredAngle
+        angleVal + (desiredAngle - angleVal%(2*PI))/2
+        //*2
+        * (distFactor)
       if (avoidPoints) {
         avoidPoints.forEach((ap, ip) => {
           const maxReflect = PI
@@ -165,7 +165,7 @@ function pattern1(scene, pointsArray, options) {
       const currentPos = new THREE.Vector3(
         sin(angleVal) * scaleSize,
         cos(angleVal) * scaleSize,
-        0
+        sin(i) / 10
       );
       nextPos = previousPos.clone().add(currentPos);
         

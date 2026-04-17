@@ -3,7 +3,7 @@ import * as THREE from 'three';
 import { Vector3 } from 'three';
 import { randInRange, pSin, pCos, distance3D, loadTextureF } from "./utils.js"
 import { heartShape, birdShape } from "./shapes.js"
-import { lisa } from './people.js';
+import { lisa, dancePerson1, dancePerson2 } from './people.js';
 //import wall from './assets/textures/wall.jpg';
 
 import { FontLoader } from 'three/addons/loaders/FontLoader.js';
@@ -35,7 +35,7 @@ const main = async () => {
   
   const camera = new THREE.PerspectiveCamera(35, 1, 0.1, 1000);
 
-  camera.position.z = 10;
+  camera.position.z = 15;
   camera.position.x = 0
 
   const renderer = new THREE.WebGLRenderer({
@@ -311,36 +311,36 @@ const main = async () => {
   
   const testGround = async () => {
     const avoidPoints = generateAvoidPoints()
-    const scaleRect = 0.2
+    const scaleRect = 1
     const testPoints = [
       new Vector3(0,0,0),
-      new Vector3(0,scaleRect,0),
-      new Vector3(1*scaleRect,scaleRect,0),
+      new Vector3(0,2*scaleRect,0),
+      new Vector3(1*scaleRect,2*scaleRect,0),
       new Vector3(1*scaleRect,0,0)
     ]
     const middlePoint = testPoints.reduce((a,c) => a.add(c),new Vector3(0,0,0))
     //testPoints.forEach(p => )
     const testPointsOffset =
-      new Vector3(-2,-1,0)
-    drawCircle(testPointsOffset, 0xff0000, 0.1)
+      new Vector3(-5,-3,0)
+    // drawCircle(testPointsOffset, 0xff0000, 0.1)
     testPoints.forEach(p => {
       p.x += testPointsOffset.x;
       p.y += testPointsOffset.y;
       p.z += testPointsOffset.z
     })
     //await doText()
-    const refPoint = new Vector3(2,0,0)
+    const refPoint = new Vector3(6,-1,0)
     const theAngle = 
       refPoint.angleTo(testPointsOffset)
       //-PI/2
       //2.0671854475079234
-    drawCircle(refPoint, 0x00ff00, 0.1)
+    // drawCircle(refPoint, 0x00ff00, 0.1)
     pattern1(scene, testPoints, {
       initAngle: theAngle,
       //refPoint: middlePoint, 
       refPoint: refPoint,
       desiredAngle: theAngle,
-      //avoidPoints: avoidPoints,
+      avoidPoints: avoidPoints,
       /*[
         {
           point: new Vector3(0,0,0),
@@ -353,6 +353,7 @@ const main = async () => {
       ],*/
       angleToRef: true
     })
+
   }
 
   // lisa(scene)
@@ -361,7 +362,9 @@ const main = async () => {
     //requestAnimationFrame(animate);
 
     testGround()
-    //lisa(scene)
+    dancePerson1(scene, {offset: new Vector3(-1.5,0,2)})
+    dancePerson2(scene, {offset: new Vector3(1.5,0,2)})
+    // lisa(scene)
     // moveShapes(meshArray)
     // doLines(linesArray)
     // skeleton.bones[0].rotation.y += -Math.PI / 100;

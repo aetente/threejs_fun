@@ -1,7 +1,6 @@
 import * as THREE from 'three';
 
 function applyPose(poseData, skeleton) {
-    console.log("skeleton", skeleton)
     poseData.forEach(data => {
         const bone = skeleton.getBoneByName(data.name);
         if (bone) {
@@ -11,6 +10,11 @@ function applyPose(poseData, skeleton) {
             console.log("not found bone", data.name)
         }
     });
+    skeleton.update();
+}
+
+function offsetPose(skeleton, offset) {
+    skeleton.getBoneByName("root").position.add(offset)
     skeleton.update();
 }
 
@@ -245,5 +249,52 @@ const sittingLegsClose = [
     { name: 'rightFoot', rot: new THREE.Euler(0, 0, 0) }
 ];
 
+const dance1 = [
+    { name: "root", rot: new THREE.Euler(0,0,0)},
+    
+    { name: 'lowerTorso', rot: new THREE.Euler(0, 0, 0) },
+    { name: 'upperTorso', rot: new THREE.Euler(0, 0, 0.5) },
+    { name: 'head', rot: new THREE.Euler(0, 0, 0) },
 
-export {applyPose, tPoseData, casualPoseData, sittingPoseData, sittingPhonePoseData, leapPoseData, relaxedSittingPhoneData, relaxedSittingPhoneAnglesData, rotatePose, sittingLegsClose}
+    { name: 'leftShoulder', rot: new THREE.Euler(1.2, 0, -0.9) },
+    { name: 'leftElbow', rot: new THREE.Euler(0, -0.7, 1.2) },
+    { name: 'leftHand', rot: new THREE.Euler(0, 0, 0.5) },
+
+    { name: 'rightShoulder', rot: new THREE.Euler(0, 0, 1) },
+    { name: 'rightElbow', rot: new THREE.Euler(0, 0, 1.3) },
+    { name: 'rightHand', rot: new THREE.Euler(0, 0, 0) },
+
+    { name: 'leftLeg', rot: new THREE.Euler(0, 0, 0) },
+    { name: 'leftKnee', rot: new THREE.Euler(0, 0, -1) },
+    { name: 'leftFoot', rot: new THREE.Euler(0, 0, 0) },
+
+    { name: 'rightLeg', rot: new THREE.Euler(0, 0.2, 1.1) },
+    { name: 'rightKnee', rot: new THREE.Euler(0, 0.2, -1.1) },
+    { name: 'rightFoot', rot: new THREE.Euler(0, 0, 0) }
+];
+
+const dance2 = [
+    { name: "root", rot: new THREE.Euler(0,0,0)},
+    
+    { name: 'lowerTorso', rot: new THREE.Euler(0, 0, 0) },
+    { name: 'upperTorso', rot: new THREE.Euler(0, 0, -0.5) },
+    { name: 'head', rot: new THREE.Euler(0, 0, 0) },
+
+    { name: 'leftShoulder', rot: new THREE.Euler(1.2, 0, 0.9) },
+    { name: 'leftElbow', rot: new THREE.Euler(0, -0.7, -1.2) },
+    { name: 'leftHand', rot: new THREE.Euler(0, 0, 0) },
+
+    { name: 'rightShoulder', rot: new THREE.Euler(0, 0, -1) },
+    { name: 'rightElbow', rot: new THREE.Euler(0, 0, -1.3) },
+    { name: 'rightHand', rot: new THREE.Euler(0, 0, -1) },
+
+    { name: 'leftLeg', rot: new THREE.Euler(0, 0, 0) },
+    { name: 'leftKnee', rot: new THREE.Euler(0, 0, 1) },
+    { name: 'leftFoot', rot: new THREE.Euler(0, 0, 0) },
+
+    { name: 'rightLeg', rot: new THREE.Euler(0, 0.2, -1.1) },
+    { name: 'rightKnee', rot: new THREE.Euler(0, 0.2, 1.1) },
+    { name: 'rightFoot', rot: new THREE.Euler(0, 0, 0) }
+];
+
+export {applyPose, tPoseData, casualPoseData, sittingPoseData, sittingPhonePoseData, leapPoseData, relaxedSittingPhoneData, relaxedSittingPhoneAnglesData, rotatePose, offsetPose, sittingLegsClose, dance1, dance2}

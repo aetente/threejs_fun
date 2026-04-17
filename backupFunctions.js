@@ -261,6 +261,7 @@ function linesPatterns(scene, pointsArray, options) {
 }
 
 function basicCloth(scene, pointsArray, options) {
+  console.log(pointsArray)
   const scale = options?.scale || 1
   // const start = startVal.clone() || new THREE.Vector3(0,0,0)
   // const end = endVal.clone() || new THREE.Vector3(0,0,0)
