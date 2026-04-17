@@ -45,7 +45,7 @@ function norm(x, base, spread) {
 }
 
 function pattern1(scene, pointsArray, options) {
-  let limit = options?.limit || 1;
+  let limit = options?.limit || 10;
   let maxLines = options?.maxLines || 100
   const scale = options?.scale || 2;
   const offset = options?.offset || new THREE.Vector3(0, 0, 0.1);
@@ -54,6 +54,7 @@ function pattern1(scene, pointsArray, options) {
   const refPointV2 = new THREE.Vector2(refPoint?.x || 0, refPoint?.y || 0)
   const initAngle = options?.initAngle || 0
   let desiredAngle = options?.desiredAngle || 0;
+  let previousDesiredAngle = desiredAngle
   let scaleSize = 0.05 * scale
   let points = [];
   let angleVal = 0;
@@ -109,14 +110,24 @@ function pattern1(scene, pointsArray, options) {
         //   angleRadians += 4 * Math.PI;
         // } 
         desiredAngle =
-        // angleRadians
-        // angleRadians - PI/2
-        (angleRadians + 3*PI/2) % (2*PI)
-        // previousPosV2.angleTo(refPointV2)
-        // if (desiredAngle < 0) {
-        //   desiredAngle += 2 * PI;
-        // }
+          // angleRadians
+          // angleRadians - PI/2
+          (angleRadians + 3*PI/2) % (2*PI)
+          // previousPosV2.angleTo(refPointV2)
+          // if (desiredAngle < 0) {
+          //   desiredAngle += 2 * PI;
+          // }
 
+        // quick fix for angle jumping
+        if (j > 0) {
+          if (desiredAngle - previousDesiredAngle > PI) {
+            desiredAngle -= 2*PI
+          } else if (desiredAngle - previousDesiredAngle < -PI) {
+            desiredAngle += 2*PI
+          }
+        }
+
+        previousDesiredAngle = desiredAngle
         console.log(previousPosV2, refPointV2, desiredAngle)
 
         //j % 50 == 0 && 
