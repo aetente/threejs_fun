@@ -37,7 +37,7 @@ import {
 }
 from "./consts.js"
 
-const { sin, cos, PI, random, pow, floor, abs, sqrt, max, min } = Math;
+const { sin, cos, PI, random, pow, floor, abs, sqrt, max, min, sign } = Math;
 const p2 = PI*2
 
 function norm(x, base, spread) {
@@ -45,7 +45,7 @@ function norm(x, base, spread) {
 }
 
 function pattern1(scene, pointsArray, options) {
-  let limit = options?.limit || 70;
+  let limit = options?.limit || 170;
   let maxLines = options?.maxLines || 110
   const scale = options?.scale || 2;
   const offset = options?.offset || new THREE.Vector3(0, 0, 0.1);
@@ -83,11 +83,11 @@ function pattern1(scene, pointsArray, options) {
       const indexId = sin((i+j)/10)
       const jScale = sin(j/maxLines * p2  + indexId)
       const distToRef = previousPos.distanceTo(refPoint)+1
-      const angleCap = PI/3.5
+      const angleCap = PI*2
       //const angleChange = sin( sin(20*i + idByPos) * angleCap) * angleCap
       
       const angleChange = jScale* sin(
-        sin(2*sin(indexId*PI)/distToRef + idByPos)
+        sin(0.5*sin(indexId*PI) + idByPos / 100)
         * PI
       ) * angleCap
       //const angleChange = sin(i + idByPos) * angleCap
@@ -160,7 +160,15 @@ function pattern1(scene, pointsArray, options) {
         })
       }
       scaleSize = psin(angleVal / PI / 3) * 0.1 * scale /1.4;
-      if (j == 0) scaleSize = 0.5
+      
+      // if (j == 0) scaleSize = 0.5
+
+      const allowedAngleDiff = PI/4
+      let angleDiff = angleVal - previousAngle
+      if (abs(angleDiff) > allowedAngleDiff) {
+        angleVal = previousAngle + sign(angleDiff) * allowedAngleDiff
+      }
+
       previousAngle = angleVal;
       const currentPos = new THREE.Vector3(
         sin(angleVal) * scaleSize,

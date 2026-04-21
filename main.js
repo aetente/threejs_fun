@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 
-import { Vector3 } from 'three';
+import { Vector2, Vector3 } from 'three';
 import { randInRange, pSin, pCos, distance3D, loadTextureF } from "./utils.js"
 import { heartShape, birdShape } from "./shapes.js"
 import { lisa, dancePerson1, dancePerson2 } from './people.js';
@@ -311,17 +311,17 @@ const main = async () => {
   
   const testGround = async () => {
     const avoidPoints = generateAvoidPoints()
-    const scaleRect = 1
+    const scaleRect = new Vector2(1,16)
     const testPoints = [
       new Vector3(0,0,0),
-      new Vector3(0,2*scaleRect,0),
-      new Vector3(1*scaleRect,2*scaleRect,0),
-      new Vector3(1*scaleRect,0,0)
+      new Vector3(0,scaleRect.y,0),
+      new Vector3(scaleRect.x, scaleRect.y,0),
+      new Vector3(scaleRect.x,0,0)
     ]
     const middlePoint = testPoints.reduce((a,c) => a.add(c),new Vector3(0,0,0))
     //testPoints.forEach(p => )
     const testPointsOffset =
-      new Vector3(-5,-3,0)
+      new Vector3(-5,-10,0)
     // drawCircle(testPointsOffset, 0xff0000, 0.1)
     testPoints.forEach(p => {
       p.x += testPointsOffset.x;
@@ -329,7 +329,7 @@ const main = async () => {
       p.z += testPointsOffset.z
     })
     //await doText()
-    const refPoint = new Vector3(6,-1,0)
+    const refPoint = new Vector3(6,0,0)
     const theAngle = 
       refPoint.angleTo(testPointsOffset)
       //-PI/2
@@ -340,7 +340,7 @@ const main = async () => {
       //refPoint: middlePoint, 
       refPoint: refPoint,
       desiredAngle: theAngle,
-      avoidPoints: avoidPoints,
+      // avoidPoints: avoidPoints,
       /*[
         {
           point: new Vector3(0,0,0),
