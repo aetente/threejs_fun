@@ -86,10 +86,12 @@ function pattern1(scene, pointsArray, options) {
       const angleCap = PI*2
       //const angleChange = sin( sin(20*i + idByPos) * angleCap) * angleCap
       
-      const angleChange = jScale* sin(
-        sin(0.5*sin(indexId*PI) + idByPos / 100)
-        * PI
-      ) * angleCap
+      // const angleChange = jScale* sin(
+      //   sin(0.5*sin(indexId*PI) + idByPos / 100)
+      //   * PI
+      // ) * angleCap
+      
+      const angleChange = sin( sin(20*i + idByPos) * angleCap) * angleCap
       //const angleChange = sin(i + idByPos) * angleCap
       //const angleChange = 0
       
@@ -136,7 +138,8 @@ function pattern1(scene, pointsArray, options) {
       const avoidAngles = []
       angleVal = 
         //desiredAngle
-        angleVal + (desiredAngle - angleVal%(2*PI))/2
+        angleVal
+        + (desiredAngle - angleVal%(2*PI))/2
         //*2
         * (distFactor)
       if (avoidPoints) {

@@ -3,8 +3,9 @@ import * as THREE from 'three';
 import { Vector2, Vector3 } from 'three';
 import { randInRange, pSin, pCos, distance3D, loadTextureF } from "./utils.js"
 import { heartShape, birdShape } from "./shapes.js"
-import { lisa, dancePerson1, dancePerson2 } from './people.js';
+import { lisa, dancePerson1, dancePerson2, basicPerson } from './people.js';
 //import wall from './assets/textures/wall.jpg';
+import { testPose1 } from './poses.js';
 
 import { FontLoader } from 'three/addons/loaders/FontLoader.js';
 import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
@@ -361,9 +362,10 @@ const main = async () => {
   function animate() {
     //requestAnimationFrame(animate);
 
-    testGround()
-    dancePerson1(scene, {offset: new Vector3(-1.5,0,2)})
-    dancePerson2(scene, {offset: new Vector3(1.5,0,2)})
+    // testGround()
+    // dancePerson1(scene, {offset: new Vector3(-1.5,0,2)})
+    // dancePerson2(scene, {offset: new Vector3(1.5,0,2)})
+    basicPerson(scene, {pose: testPose1, offset: new Vector3(0,0,2), scale: 1})
     // lisa(scene)
     // moveShapes(meshArray)
     // doLines(linesArray)

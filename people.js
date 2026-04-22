@@ -2,7 +2,7 @@ import * as THREE from 'three';
 
 import { Vector3 } from 'three';
 
-import {applyPose, tPoseData, casualPoseData, sittingPoseData, sittingPhonePoseData, leapPoseData, relaxedSittingPhoneData, relaxedSittingPhoneAnglesData, rotatePose, offsetPose, sittingLegsClose, dance1, dance2} from "./poses.js"
+import {applyPose, tPoseData, casualPoseData, sittingPoseData, sittingPhonePoseData, leapPoseData, relaxedSittingPhoneData, relaxedSittingPhoneAnglesData, rotatePose, offsetPose, scalePose, sittingLegsClose, dance1, dance2} from "./poses.js"
 import {getRectangleCorners, getAngleXYfrom3D} from "./utils.js"
 import {
   curls,
@@ -119,7 +119,9 @@ function initSkeleton () {
   return skeleton
 }
 
-function prepareSkeletonInfo(skeleton) {
+function prepareSkeletonInfo(skeleton, options) {
+
+  const scale = options?.scale || 1
 
   const headPosition = new THREE.Vector3()
   skeleton.getBoneByName("head").getWorldPosition(headPosition)
@@ -167,17 +169,17 @@ function prepareSkeletonInfo(skeleton) {
   const rootPosition = new THREE.Vector3()
   skeleton.getBoneByName("root").getWorldPosition(rootPosition)
 
-  const rightShouldRectangle = getRectangleCorners(rightShoulderPosition, rightElbowPosition, 0.1);
-  const rightHandReactangle = getRectangleCorners(rightHandPosition, rightElbowPosition, 0.1);
+  const rightShouldRectangle = getRectangleCorners(rightShoulderPosition, rightElbowPosition, 0.1 * scale);
+  const rightHandReactangle = getRectangleCorners(rightHandPosition, rightElbowPosition, 0.1 * scale);
 
-  const leftShouldRectangle = getRectangleCorners(leftShoulderPosition, leftElbowPosition, 0.1);
-  const leftHandReactangle = getRectangleCorners(leftHandPosition, leftElbowPosition, 0.1);
+  const leftShouldRectangle = getRectangleCorners(leftShoulderPosition, leftElbowPosition, 0.1 * scale);
+  const leftHandReactangle = getRectangleCorners(leftHandPosition, leftElbowPosition, 0.1 * scale);
 
-  const rightLegRectangle = getRectangleCorners(rightLegPosition, rightKneePosition, 0.1);
-  const rightFootReactangle = getRectangleCorners(rightFootPosition, rightKneePosition, 0.1);
+  const rightLegRectangle = getRectangleCorners(rightLegPosition, rightKneePosition, 0.1 * scale);
+  const rightFootReactangle = getRectangleCorners(rightFootPosition, rightKneePosition, 0.1 * scale);
 
-  const leftLegRectangle = getRectangleCorners(leftLegPosition, leftKneePosition, 0.1);
-  const leftFootReactangle = getRectangleCorners(leftFootPosition, leftKneePosition, 0.1);
+  const leftLegRectangle = getRectangleCorners(leftLegPosition, leftKneePosition, 0.1 * scale);
+  const leftFootReactangle = getRectangleCorners(leftFootPosition, leftKneePosition, 0.1 * scale);
 
   return {
     headPosition,
@@ -445,4 +447,69 @@ function dancePerson2(scene, options) {
   drawHand(scene, copyLeftHandPosition, {color: colorValue, rotation: leftHandRotation, handSize: new THREE.Vector3(0.1, 0.2, 0.01), offset: new THREE.Vector3(0.1, 0.1, -offset.z)});
 }
 
-export { initSkeleton, lisa, dancePerson1, dancePerson2 }
+function basicPerson(scene, options) {
+
+  const offset = options?.offset || new THREE.Vector3(0,0,0);
+  const clothColor = options?.clothColor || "#000";
+  const pose = options?.pose || tPoseData
+  const scale = options?.scale || 1
+
+  const skeleton = initSkeleton()
+
+  // first set t pose to be able to apply any other pose
+  applyPose(tPoseData, skeleton)
+  // rotatePose(relaxedSittingPhoneAnglesData, new THREE.Euler(0,0,0))
+  applyPose(pose, skeleton)
+  // skeleton.bones[0].rotation.y = PI / 3 + PI;
+  scalePose(skeleton, scale)
+  offsetPose(skeleton, offset)
+
+  const {
+    headPosition,
+    copyLeftHandPosition,
+    leftHandRotation,
+    copyRightHandPosition,
+    rightHandRotation,
+    leftShoulderPosition,
+    rightShoulderPosition,
+    upperTorsoPosition,
+    leftLegPosition,
+    rightLegPosition,
+    rootPosition,
+    rightShouldRectangle,
+    rightHandReactangle,
+    leftShouldRectangle,
+    leftHandReactangle,
+    rightLegRectangle,
+    rightFootReactangle,
+    leftLegRectangle,
+    leftFootReactangle
+  } = prepareSkeletonInfo(skeleton, {scale});
+
+  const torsoWidth = 0.3 * scale;
+  const leftUpperTorsoPosition = new THREE.Vector3(upperTorsoPosition.x + torsoWidth / 2, upperTorsoPosition.y, upperTorsoPosition.z);
+  const rightUpperTorsoPosition = new THREE.Vector3(upperTorsoPosition.x - torsoWidth / 2, upperTorsoPosition.y, upperTorsoPosition.z);
+  
+  const upperTorsoShape = [rootPosition, leftShoulderPosition, leftUpperTorsoPosition, rightUpperTorsoPosition, rightShoulderPosition]
+  const lowerTorsoShape = [leftUpperTorsoPosition, leftLegPosition, rightLegPosition, rightUpperTorsoPosition]
+
+  const colorValue = clothColor
+
+  basicCloth(scene, upperTorsoShape, {color: colorValue})
+  basicCloth(scene, lowerTorsoShape, {color: colorValue})
+  basicCloth(scene, rightShouldRectangle, {color: colorValue})
+  basicCloth(scene, leftShouldRectangle, {color: colorValue})
+  basicCloth(scene, rightHandReactangle, {color: colorValue})
+  basicCloth(scene, leftHandReactangle, {color: colorValue})
+  basicCloth(scene, rightLegRectangle, {color: colorValue})
+  basicCloth(scene, rightFootReactangle, {color: colorValue})
+  basicCloth(scene, leftLegRectangle, {color: colorValue})
+  basicCloth(scene, leftFootReactangle, {color: colorValue})
+
+  drawHand(scene, headPosition, {pivot: new THREE.Vector3(0.1 * scale, 0.1 * scale, 0), color: colorValue, rotation: new THREE.Vector3(0,0,0), handSize: new THREE.Vector3(0.2 * scale, 0.2 * scale, 0.01), offset: new THREE.Vector3(0, 0, -offset.z)});
+
+  drawHand(scene, copyRightHandPosition, {pivot: new THREE.Vector3(0, 0.2 * scale, 0), color: colorValue, rotation: rightHandRotation, handSize: new THREE.Vector3(0.1 * scale, 0.2 * scale, 0.01), offset: new THREE.Vector3(0, 0, -offset.z)});
+  drawHand(scene, copyLeftHandPosition, {pivot: new THREE.Vector3(0, 0.2 * scale, 0), color: colorValue, rotation: leftHandRotation, handSize: new THREE.Vector3(0.1 * scale, 0.2 * scale, 0.01), offset: new THREE.Vector3(0, 0, -offset.z)});
+}
+
+export { initSkeleton, lisa, dancePerson1, dancePerson2, basicPerson }
