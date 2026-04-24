@@ -5,7 +5,13 @@ import { randInRange, pSin, pCos, distance3D, loadTextureF } from "./utils.js"
 import { heartShape, birdShape } from "./shapes.js"
 import { lisa, dancePerson1, dancePerson2, basicPerson } from './people.js';
 //import wall from './assets/textures/wall.jpg';
-import { testPose1 } from './poses.js';
+import {
+  testPose1,
+  testPose2,
+  testPose3,
+  testPose4,
+  testPose5
+} from './poses.js';
 
 import { FontLoader } from 'three/addons/loaders/FontLoader.js';
 import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
@@ -357,7 +363,26 @@ const main = async () => {
 
   }
 
-  // lisa(scene)
+  const randomPoseData = [
+    testPose1,
+    testPose2,
+    testPose3,
+    testPose4,
+    testPose5
+  ]
+
+  function randomPeople(scene) {
+    const amountOfPeople = 100
+    for (let i = 0; i < amountOfPeople; i++) {
+      const randomPose = randomPoseData[Math.floor(Math.random() * randomPoseData.length)]
+      const randomOffset = new Vector3(
+        randInRange(-3,3,random()),
+        randInRange(-2,2,random()),
+        0)
+      
+      basicPerson(scene, {pose: randomPose, offset: randomOffset, scale: 0.4, hasOutline: true})
+    }
+  }
 
   function animate() {
     //requestAnimationFrame(animate);
@@ -365,7 +390,8 @@ const main = async () => {
     // testGround()
     // dancePerson1(scene, {offset: new Vector3(-1.5,0,2)})
     // dancePerson2(scene, {offset: new Vector3(1.5,0,2)})
-    basicPerson(scene, {pose: testPose1, offset: new Vector3(0,0,2), scale: 1})
+    // basicPerson(scene, {pose: testPose5, offset: new Vector3(0,0,2), scale: 1, hasOutline: true})
+    randomPeople(scene)
     // lisa(scene)
     // moveShapes(meshArray)
     // doLines(linesArray)

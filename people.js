@@ -133,7 +133,7 @@ function prepareSkeletonInfo(skeleton, options) {
   skeleton.getBoneByName("leftHand").getWorldPosition(leftHandPosition)
   const copyLeftHandPosition = leftHandPosition.clone()
   const leftHandRotation = skeleton.getBoneByName("leftHand").rotation
-  console.log("leftHandRotation", leftHandRotation)
+  // console.log("leftHandRotation", leftHandRotation)
 
   const rightElbowPosition = new THREE.Vector3()
   skeleton.getBoneByName("rightElbow").getWorldPosition(rightElbowPosition)
@@ -453,6 +453,9 @@ function basicPerson(scene, options) {
   const clothColor = options?.clothColor || "#000";
   const pose = options?.pose || tPoseData
   const scale = options?.scale || 1
+  
+  const hasOutline = options?.hasOutline || false
+  const outlineColor = options?.outlineColor || 0xffffff
 
   const skeleton = initSkeleton()
 
@@ -495,21 +498,21 @@ function basicPerson(scene, options) {
 
   const colorValue = clothColor
 
-  basicCloth(scene, upperTorsoShape, {color: colorValue})
-  basicCloth(scene, lowerTorsoShape, {color: colorValue})
-  basicCloth(scene, rightShouldRectangle, {color: colorValue})
-  basicCloth(scene, leftShouldRectangle, {color: colorValue})
-  basicCloth(scene, rightHandReactangle, {color: colorValue})
-  basicCloth(scene, leftHandReactangle, {color: colorValue})
-  basicCloth(scene, rightLegRectangle, {color: colorValue})
-  basicCloth(scene, rightFootReactangle, {color: colorValue})
-  basicCloth(scene, leftLegRectangle, {color: colorValue})
-  basicCloth(scene, leftFootReactangle, {color: colorValue})
+  basicCloth(scene, upperTorsoShape, {color: colorValue, hasOutline, outlineColor})
+  basicCloth(scene, lowerTorsoShape, {color: colorValue, hasOutline, outlineColor})
+  basicCloth(scene, rightShouldRectangle, {color: colorValue, hasOutline, outlineColor})
+  basicCloth(scene, leftShouldRectangle, {color: colorValue, hasOutline, outlineColor})
+  basicCloth(scene, rightHandReactangle, {color: colorValue, hasOutline, outlineColor})
+  basicCloth(scene, leftHandReactangle, {color: colorValue, hasOutline, outlineColor})
+  basicCloth(scene, rightLegRectangle, {color: colorValue, hasOutline, outlineColor})
+  basicCloth(scene, rightFootReactangle, {color: colorValue, hasOutline, outlineColor})
+  basicCloth(scene, leftLegRectangle, {color: colorValue, hasOutline, outlineColor})
+  basicCloth(scene, leftFootReactangle, {color: colorValue, hasOutline, outlineColor})
 
-  drawHand(scene, headPosition, {pivot: new THREE.Vector3(0.1 * scale, 0.1 * scale, 0), color: colorValue, rotation: new THREE.Vector3(0,0,0), handSize: new THREE.Vector3(0.2 * scale, 0.2 * scale, 0.01), offset: new THREE.Vector3(0, 0, -offset.z)});
+  drawHand(scene, headPosition, {pivot: new THREE.Vector3(0.1 * scale, 0.1 * scale, 0), color: colorValue, hasOutline, outlineColor, rotation: new THREE.Vector3(0,0,0), handSize: new THREE.Vector3(0.2 * scale, 0.2 * scale, 0.01), offset: new THREE.Vector3(0, 0, -offset.z)});
 
-  drawHand(scene, copyRightHandPosition, {pivot: new THREE.Vector3(0, 0.2 * scale, 0), color: colorValue, rotation: rightHandRotation, handSize: new THREE.Vector3(0.1 * scale, 0.2 * scale, 0.01), offset: new THREE.Vector3(0, 0, -offset.z)});
-  drawHand(scene, copyLeftHandPosition, {pivot: new THREE.Vector3(0, 0.2 * scale, 0), color: colorValue, rotation: leftHandRotation, handSize: new THREE.Vector3(0.1 * scale, 0.2 * scale, 0.01), offset: new THREE.Vector3(0, 0, -offset.z)});
+  drawHand(scene, copyRightHandPosition, {pivot: new THREE.Vector3(0, 0.1 * scale, 0), color: colorValue, hasOutline, outlineColor, rotation: rightHandRotation, handSize: new THREE.Vector3(0.1 * scale, 0.2 * scale, 0.01), offset: new THREE.Vector3(0, 0, -offset.z)});
+  drawHand(scene, copyLeftHandPosition, {pivot: new THREE.Vector3(0, 0.1 * scale, 0), color: colorValue, hasOutline, outlineColor, rotation: leftHandRotation, handSize: new THREE.Vector3(0.1 * scale, 0.2 * scale, 0.01), offset: new THREE.Vector3(0, 0, -offset.z)});
 }
 
 export { initSkeleton, lisa, dancePerson1, dancePerson2, basicPerson }

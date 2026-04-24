@@ -332,4 +332,106 @@ const testPose1 = [
     { name: 'rightFoot', rot: new THREE.Euler(0, 0, 0) }
 ];
 
-export {applyPose, tPoseData, casualPoseData, sittingPoseData, sittingPhonePoseData, leapPoseData, relaxedSittingPhoneData, relaxedSittingPhoneAnglesData, rotatePose, offsetPose, scalePose, sittingLegsClose, dance1, dance2, testPose1}
+const testPose2 = [
+    { name: "root", rot: new THREE.Euler(0,0,0.5)},
+    
+    { name: 'lowerTorso', rot: new THREE.Euler(0, 0, 0) },
+    { name: 'upperTorso', rot: new THREE.Euler(0, 0, -0.5) },
+    { name: 'head', rot: new THREE.Euler(0, 0, 0) },
+
+    { name: 'leftShoulder', rot: new THREE.Euler(0, 0, -0.9) },
+    { name: 'leftElbow', rot: new THREE.Euler(0, 0, 0.5) },
+    { name: 'leftHand', rot: new THREE.Euler(0, 0, -1) },
+
+    { name: 'rightShoulder', rot: new THREE.Euler(0, 0, 0) },
+    { name: 'rightElbow', rot: new THREE.Euler(0, 0, -1.3) },
+    { name: 'rightHand', rot: new THREE.Euler(0, 0, 1) },
+
+    { name: 'leftLeg', rot: new THREE.Euler(0, 0, 0) },
+    { name: 'leftKnee', rot: new THREE.Euler(0, 0, 0.5) },
+    { name: 'leftFoot', rot: new THREE.Euler(0, 0, 0) },
+
+    { name: 'rightLeg', rot: new THREE.Euler(0, 0, -0.5) },
+    { name: 'rightKnee', rot: new THREE.Euler(0, 0, 1.1) },
+    { name: 'rightFoot', rot: new THREE.Euler(0, 0, 0) }
+];
+
+const testPose3 = [
+    { name: "root", rot: new THREE.Euler(0,0,0.3)},
+    
+    { name: 'lowerTorso', rot: new THREE.Euler(0, 0, 0) },
+    { name: 'upperTorso', rot: new THREE.Euler(0, 0, -0.3) },
+    { name: 'head', rot: new THREE.Euler(0, 0, 0) },
+
+    { name: 'leftShoulder', rot: new THREE.Euler(0, 0, -0.9) },
+    { name: 'leftElbow', rot: new THREE.Euler(0, 0, 2) },
+    { name: 'leftHand', rot: new THREE.Euler(0, 0, 1) },
+
+    { name: 'rightShoulder', rot: new THREE.Euler(0, 0, 0.5) },
+    { name: 'rightElbow', rot: new THREE.Euler(0, 0, 2) },
+    { name: 'rightHand', rot: new THREE.Euler(0, 0, 2) },
+
+    { name: 'leftLeg', rot: new THREE.Euler(0, 0, 0.2) },
+    { name: 'leftKnee', rot: new THREE.Euler(0, 0, -0.2) },
+    { name: 'leftFoot', rot: new THREE.Euler(0, 0, 0) },
+
+    { name: 'rightLeg', rot: new THREE.Euler(0, 0, 0) },
+    { name: 'rightKnee', rot: new THREE.Euler(0, 0, -0.4) },
+    { name: 'rightFoot', rot: new THREE.Euler(0, 0, 0) }
+];
+
+const testPose4 = [
+    { name: "root", rot: new THREE.Euler(0,0,-0.1)},
+    
+    { name: 'lowerTorso', rot: new THREE.Euler(0, 0, 0) },
+    { name: 'upperTorso', rot: new THREE.Euler(0, 0, 0.1) },
+    { name: 'head', rot: new THREE.Euler(0, 0, 0) },
+
+    { name: 'leftShoulder', rot: new THREE.Euler(0, 0, -0.9) },
+    { name: 'leftElbow', rot: new THREE.Euler(0, 0, -1) },
+    { name: 'leftHand', rot: new THREE.Euler(0, 0, 3) },
+
+    { name: 'rightShoulder', rot: new THREE.Euler(0, 0, 1) },
+    { name: 'rightElbow', rot: new THREE.Euler(0, 0, -1.5) },
+    { name: 'rightHand', rot: new THREE.Euler(0, 0, 2) },
+
+    { name: 'leftLeg', rot: new THREE.Euler(0, 0, 0) },
+    { name: 'leftKnee', rot: new THREE.Euler(0, 0, 0.4) },
+    { name: 'leftFoot', rot: new THREE.Euler(0, 0, 0) },
+
+    { name: 'rightLeg', rot: new THREE.Euler(0, 0, -1) },
+    { name: 'rightKnee', rot: new THREE.Euler(0, 0, 1) },
+    { name: 'rightFoot', rot: new THREE.Euler(0, 0, 0) }
+];
+
+const testPose5 = [
+    { name: "root", rot: new THREE.Euler(0,0,0.2)},
+    
+    { name: 'lowerTorso', rot: new THREE.Euler(0, 0, 0) },
+    { name: 'upperTorso', rot: new THREE.Euler(0, 0, -0.2) },
+    { name: 'head', rot: new THREE.Euler(0, 0, 0) },
+
+    { name: 'leftShoulder', rot: new THREE.Euler(0, 0, -1.5) },
+    { name: 'leftElbow', rot: new THREE.Euler(0, 0, -2) },
+    { name: 'leftHand', rot: new THREE.Euler(0, 0, 1) },
+
+    { name: 'rightShoulder', rot: new THREE.Euler(0, 0, 1.5) },
+    { name: 'rightElbow', rot: new THREE.Euler(0, 0, 1.5) },
+    { name: 'rightHand', rot: new THREE.Euler(0, 0, -1) },
+
+    { name: 'leftLeg', rot: new THREE.Euler(0, 0, 0.2) },
+    { name: 'leftKnee', rot: new THREE.Euler(0, 0, -0.4) },
+    { name: 'leftFoot', rot: new THREE.Euler(0, 0, 0) },
+
+    { name: 'rightLeg', rot: new THREE.Euler(0, 0, -0.1) },
+    { name: 'rightKnee', rot: new THREE.Euler(0, 0, 0) },
+    { name: 'rightFoot', rot: new THREE.Euler(0, 0, 0) }
+];
+
+export {applyPose, tPoseData, casualPoseData, sittingPoseData, sittingPhonePoseData, leapPoseData, relaxedSittingPhoneData, relaxedSittingPhoneAnglesData, rotatePose, offsetPose, scalePose, sittingLegsClose, dance1, dance2,
+    testPose1,
+    testPose2,
+    testPose3,
+    testPose4,
+    testPose5
+}
