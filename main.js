@@ -372,7 +372,7 @@ const main = async () => {
   ]
 
   function randomPeople(scene) {
-    const amountOfPeople = 100
+    const amountOfPeople = 1
     for (let i = 0; i < amountOfPeople; i++) {
       const randomPose = randomPoseData[Math.floor(Math.random() * randomPoseData.length)]
       const randomOffset = new Vector3(

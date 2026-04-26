@@ -215,12 +215,16 @@ function drawHand(scene, position, options) {
     const geometryOutline = new THREE.BoxGeometry(handSize.x, handSize.y, handSize.z);
     const materialOutline = new THREE.MeshBasicMaterial({ color: outlineColor, side: THREE.BackSide });
     const meshOutline = new THREE.Mesh(geometryOutline, materialOutline);
-    meshOutline.position.set(position.x, position.y, position.z);
+    let scaleValue = 0.9;
+    let newSize = handSize.clone().multiplyScalar(scaleValue);
+    meshOutline.position.set(position.x - newSize /2, position.y - newSize /2, position.z);
     meshOutline.geometry.translate(pivot.x, pivot.y, pivot.z);
     meshOutline.rotation.set(rotation.x, rotation.y, rotation.z);
-    meshOutline.scale.set(scale + 0.2, scale + 0.2, scale + 0.2);
+    meshOutline.scale.set(scale + scaleValue, scale + scaleValue, scale + scaleValue);
     meshOutline.position.add(offset);
     scene.add(meshOutline);
+    // mesh.add(meshOutline);
+
     // const edges = new THREE.EdgesGeometry( mesh.geometry );
     // const lineMaterial = 
     //   new LineMaterial({
@@ -312,6 +316,7 @@ function basicCloth(scene, pointsArray, options) {
   const outlineColor = options?.outlineColor || 0xffffff
 
   const middlePoint = pointsArray.reduce((a,c) => a.add(c),new Vector3(0,0,0)).divideScalar(pointsArray.length)
+  console.log("middlePoint", middlePoint)
   const coatShape = new THREE.Shape();
   coatShape.moveTo( pointsArray[0].x, pointsArray[0].y );
   pointsArray.forEach(point => {
@@ -338,11 +343,15 @@ function basicCloth(scene, pointsArray, options) {
     const extrudeGeometryOutline = new THREE.ExtrudeGeometry(coatShape, extrudeSettings);
     const extrudeMaterialOutline = new THREE.MeshBasicMaterial({ color: outlineColor, side: THREE.BackSide });
     const extrudeMeshOutline = new THREE.Mesh(extrudeGeometryOutline, extrudeMaterialOutline);
+    let scaleValue = 0.1
     extrudeMeshOutline.position.set(offset.x, offset.y, offset.z);
-    extrudeMeshOutline.geometry.translate(middlePoint.x, middlePoint.y, middlePoint.z);
+    
+    // extrudeMeshOutline.geometry.translate(scaleValue/2, scaleValue/2, 0);
     extrudeMeshOutline.rotation.set(0, 0, 0);
-    extrudeMeshOutline.scale.set(scale + 0.2, scale + 0.2, scale + 0.2);
+    
+    extrudeMeshOutline.scale.set(scale + scaleValue, scale + scaleValue, scale + scaleValue);
     extrudeMesh.add(extrudeMeshOutline);
+    // scene.add(extrudeMeshOutline);
     // const edges = new THREE.EdgesGeometry( extrudeMesh.geometry );
     // const line = new THREE.LineSegments( edges, new THREE.LineBasicMaterial( { color: outlineColor } ) );
     // scene.add(line);
