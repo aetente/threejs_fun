@@ -165,8 +165,9 @@ const main = async () => {
   // const backColor = new THREE.Color("#2d196e");
   // const backColor = new THREE.Color("#120b2c");
   //const backColor = new THREE.Color("rgba(20, 20, 20, 1)");
-  //const backColor = new THREE.Color("#F63049")
-  const backColor = new THREE.Color("#3c5601")
+  // const backColor = new THREE.Color("#F63049")
+  // const backColor = new THREE.Color("#3c5601")
+  const backColor = new THREE.Color("#ccc")
   // const backColor = new THREE.Color(pallete[0]);
   console.log("backColor", backColor)
   scene.background = backColor
@@ -377,16 +378,20 @@ const main = async () => {
     const amountOfPeople = 100
     for (let i = 0; i < amountOfPeople; i++) {
       const randomPaletteIndex = floor(random()*flowersPalette1.length)
+      const randomPaletteIndex2 = floor(random()*flowersPalette1.length)
       const randomPaletteColor = flowersPalette1[randomPaletteIndex]
+      const randomPaletteColor2 = flowersPalette1[randomPaletteIndex2]
       const randomPose = randomPoseData[Math.floor(Math.random() * randomPoseData.length)]
       const randomOffset = new Vector3(
         randInRange(-3,3,random()),
-        randInRange(-2,2,random()),
+        randInRange(-1,0,random()),
         0)
       
       basicPerson(scene, {pose: randomPose, offset: randomOffset, scale: 0.4, hasOutline: true,
         clothColor: randomPaletteColor,
-        outlineColor: "#44ff99"
+        // outlineColor: "#44ff99"
+        outlineColor: "#0000ff"
+        // outlineColor: randomPaletteColor2
       })
     }
   }

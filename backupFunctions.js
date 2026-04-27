@@ -251,6 +251,41 @@ function drawHand(scene, position, options) {
   
 }
 
+function drawHand_1(scene, position, options) {
+  const color = options?.color || 0xffffff
+  const scale = options?.scale || 1
+  const offset = options?.offset || new THREE.Vector3(0,0,0)
+  const rotation = options?.rotation || new THREE.Vector3(0,0,0)
+  const handSize = options?.handSize || new THREE.Vector3(1,1,0.1)
+  const pivot = options?.pivot || new THREE.Vector3(0,0,0)
+  const hasOutline = options?.hasOutline || false
+  const outlineColor = options?.outlineColor || 0xffffff
+
+  const geometry = new THREE.BoxGeometry(handSize.x, handSize.y, handSize.z);
+  const material = new THREE.MeshBasicMaterial({ color });
+  const mesh = new THREE.Mesh(geometry, material);
+  mesh.position.set(position.x, position.y, position.z);
+  mesh.geometry.translate(pivot.x, pivot.y, pivot.z);
+  mesh.rotation.set(rotation.x, rotation.y, rotation.z);
+  mesh.scale.set(scale, scale, scale);
+  mesh.position.add(offset);
+  scene.add(mesh);
+  if (hasOutline) {
+    const geometryOutline = new THREE.BoxGeometry(handSize.x, handSize.y, handSize.z);
+    const materialOutline = new THREE.MeshBasicMaterial({ color: outlineColor, side: THREE.BackSide });
+    const meshOutline = new THREE.Mesh(geometryOutline, materialOutline);
+    let scaleValue = 0.9;
+    let newSize = handSize.clone().multiplyScalar(scaleValue);
+    meshOutline.position.set(position.x, position.y, position.z);
+    meshOutline.geometry.translate(pivot.x , pivot.y, pivot.z);
+    meshOutline.rotation.set(rotation.x, rotation.y, rotation.z);
+    meshOutline.scale.set(scale + scaleValue, scale + scaleValue, scale + scaleValue);
+    meshOutline.position.add(offset);
+    scene.add(meshOutline);
+  }
+  
+}
+
 function drawLine(scene, points, options) {
   const lineWidth = options?.lineWidth || 1;
   const color = options?.color || 0xffffff;
@@ -358,6 +393,52 @@ function basicCloth(scene, pointsArray, options) {
     // const edges = new THREE.EdgesGeometry( extrudeMesh.geometry );
     // const line = new THREE.LineSegments( edges, new THREE.LineBasicMaterial( { color: outlineColor } ) );
     // scene.add(line);
+  }
+
+}
+
+function basicCloth_1(scene, pointsArray, options) {
+  const scale = options?.scale || 1
+  const color = options?.color || 0x000000
+  const offset = options?.offset || new THREE.Vector3(0,0,-0.1)
+  const hasOutline = options?.hasOutline || false
+  const outlineColor = options?.outlineColor || 0xffffff
+
+  const middlePoint = pointsArray.reduce((a,c) => a.add(c),new Vector3(0,0,0)).divideScalar(pointsArray.length)
+  console.log("middlePoint", middlePoint)
+  const coatShape = new THREE.Shape();
+  coatShape.moveTo( pointsArray[0].x, pointsArray[0].y );
+  pointsArray.forEach(point => {
+    coatShape.lineTo( point.x, point.y );
+  })
+  coatShape.lineTo( pointsArray[0].x, pointsArray[0].y );
+  const extrudeSettings = {
+    steps: 1,
+    depth: 0.2,
+    bevelEnabled: false,
+    bevelThickness: 0.5,
+    bevelSize: 2,
+    bevelOffset: -2,
+    bevelSegments: 3
+  };
+  const extrudeGeometry = new THREE.ExtrudeGeometry(coatShape, extrudeSettings);
+  const extrudeMaterial = new THREE.MeshBasicMaterial({ color });
+  const extrudeMesh = new THREE.Mesh(extrudeGeometry, extrudeMaterial);
+  
+  extrudeMesh.scale.set(scale, scale, scale);
+  extrudeMesh.position.set(offset.x, offset.y, offset.z);
+  extrudeMesh.rotation.set(0, 0, 0);
+  
+  scene.add(extrudeMesh);
+  if (hasOutline) {
+    const extrudeGeometryOutline = new THREE.ExtrudeGeometry(coatShape, extrudeSettings);
+    const extrudeMaterialOutline = new THREE.MeshBasicMaterial({ color: outlineColor, side: THREE.BackSide });
+    const extrudeMeshOutline = new THREE.Mesh(extrudeGeometryOutline, extrudeMaterialOutline);
+    let scaleValue = 0.01
+    extrudeMeshOutline.scale.set(scale + scaleValue, scale + scaleValue, scale + scaleValue);
+    extrudeMeshOutline.position.set(offset.x, offset.y, offset.z);
+    extrudeMeshOutline.rotation.set(0, 0, 0);
+    scene.add(extrudeMeshOutline);
   }
 
 }
