@@ -217,8 +217,8 @@ function drawHand(scene, position, options) {
     const meshOutline = new THREE.Mesh(geometryOutline, materialOutline);
     let scaleValue = 0.9;
     let newSize = handSize.clone().multiplyScalar(scaleValue);
-    meshOutline.position.set(position.x - newSize /2, position.y - newSize /2, position.z);
-    meshOutline.geometry.translate(pivot.x, pivot.y, pivot.z);
+    meshOutline.position.set(position.x, position.y, position.z);
+    meshOutline.geometry.translate(pivot.x , pivot.y, pivot.z);
     meshOutline.rotation.set(rotation.x, rotation.y, rotation.z);
     meshOutline.scale.set(scale + scaleValue, scale + scaleValue, scale + scaleValue);
     meshOutline.position.add(offset);
@@ -335,22 +335,25 @@ function basicCloth(scene, pointsArray, options) {
   const extrudeGeometry = new THREE.ExtrudeGeometry(coatShape, extrudeSettings);
   const extrudeMaterial = new THREE.MeshBasicMaterial({ color });
   const extrudeMesh = new THREE.Mesh(extrudeGeometry, extrudeMaterial);
+  
+  extrudeMesh.scale.set(scale, scale, scale);
   extrudeMesh.position.set(offset.x, offset.y, offset.z);
   extrudeMesh.rotation.set(0, 0, 0);
-  extrudeMesh.scale.set(scale, scale, scale);
+  
   scene.add(extrudeMesh);
   if (hasOutline) {
     const extrudeGeometryOutline = new THREE.ExtrudeGeometry(coatShape, extrudeSettings);
     const extrudeMaterialOutline = new THREE.MeshBasicMaterial({ color: outlineColor, side: THREE.BackSide });
     const extrudeMeshOutline = new THREE.Mesh(extrudeGeometryOutline, extrudeMaterialOutline);
-    let scaleValue = 0.1
+    let scaleValue = 0.01
+    extrudeMeshOutline.scale.set(scale + scaleValue, scale + scaleValue, scale + scaleValue);
     extrudeMeshOutline.position.set(offset.x, offset.y, offset.z);
     
     // extrudeMeshOutline.geometry.translate(scaleValue/2, scaleValue/2, 0);
     extrudeMeshOutline.rotation.set(0, 0, 0);
     
-    extrudeMeshOutline.scale.set(scale + scaleValue, scale + scaleValue, scale + scaleValue);
-    extrudeMesh.add(extrudeMeshOutline);
+    
+    scene.add(extrudeMeshOutline);
     // scene.add(extrudeMeshOutline);
     // const edges = new THREE.EdgesGeometry( extrudeMesh.geometry );
     // const line = new THREE.LineSegments( edges, new THREE.LineBasicMaterial( { color: outlineColor } ) );

@@ -25,7 +25,9 @@ import {
   randRatio,
   totalWidth,
   totalHeight,
-  pallete
+  pallete,
+  flowersPalette1,
+  flowersPalette2
 }
 from "./consts.js"
 
@@ -33,7 +35,7 @@ import {pattern1} from "./patterns.js"
 
 import {saveImage} from "./utils.js"
 
-const {sin, cos, PI, random, pow} = Math;
+const {sin, cos, PI, random, pow, floor} = Math;
 
 const main = async () => {
 
@@ -372,15 +374,20 @@ const main = async () => {
   ]
 
   function randomPeople(scene) {
-    const amountOfPeople = 1
+    const amountOfPeople = 100
     for (let i = 0; i < amountOfPeople; i++) {
+      const randomPaletteIndex = floor(random()*flowersPalette1.length)
+      const randomPaletteColor = flowersPalette1[randomPaletteIndex]
       const randomPose = randomPoseData[Math.floor(Math.random() * randomPoseData.length)]
       const randomOffset = new Vector3(
         randInRange(-3,3,random()),
         randInRange(-2,2,random()),
         0)
       
-      basicPerson(scene, {pose: randomPose, offset: randomOffset, scale: 0.4, hasOutline: true})
+      basicPerson(scene, {pose: randomPose, offset: randomOffset, scale: 0.4, hasOutline: true,
+        clothColor: randomPaletteColor,
+        outlineColor: "#44ff99"
+      })
     }
   }
 
