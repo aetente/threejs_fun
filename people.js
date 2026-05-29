@@ -16,6 +16,7 @@ import {
   testPattern1,
   brokenPattern1,
 } from "./backupFunctions.js"
+import { pattern1 } from './patterns.js';
 
 const {sin, cos, PI, random, pow, floor} = Math;
 
@@ -515,4 +516,84 @@ function basicPerson(scene, options) {
   drawHand(scene, copyLeftHandPosition, {pivot: new THREE.Vector3(0, 0.1 * scale, 0), color: colorValue, hasOutline, outlineColor, rotation: leftHandRotation, handSize: new THREE.Vector3(0.1 * scale, 0.2 * scale, 0.01), offset: new THREE.Vector3(0, 0, -offset.z)});
 }
 
-export { initSkeleton, lisa, dancePerson1, dancePerson2, basicPerson }
+function pattern1Person(scene, options) {
+
+  const offset = options?.offset || new THREE.Vector3(0,0,0);
+  const clothColor = options?.clothColor || "#000";
+  const pose = options?.pose || tPoseData
+  const scale = options?.scale || 1
+  
+  const hasOutline = options?.hasOutline || false
+  const outlineColor = options?.outlineColor || 0xffffff
+
+  const skeleton = initSkeleton()
+
+  // first set t pose to be able to apply any other pose
+  applyPose(tPoseData, skeleton)
+  // rotatePose(relaxedSittingPhoneAnglesData, new THREE.Euler(0,0,0))
+  applyPose(pose, skeleton)
+  // skeleton.bones[0].rotation.y = PI / 3 + PI;
+  scalePose(skeleton, scale)
+  offsetPose(skeleton, offset)
+
+  const {
+    headPosition,
+    copyLeftHandPosition,
+    leftHandRotation,
+    copyRightHandPosition,
+    rightHandRotation,
+    leftShoulderPosition,
+    rightShoulderPosition,
+    upperTorsoPosition,
+    leftLegPosition,
+    rightLegPosition,
+    rootPosition,
+    rightShouldRectangle,
+    rightHandReactangle,
+    leftShouldRectangle,
+    leftHandReactangle,
+    rightLegRectangle,
+    rightFootReactangle,
+    leftLegRectangle,
+    leftFootReactangle
+  } = prepareSkeletonInfo(skeleton, {scale});
+
+  const torsoWidth = 0.3 * scale;
+  const leftUpperTorsoPosition = new THREE.Vector3(upperTorsoPosition.x + torsoWidth / 2, upperTorsoPosition.y, upperTorsoPosition.z);
+  const rightUpperTorsoPosition = new THREE.Vector3(upperTorsoPosition.x - torsoWidth / 2, upperTorsoPosition.y, upperTorsoPosition.z);
+  
+  const upperTorsoShape = [rootPosition, leftShoulderPosition, leftUpperTorsoPosition, rightUpperTorsoPosition, rightShoulderPosition]
+  const lowerTorsoShape = [leftUpperTorsoPosition, leftLegPosition, rightLegPosition, rightUpperTorsoPosition]
+
+  const colorValue = clothColor
+
+  basicCloth(scene, upperTorsoShape, {color: colorValue, hasOutline, outlineColor})
+  basicCloth(scene, lowerTorsoShape, {color: colorValue, hasOutline, outlineColor})
+  basicCloth(scene, rightShouldRectangle, {color: colorValue, hasOutline, outlineColor})
+  basicCloth(scene, leftShouldRectangle, {color: colorValue, hasOutline, outlineColor})
+  basicCloth(scene, rightHandReactangle, {color: colorValue, hasOutline, outlineColor})
+  basicCloth(scene, leftHandReactangle, {color: colorValue, hasOutline, outlineColor})
+  basicCloth(scene, rightLegRectangle, {color: colorValue, hasOutline, outlineColor})
+  basicCloth(scene, rightFootReactangle, {color: colorValue, hasOutline, outlineColor})
+  basicCloth(scene, leftLegRectangle, {color: colorValue, hasOutline, outlineColor})
+  basicCloth(scene, leftFootReactangle, {color: colorValue, hasOutline, outlineColor})
+
+  drawHand(scene, headPosition, {pivot: new THREE.Vector3(0.1 * scale, 0.1 * scale, 0), color: colorValue, hasOutline, outlineColor, rotation: new THREE.Vector3(0,0,0), handSize: new THREE.Vector3(0.2 * scale, 0.2 * scale, 0.01), offset: new THREE.Vector3(0, 0, -offset.z)});
+
+  drawHand(scene, copyRightHandPosition, {pivot: new THREE.Vector3(0, 0.1 * scale, 0), color: colorValue, hasOutline, outlineColor, rotation: rightHandRotation, handSize: new THREE.Vector3(0.1 * scale, 0.2 * scale, 0.01), offset: new THREE.Vector3(0, 0, -offset.z)});
+  drawHand(scene, copyLeftHandPosition, {pivot: new THREE.Vector3(0, 0.1 * scale, 0), color: colorValue, hasOutline, outlineColor, rotation: leftHandRotation, handSize: new THREE.Vector3(0.1 * scale, 0.2 * scale, 0.01), offset: new THREE.Vector3(0, 0, -offset.z)});
+
+  const boringOptions = { limit: 10, maxLines: 100, scale: 1, lineWidth: 1 * scale, dotScale: 0.5 * scale, dotColor: colorValue, lineColor: colorValue}
+  pattern1(scene, upperTorsoShape, boringOptions)
+  pattern1(scene, lowerTorsoShape, boringOptions)
+  pattern1(scene, rightShouldRectangle, boringOptions)
+  pattern1(scene, leftShouldRectangle, boringOptions)
+  pattern1(scene, rightHandReactangle, boringOptions)
+  pattern1(scene, leftHandReactangle, boringOptions)
+  pattern1(scene, rightLegRectangle, boringOptions)
+  pattern1(scene, rightFootReactangle, boringOptions)
+  pattern1(scene, leftLegRectangle, boringOptions)
+  pattern1(scene, leftFootReactangle, boringOptions)
+}
+
+export { initSkeleton, lisa, dancePerson1, dancePerson2, basicPerson, pattern1Person }

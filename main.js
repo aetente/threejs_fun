@@ -3,7 +3,7 @@ import * as THREE from 'three';
 import { Vector2, Vector3 } from 'three';
 import { randInRange, pSin, pCos, distance3D, loadTextureF } from "./utils.js"
 import { heartShape, birdShape } from "./shapes.js"
-import { lisa, dancePerson1, dancePerson2, basicPerson } from './people.js';
+import { lisa, dancePerson1, dancePerson2, basicPerson, pattern1Person } from './people.js';
 //import wall from './assets/textures/wall.jpg';
 import {
   testPose1,
@@ -403,7 +403,14 @@ const main = async () => {
     // dancePerson1(scene, {offset: new Vector3(-1.5,0,2)})
     // dancePerson2(scene, {offset: new Vector3(1.5,0,2)})
     // basicPerson(scene, {pose: testPose5, offset: new Vector3(0,0,2), scale: 1, hasOutline: true})
-    randomPeople(scene)
+    // randomPeople(scene)
+    pattern1Person(scene, {pose: testPose2, scale: 1, hasOutline: false,
+        clothColor: "#000000",
+        
+        // outlineColor: "#44ff99"
+        outlineColor: "#0000ff"
+        // outlineColor: randomPaletteColor2
+      })
     // lisa(scene)
     // moveShapes(meshArray)
     // doLines(linesArray)
