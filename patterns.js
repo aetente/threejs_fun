@@ -176,7 +176,7 @@ function pattern1(scene, pointsArray, options) {
       
       // if (j == 0) scaleSize = 0.5
 
-      const allowedAngleDiff = PI/4
+      const allowedAngleDiff = PI/9
       let angleDiff = angleVal - previousAngle
       if (abs(angleDiff) > allowedAngleDiff) {
         angleVal = previousAngle + sign(angleDiff) * allowedAngleDiff
@@ -201,7 +201,7 @@ function pattern1(scene, pointsArray, options) {
         for (let ri = 0; ri < amountOfFlowers; ri++) {
           const flowerSize = (randInRange(0.01, 0.04, amountOfFlowers/32)) * dotScale
           //(0.04 * random() + 0.02)/amountOfFlowers
-          const circle = new THREE.CircleGeometry(flowerSize, 32);
+          const circle = new THREE.CircleGeometry(flowerSize, 4);
           const flowerColor = dotColor || flowersPalette2[floor(seededRandom(dotSeed)*flowersPalette2.length)]
           const material = new THREE.MeshBasicMaterial({ color: flowerColor });
           const shape = new THREE.Mesh(circle, material);

@@ -320,11 +320,11 @@ const main = async () => {
   }
   
   let at = 0
-  let dt = 1
+  let dt = 0.1
   
   const testGround = async () => {
     
-    const avoidPoints = generateAvoidPoints()
+    // const avoidPoints = generateAvoidPoints()
     const scaleRect = new Vector2(1,1)
     const testPoints = [
       new Vector3(0,0,0),
@@ -333,9 +333,12 @@ const main = async () => {
       new Vector3(scaleRect.x,0,0)
     ]
     const middlePoint = testPoints.reduce((a,c) => a.add(c),new Vector3(0,0,0))
-    //testPoints.forEach(p => )
+    testPoints.forEach(p => {
+      p.x -= scaleRect.x/2;
+      p.y -= scaleRect.y/2;
+    })
     const testPointsOffset =
-      new Vector3(0,0,0)
+      new Vector3(-2.5,-2.5,0)
     // drawCircle(testPointsOffset, 0xff0000, 0.1)
     testPoints.forEach(p => {
       p.x += testPointsOffset.x;
@@ -343,8 +346,8 @@ const main = async () => {
       p.z += testPointsOffset.z
     })
     //await doText()
-    const rx = 1*sin(at)
-    const ry = 1*cos(at)
+    const rx = 0*sin(at)
+    const ry = 0*cos(at)
     const refPoint = new Vector3(0 + rx,0 + ry,0)
     const theAngle = 
       refPoint.angleTo(testPointsOffset) + at
@@ -353,6 +356,7 @@ const main = async () => {
     // drawCircle(refPoint, 0x00ff00, 0.1)
     pattern1(scene, testPoints, {
       scale:7,
+      dotScale: 2,
       t: at,
       maxLines: 20,
       limit: 20,
