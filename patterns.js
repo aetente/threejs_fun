@@ -4,7 +4,7 @@ import { LineMaterial } from 'three/addons/lines/LineMaterial.js';
 import { Line2 } from 'three/addons/lines/Line2.js';
 import { LineGeometry } from 'three/addons/lines/LineGeometry.js';
 
-import { Vector3 } from 'three';
+import { Vector3, MathUtils } from 'three';
 import {
   isPointInPolygon,
   psin,
@@ -37,12 +37,16 @@ import {
 }
 from "./consts.js"
 
-const { sin, cos, PI, random, pow, floor, abs, sqrt, max, min, sign } = Math;
+const { sin, cos, PI, random, pow, floor, abs, sqrt, max, min, sign, round } = Math;
+const {seededRandom} = MathUtils
 const p2 = PI*2
 
 function norm(x, base, spread) {
   return base^(-(x*x)/spread)
 }
+
+const randomSeed = 56764448754;
+const randomSeed2 = 5674433568754;
 
 function pattern1(scene, pointsArray, options) {
   let limit = options?.limit || 170;
@@ -68,7 +72,8 @@ function pattern1(scene, pointsArray, options) {
   const lineColor = options?.lineColor || null
   const dotColor = options?.dotColor || null
 
-  const dotScale = options?.dotScale || 1
+  const dotScale = (options?.dotScale || 1)
+  const t = options?.t || 0
   
   
   
@@ -81,7 +86,7 @@ function pattern1(scene, pointsArray, options) {
     const initPos = previousPos.clone()
     const idByPos = previousPos.x + previousPos.y + previousPos.z
     previousAngle = initAngle
-    const randomDir = random() > 0.5 ? 1 : -1
+    const randomDir = seededRandom(randomSeed) > 0.5 ? 1 : -1
     for (let j = 0; j < maxLines; j++) {
       // scaleSize = (psin(sin(i*2)/10) * 0.1 + 0.05) * scale
       const previousPosV2 = new THREE.Vector2(previousPos.x, previousPos.y)
@@ -154,7 +159,7 @@ function pattern1(scene, pointsArray, options) {
           const fromDistance = ap.weight || 1
           let avoidFactor = max(0, fromDistance - distToAvoidPoint)/fromDistance
           if (avoidFactor > 0 && !insidePoints[ip]) {
-            insidePoints[ip] = random() > 0.5 ? -1 : 1;
+            insidePoints[ip] = seededRandom(randomSeed) > 0.5 ? -1 : 1;
           } else if (avoidFactor <= 0) {
             insidePoints[ip] = 0
           }
@@ -190,17 +195,18 @@ function pattern1(scene, pointsArray, options) {
       const previousPosWithOffset = previousPos.clone().add(offset);
       const nextPosWithOffset = nextPos.clone().add(offset);
       drawLine(scene, [previousPosWithOffset, nextPosWithOffset], { lineWidth: lineWidth, color: i === 0 ? 0xffffff : color });
-      const amountOfFlowers = floor(random()*32)
-      if (random() > 0.99 && amountOfFlowers > 0) {
+      const dotSeed = round(indexId * 1000) + randomSeed
+      const amountOfFlowers = floor(seededRandom(dotSeed)*32)
+      if (seededRandom(dotSeed) > 0.99 && amountOfFlowers > 0) {
         for (let ri = 0; ri < amountOfFlowers; ri++) {
           const flowerSize = (randInRange(0.01, 0.04, amountOfFlowers/32)) * dotScale
           //(0.04 * random() + 0.02)/amountOfFlowers
           const circle = new THREE.CircleGeometry(flowerSize, 32);
-          const flowerColor = dotColor || flowersPalette2[floor(random()*flowersPalette2.length)]
+          const flowerColor = dotColor || flowersPalette2[floor(seededRandom(dotSeed)*flowersPalette2.length)]
           const material = new THREE.MeshBasicMaterial({ color: flowerColor });
           const shape = new THREE.Mesh(circle, material);
-        const newX = random()* 0.4+ nextPos.x  
-        const newY = random()* 0.4+ nextPos.y  
+        const newX = seededRandom(randomSeed)* 0.4+ nextPos.x  
+        const newY = seededRandom(randomSeed2)* 0.4+ nextPos.y  
         shape.position.set(newX, newY, nextPos.z + 0.2);
           scene.add(shape);
         }

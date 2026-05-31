@@ -319,9 +319,13 @@ const main = async () => {
     scene.add(circleMesh);
   }
   
+  let at = 0
+  let dt = 1
+  
   const testGround = async () => {
+    
     const avoidPoints = generateAvoidPoints()
-    const scaleRect = new Vector2(1,16)
+    const scaleRect = new Vector2(1,1)
     const testPoints = [
       new Vector3(0,0,0),
       new Vector3(0,scaleRect.y,0),
@@ -331,7 +335,7 @@ const main = async () => {
     const middlePoint = testPoints.reduce((a,c) => a.add(c),new Vector3(0,0,0))
     //testPoints.forEach(p => )
     const testPointsOffset =
-      new Vector3(-5,-10,0)
+      new Vector3(0,0,0)
     // drawCircle(testPointsOffset, 0xff0000, 0.1)
     testPoints.forEach(p => {
       p.x += testPointsOffset.x;
@@ -339,16 +343,24 @@ const main = async () => {
       p.z += testPointsOffset.z
     })
     //await doText()
-    const refPoint = new Vector3(6,0,0)
+    const rx = 1*sin(at)
+    const ry = 1*cos(at)
+    const refPoint = new Vector3(0 + rx,0 + ry,0)
     const theAngle = 
-      refPoint.angleTo(testPointsOffset)
+      refPoint.angleTo(testPointsOffset) + at
       //-PI/2
       //2.0671854475079234
     // drawCircle(refPoint, 0x00ff00, 0.1)
     pattern1(scene, testPoints, {
+      scale:7,
+      t: at,
+      maxLines: 20,
+      limit: 20,
       initAngle: theAngle,
+      lineColor: "#000",
+      dotColor: "#000",
       //refPoint: middlePoint, 
-      refPoint: refPoint,
+      //refPoint: refPoint,
       desiredAngle: theAngle,
       // avoidPoints: avoidPoints,
       /*[
@@ -363,7 +375,7 @@ const main = async () => {
       ],*/
       angleToRef: true
     })
-
+    at+=dt
   }
 
   const randomPoseData = [
@@ -396,21 +408,47 @@ const main = async () => {
     }
   }
 
-  function animate() {
-    //requestAnimationFrame(animate);
+// Source - https://stackoverflow.com/a/48768960
+// Posted by 欧阳维杰, modified by community. See post 'Timeline' for change history
+// Retrieved 2026-05-31, License - CC BY-SA 4.0
 
-    // testGround()
+function clearThree(obj){
+  while(obj.children.length > 0){ 
+    clearThree(obj.children[0]);
+    obj.remove(obj.children[0]);
+  }
+  if(obj.geometry) obj.geometry.dispose();
+
+  if(obj.material){ 
+    //in case of map, bumpMap, normalMap, envMap ...
+    Object.keys(obj.material).forEach(prop => {
+      if(!obj.material[prop])
+        return;
+      if(obj.material[prop] !== null && typeof obj.material[prop].dispose === 'function')                                  
+        obj.material[prop].dispose();                                                      
+    })
+    obj.material.dispose();
+  }
+}   
+
+
+
+
+  function animate() {
+    requestAnimationFrame(animate);
+    // Source - https://stackoverflow.com/a/48722282
+    // Posted by Jonathan Gray
+    // Retrieved 2026-05-31, License - CC BY-SA 3.0
+
+    //scene.remove.apply(scene, scene.children);
+    clearThree(scene);
+    //while(scene.children.length > 0) {scene.remove(scene.children[0])}
+    testGround()
     // dancePerson1(scene, {offset: new Vector3(-1.5,0,2)})
     // dancePerson2(scene, {offset: new Vector3(1.5,0,2)})
     // basicPerson(scene, {pose: testPose5, offset: new Vector3(0,0,2), scale: 1, hasOutline: true})
     // randomPeople(scene)
-    pattern1Person(scene, {pose: testPose2, scale: 1, hasOutline: false,
-        clothColor: "#000000",
-        
-        // outlineColor: "#44ff99"
-        outlineColor: "#0000ff"
-        // outlineColor: randomPaletteColor2
-      })
+    //pattern1Person(scene, {pose: testPose2, scale: 1, hasOutline: false, clothColor: "#000000", outlineColor: "#0000ff"})
     // lisa(scene)
     // moveShapes(meshArray)
     // doLines(linesArray)
@@ -421,6 +459,7 @@ const main = async () => {
   }
 
   animate();
+  //setInterval(animate,1000 /60)
   //saveImage(renderer)
   // renderer.render( scene, camera );
 }

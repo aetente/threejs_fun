@@ -3,6 +3,8 @@ import { LineMaterial } from 'three/addons/lines/LineMaterial.js';
 import { Line2 } from 'three/addons/lines/Line2.js';
 import { LineGeometry } from 'three/addons/lines/LineGeometry.js';
 
+import {MathUtils} from 'three'
+
 import {
   dbs,
   zs,
@@ -22,6 +24,9 @@ import {
 from "./consts.js"
 
 const {sin, cos, PI, random, pow} = Math;
+const {seededRandom} = MathUtils;
+
+const randomSeed = 475858386;
 
 const randInRange = (xmin, xmax, randVal) => (
     (xmax - xmin) * randVal + xmin
@@ -197,7 +202,7 @@ function getAngle2DRadians(v1, v2) {
 }
 
 function getRandomPointBetweenPoints(pointArray) {
-  const weights = pointArray.map(() => random());
+  const weights = pointArray.map(() => seededRandom(randomSeed));
   const totalWeight = weights.reduce((sum, w) => sum + w, 0);
 
   const result = new THREE.Vector3(0, 0, 0);
