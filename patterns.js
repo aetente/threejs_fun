@@ -81,12 +81,12 @@ function pattern1(scene, pointsArray, options) {
     
     const insidePoints = []
     const iScale = i/limit
-    let nextPos = getRandomPointBetweenPoints(pointsArray);
-    let previousPos = getRandomPointBetweenPoints(pointsArray);
+    let nextPos = getRandomPointBetweenPoints(pointsArray, i*100000);
+    let previousPos = getRandomPointBetweenPoints(pointsArray, i*22222);
     const initPos = previousPos.clone()
     const idByPos = previousPos.x + previousPos.y + previousPos.z
     previousAngle = initAngle
-    const randomDir = seededRandom(randomSeed) > 0.5 ? 1 : -1
+    const randomDir = seededRandom(randomSeed+i*1009988) > 0.5 ? 1 : -1
     for (let j = 0; j < maxLines; j++) {
       // scaleSize = (psin(sin(i*2)/10) * 0.1 + 0.05) * scale
       const previousPosV2 = new THREE.Vector2(previousPos.x, previousPos.y)
@@ -175,8 +175,12 @@ function pattern1(scene, pointsArray, options) {
       scaleSize = psin(angleVal / PI / 3) * 0.1 * scale /1.4;
       
       // if (j == 0) scaleSize = 0.5
+      const maxAllowedAngleDiff = PI/3
+      const minAllowedAngleDiff = PI/9
+      
+      const allowedAngleDiff = pow(10,-scaleSize) * (maxAllowedAngleDiff - minAllowedAngleDiff) + minAllowedAngleDiff
 
-      const allowedAngleDiff = PI/9
+      //const allowedAngleDiff = PI/9
       let angleDiff = angleVal - previousAngle
       if (abs(angleDiff) > allowedAngleDiff) {
         angleVal = previousAngle + sign(angleDiff) * allowedAngleDiff

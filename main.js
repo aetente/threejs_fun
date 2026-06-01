@@ -325,7 +325,7 @@ const main = async () => {
   const testGround = async () => {
     
     // const avoidPoints = generateAvoidPoints()
-    const scaleRect = new Vector2(1,1)
+    const scaleRect = new Vector2(4,4)
     const testPoints = [
       new Vector3(0,0,0),
       new Vector3(0,scaleRect.y,0),
@@ -338,7 +338,7 @@ const main = async () => {
       p.y -= scaleRect.y/2;
     })
     const testPointsOffset =
-      new Vector3(-2.5,-2.5,0)
+      new Vector3(0,0,0)
     // drawCircle(testPointsOffset, 0xff0000, 0.1)
     testPoints.forEach(p => {
       p.x += testPointsOffset.x;
@@ -346,8 +346,8 @@ const main = async () => {
       p.z += testPointsOffset.z
     })
     //await doText()
-    const rx = 0*sin(at)
-    const ry = 0*cos(at)
+    const rx = 4*sin(1.1235*at)
+    const ry = 4*cos(at)
     const refPoint = new Vector3(0 + rx,0 + ry,0)
     const theAngle = 
       refPoint.angleTo(testPointsOffset) + at
@@ -358,14 +358,14 @@ const main = async () => {
       scale:7,
       dotScale: 2,
       t: at,
-      maxLines: 20,
-      limit: 20,
+      maxLines: 40,
+      limit: 10,
       initAngle: theAngle,
       lineColor: "#000",
       dotColor: "#000",
       //refPoint: middlePoint, 
-      //refPoint: refPoint,
-      desiredAngle: theAngle,
+      refPoint: refPoint,
+      //desiredAngle: theAngle,
       // avoidPoints: avoidPoints,
       /*[
         {

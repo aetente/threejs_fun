@@ -201,8 +201,8 @@ function getAngle2DRadians(v1, v2) {
   return angle;
 }
 
-function getRandomPointBetweenPoints(pointArray) {
-  const weights = pointArray.map(() => seededRandom(randomSeed));
+function getRandomPointBetweenPoints(pointArray, rs) {
+  const weights = pointArray.map((a,i) => seededRandom((rs || randomSeed)*(i+1)));
   const totalWeight = weights.reduce((sum, w) => sum + w, 0);
 
   const result = new THREE.Vector3(0, 0, 0);
