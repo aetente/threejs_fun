@@ -72,6 +72,9 @@ function pattern1(scene, pointsArray, options) {
   const lineColor = options?.lineColor || null
   const dotColor = options?.dotColor || null
 
+  const lineOpacity = options?.lineOpacity || 1
+  const dotOpacity = options?.dotOpacity || 1
+
   const dotScale = (options?.dotScale || 1)
   const t = options?.t || 0
   
@@ -198,16 +201,16 @@ function pattern1(scene, pointsArray, options) {
       const color = lineColor || testPalette2[Math.floor(sunsetPalleteIndex)];
       const previousPosWithOffset = previousPos.clone().add(offset);
       const nextPosWithOffset = nextPos.clone().add(offset);
-      drawLine(scene, [previousPosWithOffset, nextPosWithOffset], { lineWidth: lineWidth, color: i === 0 ? color : color });
+      drawLine(scene, [previousPosWithOffset, nextPosWithOffset], { lineWidth: lineWidth, color: i === 0 ? color : color, opacity: lineOpacity });
       const dotSeed = round(indexId * 1000) + randomSeed
       const amountOfFlowers = floor(seededRandom(dotSeed)*32)
-      if (seededRandom(dotSeed) > 0.99 && amountOfFlowers > 0) {
+      if (seededRandom(dotSeed) > 0.59 && amountOfFlowers > 0) {
         for (let ri = 0; ri < amountOfFlowers; ri++) {
           const flowerSize = (randInRange(0.01, 0.04, amountOfFlowers/32)) * dotScale
           //(0.04 * random() + 0.02)/amountOfFlowers
           const circle = new THREE.CircleGeometry(flowerSize, 4);
           const flowerColor = dotColor || flowersPalette2[floor(seededRandom(dotSeed)*flowersPalette2.length)]
-          const material = new THREE.MeshBasicMaterial({ color: flowerColor });
+          const material = new THREE.MeshBasicMaterial({ color: flowerColor, transparent: true, opacity: dotOpacity });
           const shape = new THREE.Mesh(circle, material);
         const newX = seededRandom(randomSeed)* 0.4+ nextPos.x  
         const newY = seededRandom(randomSeed2)* 0.4+ nextPos.y  

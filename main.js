@@ -436,9 +436,21 @@ function clearThree(obj){
 }   
 
 
+  function saveFrame(dataURL, filename) {
+    const link = document.createElement('a');
+    link.download = filename;
+    link.href = dataURL;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
 
-
+  let currentFrame = 0;
+  const format = 'image/png';
+  const saveFrames = false
+  const framesToSave = 60 * 15; // 60 frames generate 2 seconds, so times 15 it will be 30 seconds
   function animate() {
+    if (saveFrames && currentFrame >= framesToSave) return;
     requestAnimationFrame(animate);
     // Source - https://stackoverflow.com/a/48722282
     // Posted by Jonathan Gray
@@ -452,14 +464,18 @@ function clearThree(obj){
     // dancePerson2(scene, {offset: new Vector3(1.5,0,2)})
     // basicPerson(scene, {pose: testPose5, offset: new Vector3(0,0,2), scale: 1, hasOutline: true})
     // randomPeople(scene)
-    pattern1Person(scene, {pose: testPose5, scale: 1, hasOutline: false, clothColor: "#000000", outlineColor: "#0000ff", t: at})
+    pattern1Person(scene, {pose: testPose3, scale: 1, hasOutline: false, clothColor: "#000000", outlineColor: "#0000ff", t: at})
     // lisa(scene)
     // moveShapes(meshArray)
     // doLines(linesArray)
     // skeleton.bones[0].rotation.y += -Math.PI / 100;
     at+=dt
     renderer.render(scene, camera);
-    
+    if (saveFrames) {
+      const dataURL = renderer.domElement.toDataURL(format);
+      saveFrame(dataURL, `frame_${String(currentFrame).padStart(4, '0')}.png`);
+    }
+    currentFrame++;
   }
 
   animate();

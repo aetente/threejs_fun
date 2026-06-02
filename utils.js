@@ -254,6 +254,7 @@ function drawLine(scene, points, options) {
   const color = options?.color || 0xffffff;
   const dashSize = options?.dashSize || 0;
   const gapSize = options?.gapSize || 0;
+  const opacity = options?.opacity || 1;
 
   const flatPath = points.flatMap(v => [v.x, v.y, v.z]);
   // console.log("flatPath", flatPath)
@@ -268,6 +269,8 @@ function drawLine(scene, points, options) {
     dashed: dashSize > 0 && gapSize > 0,
     dashSize,
     gapSize,
+    transparent: true,
+    opacity
   });
   material.resolution.set(totalWidth, totalHeight);
   material.needsUpdate = true;

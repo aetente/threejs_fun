@@ -586,7 +586,17 @@ function pattern1Person(scene, options) {
   drawHand(scene, copyLeftHandPosition, {pivot: new THREE.Vector3(0, 0.1 * scale, 0), color: "#222", hasOutline, outlineColor, rotation: leftHandRotation, handSize: new THREE.Vector3(0.1 * scale, 0.2 * scale, 0.01), offset: new THREE.Vector3(0, 0, -offset.z)});
   
   
-  const bodyParts = [upperTorsoShape, lowerTorsoShape, rightShouldRectangle, leftShouldRectangle, rightHandReactangle, leftHandReactangle, rightLegRectangle, rightFootReactangle,  leftLegRectangle, leftFootReactangle
+  const bodyParts = [
+    upperTorsoShape,
+    // lowerTorsoShape,
+    // rightShouldRectangle,
+    // leftShouldRectangle,
+    // rightHandReactangle,
+    leftHandReactangle,
+    // rightLegRectangle,
+    rightFootReactangle,
+    // leftLegRectangle,
+    leftFootReactangle
   ]
   bodyParts.forEach((bp, i) => {
     const rx = 4*sin(1.1235*t)
@@ -597,7 +607,7 @@ function pattern1Person(scene, options) {
     const refPoint = headPosition.clone().add(moveRef)
   //console.log(refPoint)
 
-    const boringOptions = { limit: 1, maxLines: 50, scale: 10, lineWidth: 1 * scale, dotScale: 0.5 * scale, dotColor: colorValue, lineColor: colorValue,
+    const boringOptions = { limit: 5, maxLines: 40, scale: 10, lineWidth: 1 * scale, dotScale: 0.5 * scale, dotColor: colorValue, lineColor: colorValue, lineOpacity: 0.5, dotOpacity: 0.5,
       desiredAngle: (t *10 + i)
     //, refPoint: refPoint
     }
