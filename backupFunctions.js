@@ -351,7 +351,7 @@ function basicCloth(scene, pointsArray, options) {
   const outlineColor = options?.outlineColor || 0xffffff
 
   const middlePoint = pointsArray.reduce((a,c) => a.add(c),new Vector3(0,0,0)).divideScalar(pointsArray.length)
-  console.log("middlePoint", middlePoint)
+  //console.log("middlePoint", middlePoint)
   const coatShape = new THREE.Shape();
   coatShape.moveTo( pointsArray[0].x, pointsArray[0].y );
   pointsArray.forEach(point => {
@@ -405,7 +405,7 @@ function basicCloth_1(scene, pointsArray, options) {
   const outlineColor = options?.outlineColor || 0xffffff
 
   const middlePoint = pointsArray.reduce((a,c) => a.add(c),new Vector3(0,0,0)).divideScalar(pointsArray.length)
-  console.log("middlePoint", middlePoint)
+  //console.log("middlePoint", middlePoint)
   const coatShape = new THREE.Shape();
   coatShape.moveTo( pointsArray[0].x, pointsArray[0].y );
   pointsArray.forEach(point => {

@@ -526,6 +526,8 @@ function pattern1Person(scene, options) {
   const hasOutline = options?.hasOutline || false
   const outlineColor = options?.outlineColor || 0xffffff
 
+  const t = options?.t || 0
+
   const skeleton = initSkeleton()
 
   // first set t pose to be able to apply any other pose
@@ -569,10 +571,10 @@ function pattern1Person(scene, options) {
 
   basicCloth(scene, upperTorsoShape, {color: colorValue, hasOutline, outlineColor})
   basicCloth(scene, lowerTorsoShape, {color: colorValue, hasOutline, outlineColor})
-  basicCloth(scene, rightShouldRectangle, {color: colorValue, hasOutline, outlineColor})
-  basicCloth(scene, leftShouldRectangle, {color: colorValue, hasOutline, outlineColor})
-  basicCloth(scene, rightHandReactangle, {color: colorValue, hasOutline, outlineColor})
-  basicCloth(scene, leftHandReactangle, {color: colorValue, hasOutline, outlineColor})
+  basicCloth(scene, rightShouldRectangle, {color: "#222", hasOutline, outlineColor})
+  basicCloth(scene, leftShouldRectangle, {color: "#333", hasOutline, outlineColor})
+  basicCloth(scene, rightHandReactangle, {color: "#444", hasOutline, outlineColor})
+  basicCloth(scene, leftHandReactangle, {color: "#555", hasOutline, outlineColor})
   basicCloth(scene, rightLegRectangle, {color: colorValue, hasOutline, outlineColor})
   basicCloth(scene, rightFootReactangle, {color: colorValue, hasOutline, outlineColor})
   basicCloth(scene, leftLegRectangle, {color: colorValue, hasOutline, outlineColor})
@@ -580,20 +582,28 @@ function pattern1Person(scene, options) {
 
   drawHand(scene, headPosition, {pivot: new THREE.Vector3(0.1 * scale, 0.1 * scale, 0), color: colorValue, hasOutline, outlineColor, rotation: new THREE.Vector3(0,0,0), handSize: new THREE.Vector3(0.2 * scale, 0.2 * scale, 0.01), offset: new THREE.Vector3(0, 0, -offset.z)});
 
-  drawHand(scene, copyRightHandPosition, {pivot: new THREE.Vector3(0, 0.1 * scale, 0), color: colorValue, hasOutline, outlineColor, rotation: rightHandRotation, handSize: new THREE.Vector3(0.1 * scale, 0.2 * scale, 0.01), offset: new THREE.Vector3(0, 0, -offset.z)});
-  drawHand(scene, copyLeftHandPosition, {pivot: new THREE.Vector3(0, 0.1 * scale, 0), color: colorValue, hasOutline, outlineColor, rotation: leftHandRotation, handSize: new THREE.Vector3(0.1 * scale, 0.2 * scale, 0.01), offset: new THREE.Vector3(0, 0, -offset.z)});
+  drawHand(scene, copyRightHandPosition, {pivot: new THREE.Vector3(0, 0.1 * scale, 0), color: "#222", hasOutline, outlineColor, rotation: rightHandRotation, handSize: new THREE.Vector3(0.1 * scale, 0.2 * scale, 0.01), offset: new THREE.Vector3(0, 0, -offset.z)});
+  drawHand(scene, copyLeftHandPosition, {pivot: new THREE.Vector3(0, 0.1 * scale, 0), color: "#222", hasOutline, outlineColor, rotation: leftHandRotation, handSize: new THREE.Vector3(0.1 * scale, 0.2 * scale, 0.01), offset: new THREE.Vector3(0, 0, -offset.z)});
+  
+  
+  const bodyParts = [upperTorsoShape, lowerTorsoShape, rightShouldRectangle, leftShouldRectangle, rightHandReactangle, leftHandReactangle, rightLegRectangle, rightFootReactangle,  leftLegRectangle, leftFootReactangle
+  ]
+  bodyParts.forEach((bp, i) => {
+    const rx = 4*sin(1.1235*t)
+    const ry = 4*cos(t)
+  
+    const moveRef = new Vector3(rx, ry, 0)
+  
+    const refPoint = headPosition.clone().add(moveRef)
+  //console.log(refPoint)
 
-  const boringOptions = { limit: 10, maxLines: 100, scale: 1, lineWidth: 1 * scale, dotScale: 0.5 * scale, dotColor: colorValue, lineColor: colorValue}
-  pattern1(scene, upperTorsoShape, boringOptions)
-  pattern1(scene, lowerTorsoShape, boringOptions)
-  pattern1(scene, rightShouldRectangle, boringOptions)
-  pattern1(scene, leftShouldRectangle, boringOptions)
-  pattern1(scene, rightHandReactangle, boringOptions)
-  pattern1(scene, leftHandReactangle, boringOptions)
-  pattern1(scene, rightLegRectangle, boringOptions)
-  pattern1(scene, rightFootReactangle, boringOptions)
-  pattern1(scene, leftLegRectangle, boringOptions)
-  pattern1(scene, leftFootReactangle, boringOptions)
+    const boringOptions = { limit: 1, maxLines: 50, scale: 10, lineWidth: 1 * scale, dotScale: 0.5 * scale, dotColor: colorValue, lineColor: colorValue,
+      desiredAngle: (t *10 + i)
+    //, refPoint: refPoint
+    }
+    pattern1(scene, bp, boringOptions)
+  })
+  
 }
 
 export { initSkeleton, lisa, dancePerson1, dancePerson2, basicPerson, pattern1Person }

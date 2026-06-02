@@ -198,7 +198,7 @@ function pattern1(scene, pointsArray, options) {
       const color = lineColor || testPalette2[Math.floor(sunsetPalleteIndex)];
       const previousPosWithOffset = previousPos.clone().add(offset);
       const nextPosWithOffset = nextPos.clone().add(offset);
-      drawLine(scene, [previousPosWithOffset, nextPosWithOffset], { lineWidth: lineWidth, color: i === 0 ? 0xffffff : color });
+      drawLine(scene, [previousPosWithOffset, nextPosWithOffset], { lineWidth: lineWidth, color: i === 0 ? color : color });
       const dotSeed = round(indexId * 1000) + randomSeed
       const amountOfFlowers = floor(seededRandom(dotSeed)*32)
       if (seededRandom(dotSeed) > 0.99 && amountOfFlowers > 0) {

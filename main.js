@@ -379,7 +379,7 @@ const main = async () => {
       ],*/
       angleToRef: true
     })
-    at+=dt
+    
   }
 
   const randomPoseData = [
@@ -447,17 +447,17 @@ function clearThree(obj){
     //scene.remove.apply(scene, scene.children);
     clearThree(scene);
     //while(scene.children.length > 0) {scene.remove(scene.children[0])}
-    testGround()
+    //testGround()
     // dancePerson1(scene, {offset: new Vector3(-1.5,0,2)})
     // dancePerson2(scene, {offset: new Vector3(1.5,0,2)})
     // basicPerson(scene, {pose: testPose5, offset: new Vector3(0,0,2), scale: 1, hasOutline: true})
     // randomPeople(scene)
-    //pattern1Person(scene, {pose: testPose2, scale: 1, hasOutline: false, clothColor: "#000000", outlineColor: "#0000ff"})
+    pattern1Person(scene, {pose: testPose5, scale: 1, hasOutline: false, clothColor: "#000000", outlineColor: "#0000ff", t: at})
     // lisa(scene)
     // moveShapes(meshArray)
     // doLines(linesArray)
     // skeleton.bones[0].rotation.y += -Math.PI / 100;
-
+    at+=dt
     renderer.render(scene, camera);
     
   }
