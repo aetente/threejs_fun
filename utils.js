@@ -32,6 +32,15 @@ const randInRange = (xmin, xmax, randVal) => (
     (xmax - xmin) * randVal + xmin
   )
 
+const randomRange = (xmin, xmax) => (
+  (xmax - xmin) * random() + xmin
+)
+
+
+const seededRandomRange = (xmin, xmax, seed) => (
+  (xmax - xmin) * seededRandom(seed) + xmin
+)
+
 const pSin = (x) => (sin(x) + 1) / 2
 const pCos = (x) => (cos(x) + 1) / 2
 
@@ -312,6 +321,8 @@ const signedAngle = (vec1, vec2) => {
 
 export {
   randInRange,
+  randomRange,
+  seededRandomRange,
   pSin,
   pCos,
   distance3D,

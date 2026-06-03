@@ -1,4 +1,7 @@
 import * as THREE from 'three';
+import {randomRange} from './utils.js'
+
+const {random} = Math
 
 function applyPose(poseData, skeleton) {
     poseData.forEach(data => {
@@ -435,22 +438,54 @@ const walk1 = [
     { name: 'upperTorso', rot: new THREE.Euler(0, 0, -0.2) },
     { name: 'head', rot: new THREE.Euler(0, 0, 0) },
 
-    { name: 'leftShoulder', rot: new THREE.Euler(0, 0, -1) },
-    { name: 'leftElbow', rot: new THREE.Euler(0, 0, 1) },
+    { name: 'leftShoulder', rot: new THREE.Euler(0, 0, -1.5) },
+    { name: 'leftElbow', rot: new THREE.Euler(0, 0, 2) },
     { name: 'leftHand', rot: new THREE.Euler(0, 0, 0) },
 
     { name: 'rightShoulder', rot: new THREE.Euler(0, 0, 0.9) },
     { name: 'rightElbow', rot: new THREE.Euler(0, 0, 1) },
     { name: 'rightHand', rot: new THREE.Euler(0, 0, 4) },
 
-    { name: 'leftLeg', rot: new THREE.Euler(0, 0, 0.5) },
-    { name: 'leftKnee', rot: new THREE.Euler(0, 0, -0.9) },
+    { name: 'leftLeg', rot: new THREE.Euler(0, 0, 1) },
+    { name: 'leftKnee', rot: new THREE.Euler(0, 0, -1) },
     { name: 'leftFoot', rot: new THREE.Euler(0, 0, 0) },
 
-    { name: 'rightLeg', rot: new THREE.Euler(0, 0, -0.3) },
-    { name: 'rightKnee', rot: new THREE.Euler(0, 0, 0) },
+    { name: 'rightLeg', rot: new THREE.Euler(0, 0, -0.5) },
+    { name: 'rightKnee', rot: new THREE.Euler(0, 0, -0.9) },
     { name: 'rightFoot', rot: new THREE.Euler(0, 0, 0) }
 ];
+
+const plusMinusRandom = (r) => {
+    return -r + 2 * r * random();
+}
+
+const generateRandomPose = () => {
+    const leftElbowAngle = randomRange(0,2);
+    const rightElbowAngle = randomRange(-2,0);
+    return [
+        { name: "root", rot: new THREE.Euler(0,0,randomRange(-0.2,0.2))},
+        
+        { name: 'lowerTorso', rot: new THREE.Euler(0, 0, 0) },
+        { name: 'upperTorso', rot: new THREE.Euler(0, 0, randomRange(-0.2,0.2)) },
+        { name: 'head', rot: new THREE.Euler(0, 0, 0) },
+
+        { name: 'leftShoulder', rot: new THREE.Euler(0, 0, randomRange(-1.5, 0)) },
+        { name: 'leftElbow', rot: new THREE.Euler(0, 0, leftElbowAngle) },
+        { name: 'leftHand', rot: new THREE.Euler(0, 0,  leftElbowAngle - 2) },
+
+        { name: 'rightShoulder', rot: new THREE.Euler(0, 0, randomRange(0,1.5)) },
+        { name: 'rightElbow', rot: new THREE.Euler(0, 0, rightElbowAngle) },
+        { name: 'rightHand', rot: new THREE.Euler(0, 0, rightElbowAngle+2) },
+
+        { name: 'leftLeg', rot: new THREE.Euler(0, 0, randomRange(0,1)) },
+        { name: 'leftKnee', rot: new THREE.Euler(0, 0, randomRange(-1,0)) },
+        { name: 'leftFoot', rot: new THREE.Euler(0, 0, 0) },
+
+        { name: 'rightLeg', rot: new THREE.Euler(0, 0, randomRange(0,1)) },
+        { name: 'rightKnee', rot: new THREE.Euler(0, 0, randomRange(-1,0)) },
+        { name: 'rightFoot', rot: new THREE.Euler(0, 0, 0) }
+    ]
+}
 
 export {applyPose, tPoseData, casualPoseData, sittingPoseData, sittingPhonePoseData, leapPoseData, relaxedSittingPhoneData, relaxedSittingPhoneAnglesData, rotatePose, offsetPose, scalePose, sittingLegsClose, dance1, dance2,
     testPose1,
@@ -458,5 +493,6 @@ export {applyPose, tPoseData, casualPoseData, sittingPoseData, sittingPhonePoseD
     testPose3,
     testPose4,
     testPose5,
-    walk1
+    walk1,
+    generateRandomPose
 }

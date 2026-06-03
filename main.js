@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 
 import { Vector2, Vector3 } from 'three';
-import { randInRange, pSin, pCos, distance3D, loadTextureF } from "./utils.js"
+import { randInRange, pSin, pCos, distance3D, loadTextureF, seededRandomRange } from "./utils.js"
 import { heartShape, birdShape } from "./shapes.js"
 import { lisa, dancePerson1, dancePerson2, basicPerson, pattern1Person } from './people.js';
 //import wall from './assets/textures/wall.jpg';
@@ -11,7 +11,8 @@ import {
   testPose3,
   testPose4,
   testPose5,
-  walk1
+  walk1,
+  generateRandomPose
 } from './poses.js';
 
 import { FontLoader } from 'three/addons/loaders/FontLoader.js';
@@ -391,8 +392,10 @@ const main = async () => {
     testPose5
   ]
 
+
+
   function randomPeople(scene) {
-    const amountOfPeople = 100
+    const amountOfPeople = 10
     for (let i = 0; i < amountOfPeople; i++) {
       const randomPaletteIndex = floor(random()*flowersPalette1.length)
       const randomPaletteIndex2 = floor(random()*flowersPalette1.length)
@@ -400,16 +403,18 @@ const main = async () => {
       const randomPaletteColor2 = flowersPalette1[randomPaletteIndex2]
       const randomPose = randomPoseData[Math.floor(Math.random() * randomPoseData.length)]
       const randomOffset = new Vector3(
-        randInRange(-3,3,random()),
-        randInRange(-1,0,random()),
-        0)
+        seededRandomRange(-3,3,(i + 1) * 23424),
+        seededRandomRange(-1,0,(i + 1) * 11235),
+      0)
       
-      basicPerson(scene, {pose: randomPose, offset: randomOffset, scale: 0.4, hasOutline: true,
-        clothColor: randomPaletteColor,
-        // outlineColor: "#44ff99"
-        outlineColor: "#0000ff"
-        // outlineColor: randomPaletteColor2
-      })
+      pattern1Person(scene, {poses:  [generateRandomPose()], offset: randomOffset, scale: 0.4, clothColor: "#000000", t: at})
+
+      // basicPerson(scene, {pose: randomPose, offset: randomOffset, scale: 0.4, hasOutline: true,
+      //   clothColor: randomPaletteColor,
+      //   // outlineColor: "#44ff99"
+      //   outlineColor: "#0000ff"
+      //   // outlineColor: randomPaletteColor2
+      // })
     }
   }
 
@@ -449,7 +454,7 @@ function clearThree(obj){
   let currentFrame = 0;
   const format = 'image/png';
   const saveFrames = false
-  const framesToSave = 60 * 15; // 60 frames generate 2 seconds, so times 15 it will be 30 seconds
+  const framesToSave = 60 * 12; // 60 frames generate 2 seconds, so times 15 it will be 30 seconds
   function animate() {
     if (saveFrames && currentFrame >= framesToSave) return;
     requestAnimationFrame(animate);
@@ -464,8 +469,8 @@ function clearThree(obj){
     // dancePerson1(scene, {offset: new Vector3(-1.5,0,2)})
     // dancePerson2(scene, {offset: new Vector3(1.5,0,2)})
     // basicPerson(scene, {pose: testPose5, offset: new Vector3(0,0,2), scale: 1, hasOutline: true})
-    // randomPeople(scene)
-    pattern1Person(scene, {poses:  [walk1], scale: 1, hasOutline: false, clothColor: "#000000", outlineColor: "#0000ff", t: at})
+    randomPeople(scene)
+    // pattern1Person(scene, {poses:  [generateRandomPose()], scale: 1, hasOutline: false, clothColor: "#000000", outlineColor: "#0000ff", t: at})
     // lisa(scene)
     // moveShapes(meshArray)
     // doLines(linesArray)
