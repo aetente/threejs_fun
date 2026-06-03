@@ -18,6 +18,8 @@ import {
 } from "./backupFunctions.js"
 import { pattern1 } from './patterns.js';
 
+import {pSin} from './utils.js'
+
 const {sin, cos, PI, random, pow, floor} = Math;
 
 function initSkeleton () {
@@ -453,6 +455,7 @@ function basicPerson(scene, options) {
   const offset = options?.offset || new THREE.Vector3(0,0,0);
   const clothColor = options?.clothColor || "#000";
   const pose = options?.pose || tPoseData
+  
   const scale = options?.scale || 1
   
   const hasOutline = options?.hasOutline || false
@@ -520,13 +523,18 @@ function pattern1Person(scene, options) {
 
   const offset = options?.offset || new THREE.Vector3(0,0,0);
   const clothColor = options?.clothColor || "#000";
-  const pose = options?.pose || tPoseData
+  const argPose = options?.pose || tPoseData
   const scale = options?.scale || 1
   
   const hasOutline = options?.hasOutline || false
   const outlineColor = options?.outlineColor || 0xffffff
 
   const t = options?.t || 0
+  
+  const poses = options?.poses || null
+  const posesSize = poses ? poses.length : 0
+  const poseIndex = floor(t % posesSize)
+  const pose = poses ? poses[poseIndex] : argPose
 
   const skeleton = initSkeleton()
 
@@ -607,7 +615,7 @@ function pattern1Person(scene, options) {
     const refPoint = headPosition.clone().add(moveRef)
   //console.log(refPoint)
 
-    const boringOptions = { limit: 5, maxLines: 40, scale: 10, lineWidth: 1 * scale, dotScale: 0.5 * scale, dotColor: colorValue, lineColor: colorValue, lineOpacity: 0.5, dotOpacity: 0.5,
+    const boringOptions = { limit: 5, maxLines: 10, scale: 10, lineWidth: 1 * scale, dotScale: 0.5 * scale, dotColor: colorValue, lineColor: colorValue, lineOpacity: 0.5, dotOpacity: 0.5,
       desiredAngle: (t *10 + i)
     //, refPoint: refPoint
     }

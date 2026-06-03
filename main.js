@@ -10,7 +10,8 @@ import {
   testPose2,
   testPose3,
   testPose4,
-  testPose5
+  testPose5,
+  walk1
 } from './poses.js';
 
 import { FontLoader } from 'three/addons/loaders/FontLoader.js';
@@ -464,7 +465,7 @@ function clearThree(obj){
     // dancePerson2(scene, {offset: new Vector3(1.5,0,2)})
     // basicPerson(scene, {pose: testPose5, offset: new Vector3(0,0,2), scale: 1, hasOutline: true})
     // randomPeople(scene)
-    pattern1Person(scene, {pose: testPose3, scale: 1, hasOutline: false, clothColor: "#000000", outlineColor: "#0000ff", t: at})
+    pattern1Person(scene, {poses:  [walk1], scale: 1, hasOutline: false, clothColor: "#000000", outlineColor: "#0000ff", t: at})
     // lisa(scene)
     // moveShapes(meshArray)
     // doLines(linesArray)

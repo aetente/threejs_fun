@@ -204,7 +204,7 @@ function pattern1(scene, pointsArray, options) {
       drawLine(scene, [previousPosWithOffset, nextPosWithOffset], { lineWidth: lineWidth, color: i === 0 ? color : color, opacity: lineOpacity });
       const dotSeed = round(indexId * 1000) + randomSeed
       const amountOfFlowers = floor(seededRandom(dotSeed)*32)
-      if (seededRandom(dotSeed) > 0.59 && amountOfFlowers > 0) {
+      if (seededRandom(dotSeed) > 0.99 && amountOfFlowers > 0) {
         for (let ri = 0; ri < amountOfFlowers; ri++) {
           const flowerSize = (randInRange(0.01, 0.04, amountOfFlowers/32)) * dotScale
           //(0.04 * random() + 0.02)/amountOfFlowers
