@@ -325,6 +325,10 @@ const main = async () => {
   let dt = 0.1
   
   const testGround = async () => {
+    const maxP = 10
+    for(let i = 0; i < maxP; i++) {
+      
+    const ni = i/maxP
     
     // const avoidPoints = generateAvoidPoints()
     const scaleRect = new Vector2(4,4)
@@ -339,8 +343,13 @@ const main = async () => {
       p.x -= scaleRect.x/2;
       p.y -= scaleRect.y/2;
     })
+    const si = 3
     const testPointsOffset =
-      new Vector3(0,0,0)
+      new Vector3(
+        si*sin(ni*PI*2),
+        si*cos(ni*PI*2),
+        0
+      )
     // drawCircle(testPointsOffset, 0xff0000, 0.1)
     testPoints.forEach(p => {
       p.x += testPointsOffset.x;
@@ -381,7 +390,7 @@ const main = async () => {
       ],*/
       angleToRef: true
     })
-    
+    }
   }
 
   const randomPoseData = [
@@ -465,11 +474,11 @@ function clearThree(obj){
     //scene.remove.apply(scene, scene.children);
     clearThree(scene);
     //while(scene.children.length > 0) {scene.remove(scene.children[0])}
-    //testGround()
+    testGround()
     // dancePerson1(scene, {offset: new Vector3(-1.5,0,2)})
     // dancePerson2(scene, {offset: new Vector3(1.5,0,2)})
     // basicPerson(scene, {pose: testPose5, offset: new Vector3(0,0,2), scale: 1, hasOutline: true})
-    randomPeople(scene)
+    //randomPeople(scene)
     // pattern1Person(scene, {poses:  [generateRandomPose()], scale: 1, hasOutline: false, clothColor: "#000000", outlineColor: "#0000ff", t: at})
     // lisa(scene)
     // moveShapes(meshArray)

@@ -93,7 +93,8 @@ function pattern1(scene, pointsArray, options) {
     for (let j = 0; j < maxLines; j++) {
       // scaleSize = (psin(sin(i*2)/10) * 0.1 + 0.05) * scale
       const previousPosV2 = new THREE.Vector2(previousPos.x, previousPos.y)
-      const indexId = sin((i+j)/10)
+      //const indexId = sin((i+j)/10)
+      const indexId = i + j*limit
       const jScale = sin(j/maxLines * p2  + indexId)
       const distToRef = previousPos.distanceTo(refPoint)+1
       const angleCap = PI*2
@@ -104,7 +105,7 @@ function pattern1(scene, pointsArray, options) {
       //   * PI
       // ) * angleCap
       
-      const angleChange = sin( sin(20*i + idByPos) * angleCap) * angleCap
+      const angleChange = sin( sin(i/200 + idByPos) / 20) * angleCap
       //const angleChange = sin(i + idByPos) * angleCap
       //const angleChange = 0
       
@@ -204,7 +205,7 @@ function pattern1(scene, pointsArray, options) {
       drawLine(scene, [previousPosWithOffset, nextPosWithOffset], { lineWidth: lineWidth, color: i === 0 ? color : color, opacity: lineOpacity });
       const dotSeed = round(indexId * 1000) + randomSeed
       const amountOfFlowers = floor(seededRandom(dotSeed)*32)
-      if (seededRandom(dotSeed) > 0.99 && amountOfFlowers > 0) {
+      if (seededRandom(dotSeed) > 10.99 && amountOfFlowers > 0) {
         for (let ri = 0; ri < amountOfFlowers; ri++) {
           const flowerSize = (randInRange(0.01, 0.04, amountOfFlowers/32)) * dotScale
           //(0.04 * random() + 0.02)/amountOfFlowers
