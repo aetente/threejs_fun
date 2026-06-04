@@ -89,7 +89,9 @@ function pattern1(scene, pointsArray, options) {
     const initPos = previousPos.clone()
     const idByPos = previousPos.x + previousPos.y + previousPos.z
     previousAngle = initAngle
-    const randomDir = seededRandom(randomSeed+i*1009988) > 0.5 ? 1 : -1
+    // const randomDir = seededRandom(randomSeed+i*567) > 0.5 ? 1 : -1
+    const randomDir = i % 2 === 0 ? 1 : -1
+    // const randomDir = random() > 0.5 ? 1 : -1
     for (let j = 0; j < maxLines; j++) {
       // scaleSize = (psin(sin(i*2)/10) * 0.1 + 0.05) * scale
       const previousPosV2 = new THREE.Vector2(previousPos.x, previousPos.y)
@@ -105,7 +107,7 @@ function pattern1(scene, pointsArray, options) {
       //   * PI
       // ) * angleCap
       
-      const angleChange = sin( sin(i/200 + idByPos) / 20) * angleCap
+      const angleChange = sin( sin(idByPos / 100) * PI + PI) * angleCap
       //const angleChange = sin(i + idByPos) * angleCap
       //const angleChange = 0
       
@@ -128,7 +130,7 @@ function pattern1(scene, pointsArray, options) {
         desiredAngle =
           // angleRadians
           // angleRadians - PI/2
-          (angleRadians + 3*PI/2) % (2*PI)
+          (angleRadians + 3*PI/2 * randomDir) % (2*PI)
           // previousPosV2.angleTo(refPointV2)
           // if (desiredAngle < 0) {
           //   desiredAngle += 2 * PI;

@@ -343,7 +343,7 @@ const main = async () => {
       p.x -= scaleRect.x/2;
       p.y -= scaleRect.y/2;
     })
-    const si = 3
+    const si = 1
     const testPointsOffset =
       new Vector3(
         si*sin(ni*PI*2),
@@ -357,8 +357,8 @@ const main = async () => {
       p.z += testPointsOffset.z
     })
     //await doText()
-    const rx = 4*sin(1.1235*at)
-    const ry = 4*cos(at)
+    const rx = 1*sin(1.1235*at)
+    const ry = 1*cos(at)
     const refPoint = new Vector3(0 + rx,0 + ry,0)
     const theAngle = 
       refPoint.angleTo(testPointsOffset) + at
@@ -366,11 +366,11 @@ const main = async () => {
       //2.0671854475079234
     // drawCircle(refPoint, 0x00ff00, 0.1)
     pattern1(scene, testPoints, {
-      scale:7,
+      scale:1,
       dotScale: 2,
       t: at,
-      maxLines: 40,
-      limit: 10,
+      maxLines: 10,
+      limit: 40,
       initAngle: theAngle,
       lineColor: "#000",
       dotColor: "#000",
