@@ -325,13 +325,13 @@ const main = async () => {
   let dt = 0.1
   
   const testGround = async () => {
-    const maxP = 10
+    const maxP = 4
     for(let i = 0; i < maxP; i++) {
       
-    const ni = i/maxP
+    const ni = (i/maxP) + 1
     
     // const avoidPoints = generateAvoidPoints()
-    const scaleRect = new Vector2(4,4)
+    const scaleRect = new Vector2(4,0)
     const testPoints = [
       new Vector3(0,0,0),
       new Vector3(0,scaleRect.y,0),
@@ -347,7 +347,7 @@ const main = async () => {
     const testPointsOffset =
       new Vector3(
         si*sin(ni*PI*2),
-        si*cos(ni*PI*2),
+        0*cos(ni*PI*2) - 2,
         0
       )
     // drawCircle(testPointsOffset, 0xff0000, 0.1)
@@ -357,21 +357,21 @@ const main = async () => {
       p.z += testPointsOffset.z
     })
     //await doText()
-    const rx = 1*sin(1.1235*at)
-    const ry = 1*cos(at)
+    const rx = 0.5*sin(1.1235*at + 2*ni)
+    const ry = 0*cos(at) + 1
     const refPoint = new Vector3(0 + rx,0 + ry,0)
     const theAngle = 
-      refPoint.angleTo(testPointsOffset) + at
+      refPoint.angleTo(testPointsOffset)
       //-PI/2
       //2.0671854475079234
     // drawCircle(refPoint, 0x00ff00, 0.1)
     pattern1(scene, testPoints, {
       scale:1,
-      dotScale: 2,
+      dotScale: 0.5,
       t: at,
-      maxLines: 10,
-      limit: 40,
-      initAngle: theAngle,
+      maxLines: 80,
+      limit: 10,
+      initAngle: PI,
       lineColor: "#000",
       dotColor: "#000",
       //refPoint: middlePoint, 

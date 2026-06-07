@@ -107,7 +107,7 @@ function pattern1(scene, pointsArray, options) {
       //   * PI
       // ) * angleCap
       
-      const angleChange = sin( sin(idByPos / 100) * PI + PI) * angleCap
+      const angleChange = sin( sin(idByPos / 100) * PI * 2) * angleCap * randomDir
       //const angleChange = sin(i + idByPos) * angleCap
       //const angleChange = 0
       
@@ -130,7 +130,7 @@ function pattern1(scene, pointsArray, options) {
         desiredAngle =
           // angleRadians
           // angleRadians - PI/2
-          (angleRadians + 3*PI/2 * randomDir) % (2*PI)
+          (angleRadians + 3*PI/2) % (2*PI)
           // previousPosV2.angleTo(refPointV2)
           // if (desiredAngle < 0) {
           //   desiredAngle += 2 * PI;
@@ -207,7 +207,8 @@ function pattern1(scene, pointsArray, options) {
       drawLine(scene, [previousPosWithOffset, nextPosWithOffset], { lineWidth: lineWidth, color: i === 0 ? color : color, opacity: lineOpacity });
       const dotSeed = round(indexId * 1000) + randomSeed
       const amountOfFlowers = floor(seededRandom(dotSeed)*32)
-      if (seededRandom(dotSeed) > 10.99 && amountOfFlowers > 0) {
+      const dotsAppearanceByIndexThreshold = maxLines - maxLines/10
+      if (seededRandom(dotSeed) > 0.59 && amountOfFlowers > 0 && j > dotsAppearanceByIndexThreshold) {
         for (let ri = 0; ri < amountOfFlowers; ri++) {
           const flowerSize = (randInRange(0.01, 0.04, amountOfFlowers/32)) * dotScale
           //(0.04 * random() + 0.02)/amountOfFlowers
@@ -215,8 +216,8 @@ function pattern1(scene, pointsArray, options) {
           const flowerColor = dotColor || flowersPalette2[floor(seededRandom(dotSeed)*flowersPalette2.length)]
           const material = new THREE.MeshBasicMaterial({ color: flowerColor, transparent: true, opacity: dotOpacity });
           const shape = new THREE.Mesh(circle, material);
-        const newX = seededRandom(randomSeed)* 0.4+ nextPos.x  
-        const newY = seededRandom(randomSeed2)* 0.4+ nextPos.y  
+        const newX = seededRandom(randomSeed + ri + i + j)* 0.4+ nextPos.x  
+        const newY = seededRandom(randomSeed2 + ri + i + j)* 0.4+ nextPos.y  
         shape.position.set(newX, newY, nextPos.z + 0.2);
           scene.add(shape);
         }
