@@ -322,10 +322,10 @@ const main = async () => {
   }
   
   let at = 0
-  let dt = 0.1
+  let dt = 0.01
   
   const testGround = async () => {
-    const maxP = 4
+    const maxP = 10
     for(let i = 0; i < maxP; i++) {
       
     const ni = (i/maxP) + 1
@@ -357,7 +357,7 @@ const main = async () => {
       p.z += testPointsOffset.z
     })
     //await doText()
-    const rx = 0.5*sin(1.1235*at + 2*ni)
+    const rx = 0.5*sin(1.1235*at + 5*ni)
     const ry = 0*cos(at) + 1
     const refPoint = new Vector3(0 + rx,0 + ry,0)
     const theAngle = 
@@ -370,8 +370,8 @@ const main = async () => {
       dotScale: 0.5,
       t: at,
       maxLines: 80,
-      limit: 10,
-      initAngle: PI,
+      limit: 1,
+      initAngle: -PI/2,
       lineColor: "#000",
       dotColor: "#000",
       //refPoint: middlePoint, 
