@@ -117,7 +117,8 @@ function pattern1(scene, pointsArray, options) {
       //const correctAngle = angleChange + ((desiredAngle - angleChange)%p2)/1
       //let distFactor = min(1,1/(2*distToRef-1))
       //let distFactor = 1
-      let distFactor = max(1*min(1, distToRef - 1),0)
+      const distThreshold = 2
+      let distFactor = max(1*min(distThreshold, distToRef - distThreshold),0)
       angleVal = previousAngle + angleChange
       if (angleToRef) {
         
@@ -158,7 +159,7 @@ function pattern1(scene, pointsArray, options) {
       angleVal = 
         //desiredAngle
         angleVal
-        + (desiredAngle - angleVal%(2*PI))/5
+        + (desiredAngle - angleVal%(2*PI))/2
         //*2
         * (distFactor)
       if (avoidPoints) {
@@ -211,7 +212,7 @@ function pattern1(scene, pointsArray, options) {
       const dotSeed = round(indexId * 1000) + randomSeed
       const amountOfFlowers = floor(seededRandom(dotSeed)*32)
       const dotsAppearanceByIndexThreshold = maxLines - maxLines/7
-      if (seededRandom(dotSeed) > 0.59 && amountOfFlowers > 0 && j > dotsAppearanceByIndexThreshold) {
+      if (seededRandom(dotSeed) > 0.69 && amountOfFlowers > 0 && j > dotsAppearanceByIndexThreshold) {
         for (let ri = 0; ri < amountOfFlowers; ri++) {
           const flowerSize = (randInRange(0.01, 0.04, amountOfFlowers/32)) * dotScale
           //(0.04 * random() + 0.02)/amountOfFlowers

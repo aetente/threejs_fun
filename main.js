@@ -325,7 +325,7 @@ const main = async () => {
   let dt = 0.01
   
   const testGround = async () => {
-    const maxP = 10
+    const maxP = 4
     for(let i = 0; i < maxP; i++) {
       
     const ni = (i/maxP) + 1
@@ -343,11 +343,11 @@ const main = async () => {
       p.x -= scaleRect.x/2;
       p.y -= scaleRect.y/2;
     })
-    const si = 1
+    const si = 0.1
     const testPointsOffset =
       new Vector3(
         si*sin(ni*PI*2),
-        0*cos(ni*PI*2) - 2,
+        si*cos(ni*PI*2),
         0
       )
     // drawCircle(testPointsOffset, 0xff0000, 0.1)
@@ -357,8 +357,8 @@ const main = async () => {
       p.z += testPointsOffset.z
     })
     //await doText()
-    const rx = 0.5*sin(1.1235*at + 5*ni)
-    const ry = 0*cos(at) + 1
+    const rx = 1*sin(10*at + 5*ni)
+    const ry = 1*cos(10*at + 5*ni)
     const refPoint = new Vector3(0 + rx,0 + ry,0)
     const theAngle = 
       refPoint.angleTo(testPointsOffset)
@@ -366,7 +366,7 @@ const main = async () => {
       //2.0671854475079234
     // drawCircle(refPoint, 0x00ff00, 0.1)
     pattern1(scene, testPoints, {
-      scale:1,
+      scale:0,
       dotScale: 0.5,
       t: at,
       maxLines: 80,
@@ -404,7 +404,7 @@ const main = async () => {
 
 
   function randomPeople(scene) {
-    const amountOfPeople = 10
+    const amountOfPeople = 4
     for (let i = 0; i < amountOfPeople; i++) {
       const randomPaletteIndex = floor(random()*flowersPalette1.length)
       const randomPaletteIndex2 = floor(random()*flowersPalette1.length)
