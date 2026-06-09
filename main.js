@@ -322,10 +322,10 @@ const main = async () => {
   }
   
   let at = 0
-  let dt = 0.01
+  let dt = 0.003
   
   const testGround = async () => {
-    const maxP = 4
+    const maxP = 20
     for(let i = 0; i < maxP; i++) {
       
     const ni = (i/maxP) + 1
