@@ -52,6 +52,7 @@ const loadTextureF = async (url) => {
   return new Promise((resolve, reject) => {
     let texture;
     let onLoadF = function () {
+      texture.colorSpace = THREE.SRGBColorSpace
       resolve(texture);
       
     };

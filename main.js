@@ -62,7 +62,11 @@ const main = async () => {
   const texture = await loadTextureF(
     '/assets/textures/wall.jpg'
   );
-  texture.colorSpace = THREE.SRGBColorSpace;
+  //texture.colorSpace = THREE.SRGBColorSpace;
+  const fl1 = await loadTextureF('/assets/flowers/fl1.png')
+  //fl1.colorSpace = THREE.SRGBColorSpace;
+  const fl2 = await loadTextureF('/assets/flowers/fl2.png')
+  //fl2.colorSpace = THREE.SRGBColorSpace;
   
   function doDymanicsLines(lines) {
     lines.forEach((line,i) => {
@@ -159,9 +163,9 @@ const main = async () => {
 
   const light = new THREE.DirectionalLight(0xff0000, 1);
   light.position.set(2, 2, 2);
-  scene.add(light);
-  const ambientLight = new THREE.AmbientLight(0xffffff, 0);
-  // scene.add(ambientLight);
+  //scene.add(light);
+  const ambientLight = new THREE.AmbientLight(0xffffff, 1);
+   scene.add(ambientLight);
 
   // const backColor = new THREE.Color().setRGB(0.01, 0.01, 0.01);
   // const backColor = new THREE.Color("#2d196e");
@@ -325,7 +329,7 @@ const main = async () => {
   let dt = 0.003
   
   const testGround = async () => {
-    const maxP = 20
+    const maxP = 5
     for(let i = 0; i < maxP; i++) {
       
     const ni = (i/maxP) + 1
@@ -343,7 +347,7 @@ const main = async () => {
       p.x -= scaleRect.x/2;
       p.y -= scaleRect.y/2;
     })
-    const si = 0.1
+    const si = 3
     const testPointsOffset =
       new Vector3(
         si*sin(ni*PI*2),
@@ -357,8 +361,8 @@ const main = async () => {
       p.z += testPointsOffset.z
     })
     //await doText()
-    const rx = 1*sin(10*at + 5*ni)
-    const ry = 1*cos(10*at + 5*ni)
+    const rx = 0.1*sin(10*at + 5*ni)
+    const ry = 0.1*cos(10*at + 5*ni)
     const refPoint = new Vector3(0 + rx,0 + ry,0)
     const theAngle = 
       refPoint.angleTo(testPointsOffset)
@@ -366,14 +370,15 @@ const main = async () => {
       //2.0671854475079234
     // drawCircle(refPoint, 0x00ff00, 0.1)
     pattern1(scene, testPoints, {
-      scale:0,
-      dotScale: 0.5,
+      scale:1,
+      dotScale: 2,
       t: at,
       maxLines: 80,
       limit: 1,
       initAngle: -PI/2,
       lineColor: "#000",
-      dotColor: "#000",
+      dotColor: "#ff0000",
+      dotTextures: [fl1,fl2],
       //refPoint: middlePoint, 
       refPoint: refPoint,
       //desiredAngle: theAngle,
@@ -466,7 +471,7 @@ function clearThree(obj){
   const framesToSave = 60 * 12; // 60 frames generate 2 seconds, so times 15 it will be 30 seconds
   function animate() {
     if (saveFrames && currentFrame >= framesToSave) return;
-    requestAnimationFrame(animate);
+    //requestAnimationFrame(animate);
     // Source - https://stackoverflow.com/a/48722282
     // Posted by Jonathan Gray
     // Retrieved 2026-05-31, License - CC BY-SA 3.0

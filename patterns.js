@@ -79,7 +79,7 @@ function pattern1(scene, pointsArray, options) {
   const dotScale = (options?.dotScale || 1)
   const t = options?.t || 0
   
-  
+  const dotTextures = options?.dotTextures || null
   
   for (let i = 0; i < limit; i++) {
     
@@ -217,9 +217,15 @@ function pattern1(scene, pointsArray, options) {
           const flowerSize = (randInRange(0.01, 0.04, amountOfFlowers/32)) * dotScale
           //(0.04 * random() + 0.02)/amountOfFlowers
           const circle = new THREE.CircleGeometry(flowerSize, 4);
+          const planeG = new THREE.PlaneGeometry(flowerSize, flowerSize)
           const flowerColor = dotColor || flowersPalette2[floor(seededRandom(dotSeed)*flowersPalette2.length)]
-          const material = new THREE.MeshBasicMaterial({ color: flowerColor, transparent: true, opacity: dotOpacity });
-          const shape = new THREE.Mesh(circle, material);
+          const flowerTexture = dotTextures?.length ? dotTextures[floor(random()*dotTextures.length)] : null
+          //console.log(flowerTexture)
+          const material = flowerTexture ?
+          new THREE.MeshStandardMaterial({ map: flowerTexture, transparent: true })
+          //new THREE.MeshBasicMaterial({ color: "#ff0000", transparent: true, opacity: dotOpacity })
+          : new THREE.MeshBasicMaterial({ color: flowerColor, transparent: true, opacity: dotOpacity });
+          const shape = new THREE.Mesh(planeG, material);
         const newX = seededRandomRange(-1,1,randomSeed + ri + indexId)* 0.1+ nextPos.x  
         const newY = seededRandomRange(-1,1,randomSeed2 + ri + indexId)* 0.1+ nextPos.y  
         shape.position.set(newX, newY, nextPos.z + 0.2);
