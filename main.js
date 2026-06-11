@@ -326,10 +326,11 @@ const main = async () => {
   }
   
   let at = 0
-  let dt = 0.003
+  let bt = 0
+  let dt = 0.03
   
   const testGround = async () => {
-    const maxP = 5
+    const maxP = 30
     for(let i = 0; i < maxP; i++) {
       
     const ni = (i/maxP) + 1
@@ -371,7 +372,7 @@ const main = async () => {
     // drawCircle(refPoint, 0x00ff00, 0.1)
     pattern1(scene, testPoints, {
       scale:1,
-      dotScale: 2,
+      dotScale: 8,
       t: at,
       maxLines: 80,
       limit: 1,
@@ -467,14 +468,11 @@ function clearThree(obj){
 
   let currentFrame = 0;
   const format = 'image/png';
-  const saveFrames = false
+  const saveFrames = true
   const framesToSave = 60 * 12; // 60 frames generate 2 seconds, so times 15 it will be 30 seconds
   function animate() {
     if (saveFrames && currentFrame >= framesToSave) return;
-    //requestAnimationFrame(animate);
-    // Source - https://stackoverflow.com/a/48722282
-    // Posted by Jonathan Gray
-    // Retrieved 2026-05-31, License - CC BY-SA 3.0
+    requestAnimationFrame(animate);
 
     //scene.remove.apply(scene, scene.children);
     clearThree(scene);
@@ -489,7 +487,8 @@ function clearThree(obj){
     // moveShapes(meshArray)
     // doLines(linesArray)
     // skeleton.bones[0].rotation.y += -Math.PI / 100;
-    at+=dt
+    bt+=dt
+    at = sin(bt)
     renderer.render(scene, camera);
     if (saveFrames) {
       const dataURL = renderer.domElement.toDataURL(format);
