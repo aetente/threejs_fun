@@ -33,7 +33,7 @@ import {
 }
 from "./consts.js"
 
-import {pattern1} from "./patterns.js"
+import {pattern1, swarm1} from "./patterns.js"
 
 import {saveImage} from "./utils.js"
 
@@ -67,6 +67,8 @@ const main = async () => {
   //fl1.colorSpace = THREE.SRGBColorSpace;
   const fl2 = await loadTextureF('/assets/flowers/fl2.png')
   //fl2.colorSpace = THREE.SRGBColorSpace;
+  const pigeonTexture1 = await loadTextureF('/assets/textures/pigeon/Pigeon1.png')
+  const pigeonTexture2 = await loadTextureF('/assets/textures/pigeon/Pigeon2.png')
   
   function doDymanicsLines(lines) {
     lines.forEach((line,i) => {
@@ -477,7 +479,8 @@ function clearThree(obj){
     //scene.remove.apply(scene, scene.children);
     clearThree(scene);
     //while(scene.children.length > 0) {scene.remove(scene.children[0])}
-    testGround()
+    // testGround()
+    swarm1(scene, {t: at, textures: [pigeonTexture1, pigeonTexture2]})
     // dancePerson1(scene, {offset: new Vector3(-1.5,0,2)})
     // dancePerson2(scene, {offset: new Vector3(1.5,0,2)})
     // basicPerson(scene, {pose: testPose5, offset: new Vector3(0,0,2), scale: 1, hasOutline: true})
@@ -488,7 +491,8 @@ function clearThree(obj){
     // doLines(linesArray)
     // skeleton.bones[0].rotation.y += -Math.PI / 100;
     bt+=dt
-    at = sin(bt)
+    // at = sin(bt)
+    at = bt
     renderer.render(scene, camera);
     if (saveFrames) {
       const dataURL = renderer.domElement.toDataURL(format);

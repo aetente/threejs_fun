@@ -245,6 +245,70 @@ function pattern1(scene, pointsArray, options) {
   }
 }
 
+const genPosArray = (amountOfElements) => {
+  const posArray = []
+  for (let i = 0; i < amountOfElements; i++) {
+    posArray.push(new THREE.Vector3(
+      seededRandomRange(-1,1,i*1351234656),
+      seededRandomRange(-1,1,i*45673464),
+    0));
+  }
+  return posArray
+}
+const hardCodeAmountOfElements = 100
+let prevPos = genPosArray(hardCodeAmountOfElements)
+
+const swarm1 = (scene, options) => {
+  const amountOfElements = options?.amountOfElements || hardCodeAmountOfElements;
+  const t = options?.t || 0
+  const newPos = []
+  const textures = options?.textures || null
+  const scale = options?.scale || 0.8
+  for (let i = 0; i < amountOfElements; i++) {
+    const prevPosVal = prevPos[i].clone()
+    const movePos = new THREE.Vector3(
+      sin(i+t*1)/10,
+      cos(i+t*1)/100,
+      0
+    )
+    // console.log(movePos)
+    const newPosVal = prevPosVal.clone().add(movePos)
+    newPos.push(newPosVal)
+
+    const planeG = new THREE.PlaneGeometry(scale, scale)
+
+    const dist = (newPosVal.distanceTo(prevPosVal))
+
+    const maxSpriteSpeed = 6
+    const minSpriteSpeed = 2
+    const spriteSpeed = pow(2,-dist) * (maxSpriteSpeed - minSpriteSpeed) + minSpriteSpeed
+    const textureIndex = floor((t*spriteSpeed)%textures.length)
+    const texture = textures[textureIndex]
+    
+    const dx = newPosVal.x - prevPosVal.x;
+    const dy = newPosVal.y - prevPosVal.y;
+    
+    let angleVal = Math.atan2(dy, -dx) - PI/2;
+    angleVal = (angleVal + 3*PI/2) % (2*PI)
+
+    if (angleVal % (2*PI) > PI) {
+      // console.log(angleVal)
+      texture.flipY = true
+      texture.needsUpdate = true
+    }
+
+
+    const material = new THREE.MeshBasicMaterial({ map: texture, transparent: true })
+    const shape = new THREE.Mesh(planeG, material);
+
+    shape.rotation.z = angleVal
+    shape.position.set(newPosVal.x, newPosVal.y, newPosVal.z);
+    scene.add(shape);
+    prevPos[i] = newPosVal.clone()
+  }
+}
+
 export {
-  pattern1
+  pattern1,
+  swarm1
 }
