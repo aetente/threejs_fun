@@ -468,7 +468,7 @@ function clearThree(obj){
 
   let currentFrame = 0;
   const format = 'image/png';
-  const saveFrames = true
+  const saveFrames = false
   const framesToSave = 60 * 12; // 60 frames generate 2 seconds, so times 15 it will be 30 seconds
   function animate() {
     if (saveFrames && currentFrame >= framesToSave) return;
