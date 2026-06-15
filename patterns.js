@@ -255,7 +255,7 @@ const genPosArray = (amountOfElements) => {
   }
   return posArray
 }
-const hardCodeAmountOfElements = 100
+const hardCodeAmountOfElements = 10
 let prevPos = genPosArray(hardCodeAmountOfElements)
 
 const swarm1 = (scene, options) => {
@@ -289,10 +289,15 @@ const swarm1 = (scene, options) => {
     const dy = newPosVal.y - prevPosVal.y;
     
     let angleVal = Math.atan2(dy, -dx) - PI/2;
-    angleVal = (angleVal + 3*PI/2) % (2*PI)
+    angleVal = (angleVal + 7*PI/2) % (2*PI)
+    //angleVal = t%(2*PI)
 
-    if (angleVal % (2*PI) > PI) {
+    if (angleVal > PI/2 && angleVal < 3*PI/2) {
       // console.log(angleVal)
+      texture.flipY = false
+      texture.needsUpdate = true
+    } 
+    else  {
       texture.flipY = true
       texture.needsUpdate = true
     }
@@ -303,6 +308,7 @@ const swarm1 = (scene, options) => {
 
     shape.rotation.z = angleVal
     shape.position.set(newPosVal.x, newPosVal.y, newPosVal.z);
+    //shape.position.set()
     scene.add(shape);
     prevPos[i] = newPosVal.clone()
   }
