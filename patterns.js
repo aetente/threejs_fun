@@ -247,15 +247,16 @@ function pattern1(scene, pointsArray, options) {
 
 const genPosArray = (amountOfElements) => {
   const posArray = []
+  const sizePos = 3
   for (let i = 0; i < amountOfElements; i++) {
     posArray.push(new THREE.Vector3(
-      seededRandomRange(-1,1,i*1351234656),
-      seededRandomRange(-1,1,i*45673464),
+      seededRandomRange(-1,1,i*1351234656)*sizePos,
+      seededRandomRange(-1,1,i*45673464)*sizePos,
     0));
   }
   return posArray
 }
-const hardCodeAmountOfElements = 10
+const hardCodeAmountOfElements = 20
 let prevPos = genPosArray(hardCodeAmountOfElements)
 
 const swarm1 = (scene, options) => {
@@ -264,11 +265,24 @@ const swarm1 = (scene, options) => {
   const newPos = []
   const textures = options?.textures || null
   const scale = options?.scale || 0.8
+  const pointToFollow = options?.pointToFollow || new THREE.Vector3(0,0,0)
   for (let i = 0; i < amountOfElements; i++) {
     const prevPosVal = prevPos[i].clone()
+    const moveAngle = sin(t/2)*PI
+
+    const newPointToFollow = new THREE.Vector3(
+      sin(moveAngle)/20,
+      cos(moveAngle)/20,
+      0
+    )
+    
+    const desiredAngle = Math.atan2(newPointToFollow.y - prevPosVal.y, -(newPointToFollow.x - prevPosVal.x))
+
+    // const angleDiff = desiredAngle - moveAngle
+
     const movePos = new THREE.Vector3(
-      sin(i+t*1)/10,
-      cos(i+t*1)/100,
+      sin(desiredAngle)/4,
+      cos(desiredAngle)/4,
       0
     )
     // console.log(movePos)
@@ -279,17 +293,19 @@ const swarm1 = (scene, options) => {
 
     const dist = (newPosVal.distanceTo(prevPosVal))
 
-    const maxSpriteSpeed = 6
-    const minSpriteSpeed = 2
-    const spriteSpeed = pow(2,-dist) * (maxSpriteSpeed - minSpriteSpeed) + minSpriteSpeed
+    const maxSpriteSpeed = 8
+    const minSpriteSpeed = 4
+    const spriteSpeed = pow(1.2,-dist) * (maxSpriteSpeed - minSpriteSpeed) + minSpriteSpeed
     const textureIndex = floor((t*spriteSpeed)%textures.length)
-    const texture = textures[textureIndex]
+    const texture = textures[textureIndex].clone()
+
     
     const dx = newPosVal.x - prevPosVal.x;
     const dy = newPosVal.y - prevPosVal.y;
     
+
     let angleVal = Math.atan2(dy, -dx) - PI/2;
-    angleVal = (angleVal + 7*PI/2) % (2*PI)
+    angleVal = (angleVal + 3*PI/2) % (2*PI)
     //angleVal = t%(2*PI)
 
     if (angleVal > PI/2 && angleVal < 3*PI/2) {
@@ -302,11 +318,17 @@ const swarm1 = (scene, options) => {
       texture.needsUpdate = true
     }
 
+    // angleVal += PI
+
 
     const material = new THREE.MeshBasicMaterial({ map: texture, transparent: true })
     const shape = new THREE.Mesh(planeG, material);
 
     shape.rotation.z = angleVal
+    // if (abs(newPosVal.x) > 3 || abs(newPosVal.y) > 3) {
+    //   newPosVal.x = 0
+    //   newPosVal.y = 0
+    // }
     shape.position.set(newPosVal.x, newPosVal.y, newPosVal.z);
     //shape.position.set()
     scene.add(shape);
