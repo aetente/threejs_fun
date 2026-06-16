@@ -311,6 +311,7 @@ const swarm1 = (scene, options) => {
     let angleVal = Math.atan2(dy, dx);
     angleVal = (angleVal + 2*PI) % (2*PI)
     //angleVal = t%(2*PI)
+    //angleVal = desiredAngle + PI/2
 
     if (angleVal > PI/2 && angleVal < 3*PI/2) {
       // console.log(angleVal)
