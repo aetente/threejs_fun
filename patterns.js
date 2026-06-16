@@ -256,7 +256,7 @@ const genPosArray = (amountOfElements) => {
   }
   return posArray
 }
-const hardCodeAmountOfElements = 20
+const hardCodeAmountOfElements = 1000
 let prevPos = genPosArray(hardCodeAmountOfElements)
 
 const swarm1 = (scene, options) => {
@@ -264,14 +264,14 @@ const swarm1 = (scene, options) => {
   const t = options?.t || 0
   const newPos = []
   const textures = options?.textures || null
-  const scale = options?.scale || 0.8
+  const scale = options?.scale || 0.4
   const pointToFollow = options?.pointToFollow || new THREE.Vector3(0,0,0)
   for (let i = 0; i < amountOfElements; i++) {
     const prevPosVal = prevPos[i].clone()
     const moveAngle = sin(t/2)*PI
 
     const newPointToFollow = new THREE.Vector3(
-      sin(moveAngle)/20,
+      sin(moveAngle)*2,
       cos(moveAngle)/20,
       0
     )
@@ -279,10 +279,14 @@ const swarm1 = (scene, options) => {
     const desiredAngle = Math.atan2(newPointToFollow.y - prevPosVal.y, -(newPointToFollow.x - prevPosVal.x))
 
     // const angleDiff = desiredAngle - moveAngle
+    const distToPoint = prevPosVal.distanceTo(newPointToFollow)
+    const minSpeed = 0.01 * (1 - psin(t/2))
+    const maxSpeed = 2
+    const speed = pow(3,-distToPoint) * (maxSpeed - minSpeed) + minSpeed
 
     const movePos = new THREE.Vector3(
-      sin(desiredAngle)/4,
-      cos(desiredAngle)/4,
+      sin(desiredAngle)*speed,
+      cos(desiredAngle)*speed,
       0
     )
     // console.log(movePos)
@@ -296,7 +300,7 @@ const swarm1 = (scene, options) => {
     const maxSpriteSpeed = 8
     const minSpriteSpeed = 4
     const spriteSpeed = pow(1.2,-dist) * (maxSpriteSpeed - minSpriteSpeed) + minSpriteSpeed
-    const textureIndex = floor((t*spriteSpeed)%textures.length)
+    const textureIndex = floor((t*spriteSpeed + i)%textures.length)
     const texture = textures[textureIndex].clone()
 
     
@@ -304,8 +308,8 @@ const swarm1 = (scene, options) => {
     const dy = newPosVal.y - prevPosVal.y;
     
 
-    let angleVal = Math.atan2(dy, -dx) - PI/2;
-    angleVal = (angleVal + 3*PI/2) % (2*PI)
+    let angleVal = Math.atan2(dy, dx);
+    angleVal = (angleVal + 2*PI) % (2*PI)
     //angleVal = t%(2*PI)
 
     if (angleVal > PI/2 && angleVal < 3*PI/2) {
