@@ -256,7 +256,7 @@ const genPosArray = (amountOfElements) => {
   }
   return posArray
 }
-const hardCodeAmountOfElements = 20
+const hardCodeAmountOfElements = 1
 let prevPos = genPosArray(hardCodeAmountOfElements)
 
 const swarm1 = (scene, options) => {
@@ -271,8 +271,8 @@ const swarm1 = (scene, options) => {
     const moveAngle = sin(t/2)*PI
 
     const newPointToFollow = new THREE.Vector3(
-      sin(moveAngle)/20,
-      cos(moveAngle)/20,
+      sin(moveAngle)/1,
+      cos(moveAngle)/1,
       0
     )
     
@@ -307,6 +307,7 @@ const swarm1 = (scene, options) => {
     let angleVal = Math.atan2(dy, -dx) - PI/2;
     angleVal = (angleVal + 3*PI/2) % (2*PI)
     //angleVal = t%(2*PI)
+    //angleVal = desiredAngle + PI/2
 
     if (angleVal > PI/2 && angleVal < 3*PI/2) {
       // console.log(angleVal)
