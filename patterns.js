@@ -13,7 +13,9 @@ import {
   drawLine,
   randInRange,
   signedAngle,
-  seededRandomRange
+  seededRandomRange,
+  triangle,
+  ptriangle
 } from './utils.js';
 
 import {
@@ -39,7 +41,7 @@ import {
 from "./consts.js"
 
 const { sin, cos, PI, random, pow, floor, abs, sqrt, max, min, sign, round } = Math;
-const {seededRandom} = MathUtils
+const {seededRandom, lerp, smoothstep} = MathUtils
 const p2 = PI*2
 
 function norm(x, base, spread) {
@@ -256,7 +258,7 @@ const genPosArray = (amountOfElements) => {
   }
   return posArray
 }
-const hardCodeAmountOfElements = 100
+const hardCodeAmountOfElements = 1000
 let prevPos = genPosArray(hardCodeAmountOfElements)
 
 const swarm1 = (scene, options) => {
@@ -268,11 +270,11 @@ const swarm1 = (scene, options) => {
   const pointToFollow = options?.pointToFollow || new THREE.Vector3(0,0,0)
   for (let i = 0; i < amountOfElements; i++) {
     const prevPosVal = prevPos[i].clone()
-    const moveAngle = sin(t + i)*PI
+    const moveAngle = triangle(t + i)*PI
 
     const newPointToFollow = new THREE.Vector3(
-      sin(moveAngle)*1,
-      cos(moveAngle)*1,
+      sin(moveAngle)*0,
+      cos(moveAngle)*0,
       0
     )
     
@@ -280,12 +282,19 @@ const swarm1 = (scene, options) => {
 
     const distToPoint = prevPosVal.distanceTo(newPointToFollow)
     const angleDiff = moveAngle - desiredAngle
-    const distF = pow(4, -distToPoint) * (40-1) + 1
-    const actualAngle = moveAngle - (angleDiff)/distF
+    // const distF = pow(2, -distToPoint) * (30-1) + 1
+    // const distF = lerp(30, 1, distToPoint)
+    const distF = (1 - smoothstep(distToPoint/10, 0, 1)) * (30-1) + 1
+    const actualAngle = moveAngle
     
-    const minSpeed = 0.6 * (1 - psin(t/2))
-    const maxSpeed = 1
-    const speed = pow(3,-distToPoint) * (maxSpeed - minSpeed) + minSpeed
+    const minSpeed = 0.01
+    const maxSpeed = 0.1
+    // const speed = pow(10,-distToPoint) * (maxSpeed - minSpeed) + minSpeed
+    // const speed = lerp(maxSpeed, minSpeed, distToPoint)
+    const speed = (1 - smoothstep(distToPoint/10, 0, 1)) * (maxSpeed - minSpeed) + minSpeed
+    
+    // console.log(distToPoint, speed)
+    // const speed = (ptriangle(t/1 + i*45645)*(maxSpeed - minSpeed) + minSpeed)
 
     const movePos = new THREE.Vector3(
       sin(actualAngle)*speed,
@@ -301,10 +310,10 @@ const swarm1 = (scene, options) => {
 
     const dist = (newPosVal.distanceTo(prevPosVal))
 
-    const maxSpriteSpeed = 80
-    const minSpriteSpeed = 40
+    const maxSpriteSpeed = 6
+    const minSpriteSpeed = 3
     const spriteSpeedThreshold = minSpriteSpeed + (maxSpriteSpeed - minSpriteSpeed)/8
-    const spriteSpeed = pow(2,-dist) * (maxSpriteSpeed - minSpriteSpeed) + minSpriteSpeed
+    const spriteSpeed = pow(100,-dist) * (maxSpriteSpeed - minSpriteSpeed) + minSpriteSpeed
     const textureIndex = spriteSpeed < spriteSpeedThreshold ? 0 : floor((t*spriteSpeed + i)%textures.length)
     const texture = textures[textureIndex].clone()
 

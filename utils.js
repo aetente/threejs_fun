@@ -23,7 +23,7 @@ import {
 }
 from "./consts.js"
 
-const {sin, cos, PI, random, pow} = Math;
+const {sin, cos, PI, random, pow, asin} = Math;
 const {seededRandom} = MathUtils;
 
 const randomSeed = 475858386;
@@ -43,6 +43,8 @@ const seededRandomRange = (xmin, xmax, seed) => (
 
 const pSin = (x) => (sin(x) + 1) / 2
 const pCos = (x) => (cos(x) + 1) / 2
+const triangle = (x) => 2 * asin(sin(x))/PI
+const ptriangle = (x) => (triangle(x) + 1) / 2
 
 const distance3D = (a,b) => {
   return sqrt(a.x*b.x + a.y*b.y + a.z*b.x)
@@ -326,6 +328,8 @@ export {
   seededRandomRange,
   pSin,
   pCos,
+  triangle,
+  ptriangle,
   distance3D,
   loadTextureF,
   getRectangleCorners,

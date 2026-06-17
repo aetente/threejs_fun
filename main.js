@@ -177,7 +177,8 @@ const main = async () => {
   // const backColor = new THREE.Color("#3c5601")
   // const backColor = new THREE.Color("#ccc")
   // const backColor = new THREE.Color(pallete[0]);
-  const backColor = new THREE.Color("#E2725B")
+  // const backColor = new THREE.Color("#E2725B")
+  const backColor = new THREE.Color("#0B4F6C")
   console.log("backColor", backColor)
   scene.background = backColor
   let t = 0;
@@ -493,7 +494,7 @@ function clearThree(obj){
     // skeleton.bones[0].rotation.y += -Math.PI / 100;
     bt+=dt
     // at = sin(bt)
-    at = bt
+    at = bt/2
     renderer.render(scene, camera);
     if (saveFrames) {
       const dataURL = renderer.domElement.toDataURL(format);
