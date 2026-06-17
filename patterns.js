@@ -256,7 +256,7 @@ const genPosArray = (amountOfElements) => {
   }
   return posArray
 }
-const hardCodeAmountOfElements = 1000
+const hardCodeAmountOfElements = 100
 let prevPos = genPosArray(hardCodeAmountOfElements)
 
 const swarm1 = (scene, options) => {
@@ -268,39 +268,44 @@ const swarm1 = (scene, options) => {
   const pointToFollow = options?.pointToFollow || new THREE.Vector3(0,0,0)
   for (let i = 0; i < amountOfElements; i++) {
     const prevPosVal = prevPos[i].clone()
-    const moveAngle = sin(t/2)*PI
+    const moveAngle = sin(t + i)*PI
 
     const newPointToFollow = new THREE.Vector3(
-      sin(moveAngle)*2,
-      cos(moveAngle)/20,
+      sin(moveAngle)*1,
+      cos(moveAngle)*1,
       0
     )
     
-    const desiredAngle = Math.atan2(newPointToFollow.y - prevPosVal.y, -(newPointToFollow.x - prevPosVal.x))
+    const desiredAngle = Math.atan2(newPointToFollow.y - prevPosVal.y, -(newPointToFollow.x - prevPosVal.x)) - PI/2
 
-    // const angleDiff = desiredAngle - moveAngle
     const distToPoint = prevPosVal.distanceTo(newPointToFollow)
-    const minSpeed = 0.01 * (1 - psin(t/2))
-    const maxSpeed = 2
+    const angleDiff = moveAngle - desiredAngle
+    const distF = pow(4, -distToPoint) * (40-1) + 1
+    const actualAngle = moveAngle - (angleDiff)/distF
+    
+    const minSpeed = 0.6 * (1 - psin(t/2))
+    const maxSpeed = 1
     const speed = pow(3,-distToPoint) * (maxSpeed - minSpeed) + minSpeed
 
     const movePos = new THREE.Vector3(
-      sin(desiredAngle)*speed,
-      cos(desiredAngle)*speed,
+      sin(actualAngle)*speed,
+      cos(actualAngle)*speed,
       0
     )
     // console.log(movePos)
     const newPosVal = prevPosVal.clone().add(movePos)
     newPos.push(newPosVal)
 
-    const planeG = new THREE.PlaneGeometry(scale, scale)
+    const sizeVal = seededRandomRange(1,3,i)
+    const planeG = new THREE.PlaneGeometry(sizeVal * scale, sizeVal * scale)
 
     const dist = (newPosVal.distanceTo(prevPosVal))
 
-    const maxSpriteSpeed = 8
-    const minSpriteSpeed = 4
-    const spriteSpeed = pow(1.2,-dist) * (maxSpriteSpeed - minSpriteSpeed) + minSpriteSpeed
-    const textureIndex = floor((t*spriteSpeed + i)%textures.length)
+    const maxSpriteSpeed = 80
+    const minSpriteSpeed = 40
+    const spriteSpeedThreshold = minSpriteSpeed + (maxSpriteSpeed - minSpriteSpeed)/8
+    const spriteSpeed = pow(2,-dist) * (maxSpriteSpeed - minSpriteSpeed) + minSpriteSpeed
+    const textureIndex = spriteSpeed < spriteSpeedThreshold ? 0 : floor((t*spriteSpeed + i)%textures.length)
     const texture = textures[textureIndex].clone()
 
     
