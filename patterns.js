@@ -291,13 +291,14 @@ const swarm1 = (scene, options) => {
     // }
 
     // previousDesiredAngle = desiredAngle
-    // desiredAngle -= PI/2
+    desiredAngle -= PI/2
 
     const currentAngleDiff = currentAngle - desiredAngle
     const currentAngleDiffNorm = Math.atan2(sin(currentAngleDiff), cos(currentAngleDiff))
 
     const distToPoint = prevPosVal.distanceTo(newPointToFollow)
     const angleDiff = moveAngle - desiredAngle
+    const moveAngleDiffNorm = Math.atan2(sin(angleDiff), cos(angleDiff))
     // const distF = pow(2, -distToPoint) * (30-1) + 1
     // const distF = lerp(30, 1, distToPoint)
     const maxDistF = 30
@@ -305,11 +306,12 @@ const swarm1 = (scene, options) => {
     const distF = (1 - smoothstep(distToPoint/4, 0, 1)) * (maxDistF-minDistF) + minDistF
     const distFReverse = (smoothstep(distToPoint/4, 0, 1)) * (maxDistF-minDistF) + minDistF
     let actualAngle = moveAngle - angleDiff/distF
-    actualAngle = (currentAngleDiffNorm * 1) - PI/2
+    actualAngle = moveAngle - (moveAngleDiffNorm/distF)
     // + moveAngle/distFReverse
+    //actualAngle=desiredAngle - PI/2
     currentAngle = actualAngle
 
-    console.log(currentAngleDiffNorm, currentAngleDiff)
+    //console.log(currentAngleDiffNorm, currentAngleDiff)
     
     const minSpeed = 0.01
     const maxSpeed = 0.1
