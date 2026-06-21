@@ -258,7 +258,7 @@ const genPosArray = (amountOfElements) => {
   }
   return posArray
 }
-const hardCodeAmountOfElements = 1
+const hardCodeAmountOfElements = 10
 let prevPos = genPosArray(hardCodeAmountOfElements)
 
 const swarm1 = (scene, options) => {
@@ -272,7 +272,9 @@ const swarm1 = (scene, options) => {
   let currentAngle = 0
   for (let i = 0; i < amountOfElements; i++) {
     const prevPosVal = prevPos[i].clone()
-    const moveAngle = triangle(t + i)*PI
+    const wi = smoothstep(i/amountOfElements, 0, 1)
+    const wi2 = wi * (4 - 1) + 1
+    const moveAngle = sin(t* wi2/3 + i*2345 + currentAngle / 10) * PI
 
     const newPointToFollow = new THREE.Vector3(
       sin(moveAngle)*0,
@@ -333,7 +335,7 @@ const swarm1 = (scene, options) => {
     newPos.push(newPosVal)
     // console.log(newPosVal)
 
-    const sizeVal = seededRandomRange(1,3,i)
+    const sizeVal = seededRandomRange(0.5,2,i)
     const planeG = new THREE.PlaneGeometry(sizeVal * scale, sizeVal * scale)
 
     const dist = (newPosVal.distanceTo(prevPosVal))
