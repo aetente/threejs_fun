@@ -8,6 +8,7 @@ import { Vector3, MathUtils } from 'three';
 import {
   isPointInPolygon,
   psin,
+  pCos,
   lerpAlongPath,
   getRandomPointBetweenPoints,
   drawLine,
@@ -274,13 +275,15 @@ const swarm1 = (scene, options) => {
     const prevPosVal = prevPos[i].clone()
     const wi = smoothstep(i/amountOfElements, 0, 1)
     const wi2 = wi * (4 - 1) + 1
-    const moveAngle = sin(t* wi2/3 + i*2345 + currentAngle / 10) * PI
+    const moveAngle = sin(t* 1/2+ i*2345) * PI
 
     const newPointToFollow = new THREE.Vector3(
       sin(moveAngle)*0,
       cos(moveAngle)*0,
       0
     )
+
+    // console.log(newPointToFollow.y)
     
     let desiredAngle = Math.atan2(newPointToFollow.y - prevPosVal.y, -(newPointToFollow.x - prevPosVal.x))
     // if (desiredAngle < 0) desiredAngle += PI*2
@@ -295,32 +298,44 @@ const swarm1 = (scene, options) => {
     // previousDesiredAngle = desiredAngle
     desiredAngle -= PI/2
 
-    const currentAngleDiff = currentAngle - desiredAngle
-    const currentAngleDiffNorm = Math.atan2(sin(currentAngleDiff), cos(currentAngleDiff))
+    // const currentAngleDiff = currentAngle - desiredAngle
+    // const currentAngleDiffNorm = Math.atan2(sin(currentAngleDiff), cos(currentAngleDiff))
 
     const distToPoint = prevPosVal.distanceTo(newPointToFollow)
     const angleDiff = moveAngle - desiredAngle
     const moveAngleDiffNorm = Math.atan2(sin(angleDiff), cos(angleDiff))
-    // const distF = pow(2, -distToPoint) * (30-1) + 1
+
+    
+    const randomAngle = currentAngle + sin(t *wi2*1 +i) * PI
+
+
+    const randomAngleDiff = randomAngle - desiredAngle
+    const randomAngleDiffNorm = Math.atan2(sin(randomAngleDiff), cos(randomAngleDiff))
     // const distF = lerp(30, 1, distToPoint)
     const maxDistF = 30
     const minDistF = 1
-    const distF = (1 - smoothstep(distToPoint/4, 0, 1)) * (maxDistF-minDistF) + minDistF
+    const distF = pow(2, -distToPoint) * (maxDistF-minDistF) + minDistF
+    // const distF = (-pow(2, -distToPoint) + 1) * (maxDistF-minDistF) + minDistF
+    // const distF = (1 - smoothstep(distToPoint/4, 0, 1)) * (maxDistF-minDistF) + minDistF
     const distFReverse = (smoothstep(distToPoint/4, 0, 1)) * (maxDistF-minDistF) + minDistF
-    let actualAngle = moveAngle - angleDiff/distF
+    let actualAngle = 0
+    // actualAngle = moveAngle - angleDiff/distF
     actualAngle = moveAngle - (moveAngleDiffNorm/distF)
+    actualAngle = randomAngle - randomAngleDiffNorm/distF
+    // actualAngle = desiredAngle
     // + moveAngle/distFReverse
     //actualAngle=desiredAngle - PI/2
-    currentAngle = actualAngle
+    // currentAngle = actualAngle
+    currentAngle = randomAngle
 
-    //console.log(currentAngleDiffNorm, currentAngleDiff)
+    // console.log(distToPoint, distF)
     
     const minSpeed = 0.01
-    const maxSpeed = 0.1
-    // const speed = pow(10,-distToPoint) * (maxSpeed - minSpeed) + minSpeed
+    const maxSpeed = 0.5
+    const speed = pow(2,-distToPoint) * (maxSpeed - minSpeed) + minSpeed
     // const speed = lerp(maxSpeed, minSpeed, distToPoint)
     // const speed = (1 - smoothstep(distToPoint/10, 0, 1)) * (maxSpeed - minSpeed) + minSpeed
-    const speed = 0.05
+    // const speed = 0.05
     
     // console.log(distToPoint, speed)
     // const speed = (ptriangle(t/1 + i*45645)*(maxSpeed - minSpeed) + minSpeed)
@@ -340,8 +355,8 @@ const swarm1 = (scene, options) => {
 
     const dist = (newPosVal.distanceTo(prevPosVal))
 
-    const maxSpriteSpeed = 6
-    const minSpriteSpeed = 3
+    const maxSpriteSpeed = 20
+    const minSpriteSpeed = 7
     const spriteSpeedThreshold = minSpriteSpeed + (maxSpriteSpeed - minSpriteSpeed)/8
     const spriteSpeed = pow(100,-dist) * (maxSpriteSpeed - minSpriteSpeed) + minSpriteSpeed
     const textureIndex = spriteSpeed < spriteSpeedThreshold ? 0 : floor((t*spriteSpeed + i)%textures.length)

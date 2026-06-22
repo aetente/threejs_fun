@@ -179,7 +179,8 @@ const main = async () => {
   // const backColor = new THREE.Color(pallete[0]);
   // const backColor = new THREE.Color("#E2725B")
   // const backColor = new THREE.Color("#0B4F6C")
-  const backColor = new THREE.Color("#D18B47")
+  // const backColor = new THREE.Color("#D18B47")
+  const backColor = new THREE.Color("#00B4D8")
   console.log("backColor", backColor)
   scene.background = backColor
   let t = 0;
@@ -474,9 +475,11 @@ function clearThree(obj){
   let currentFrame = 0;
   const format = 'image/png';
   const saveFrames = false
+  const startFrame = 100
   const framesToSave = 60 * 12; // 60 frames generate 2 seconds, so times 15 it will be 30 seconds
   function animate() {
-    if (saveFrames && currentFrame >= framesToSave) return;
+
+    if (saveFrames && currentFrame >= (startFrame + framesToSave)) return;
     requestAnimationFrame(animate);
 
     //scene.remove.apply(scene, scene.children);
@@ -497,9 +500,9 @@ function clearThree(obj){
     // at = sin(bt)
     at = bt/2
     renderer.render(scene, camera);
-    if (saveFrames) {
+    if (saveFrames && currentFrame >= startFrame) {
       const dataURL = renderer.domElement.toDataURL(format);
-      saveFrame(dataURL, `frame_${String(currentFrame).padStart(4, '0')}.png`);
+      saveFrame(dataURL, `frame_${String(currentFrame - startFrame).padStart(4, '0')}.png`);
     }
     currentFrame++;
   }
