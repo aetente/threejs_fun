@@ -259,7 +259,7 @@ const genPosArray = (amountOfElements) => {
   }
   return posArray
 }
-const hardCodeAmountOfElements = 10
+const hardCodeAmountOfElements = 100
 let prevPos = genPosArray(hardCodeAmountOfElements)
 
 const swarm1 = (scene, options) => {
@@ -269,75 +269,59 @@ const swarm1 = (scene, options) => {
   const textures = options?.textures || null
   const scale = options?.scale || 0.4
   const pointToFollow = options?.pointToFollow || new THREE.Vector3(0,0,0)
+  const avoidPoints = options?.avoidPoints || [new THREE.Vector3(0,0.5,0)]
   let previousDesiredAngle = 0
   let currentAngle = 0
+  
+  
   for (let i = 0; i < amountOfElements; i++) {
     const prevPosVal = prevPos[i].clone()
     const wi = smoothstep(i/amountOfElements, 0, 1)
     const wi2 = wi * (4 - 1) + 1
+    
+    // point to follow
     const moveAngle = sin(t* 1/2+ i*2345) * PI
-
     const newPointToFollow = new THREE.Vector3(
       sin(moveAngle)*0,
       cos(moveAngle)*0,
       0
     )
-
-    // console.log(newPointToFollow.y)
-    
     let desiredAngle = Math.atan2(newPointToFollow.y - prevPosVal.y, -(newPointToFollow.x - prevPosVal.x))
-    // if (desiredAngle < 0) desiredAngle += PI*2
-    // const desiredAngleDiff = desiredAngle - previousDesiredAngle
-    // console.log(desiredAngleDiff)
-    // const allowedAngleDiff = PI/9
-    // if (abs(desiredAngleDiff) > allowedAngleDiff) {
-    //   console.log(desiredAngleDiff)
-    //   desiredAngle = previousDesiredAngle + sign(desiredAngleDiff) * (allowedAngleDiff)
-    // }
-
-    // previousDesiredAngle = desiredAngle
     desiredAngle -= PI/2
 
-    // const currentAngleDiff = currentAngle - desiredAngle
-    // const currentAngleDiffNorm = Math.atan2(sin(currentAngleDiff), cos(currentAngleDiff))
-
     const distToPoint = prevPosVal.distanceTo(newPointToFollow)
-    const angleDiff = moveAngle - desiredAngle
-    const moveAngleDiffNorm = Math.atan2(sin(angleDiff), cos(angleDiff))
-
+    
+    
     
     const randomAngle = currentAngle + sin(t *wi2*1 +i) * PI
-
-
     const randomAngleDiff = randomAngle - desiredAngle
     const randomAngleDiffNorm = Math.atan2(sin(randomAngleDiff), cos(randomAngleDiff))
     // const distF = lerp(30, 1, distToPoint)
     const maxDistF = 30
     const minDistF = 1
     const distF = pow(2, -distToPoint) * (maxDistF-minDistF) + minDistF
-    // const distF = (-pow(2, -distToPoint) + 1) * (maxDistF-minDistF) + minDistF
-    // const distF = (1 - smoothstep(distToPoint/4, 0, 1)) * (maxDistF-minDistF) + minDistF
-    const distFReverse = (smoothstep(distToPoint/4, 0, 1)) * (maxDistF-minDistF) + minDistF
     let actualAngle = 0
-    // actualAngle = moveAngle - angleDiff/distF
-    actualAngle = moveAngle - (moveAngleDiffNorm/distF)
     actualAngle = randomAngle - randomAngleDiffNorm/distF
-    // actualAngle = desiredAngle
-    // + moveAngle/distFReverse
-    //actualAngle=desiredAngle - PI/2
-    // currentAngle = actualAngle
-    currentAngle = randomAngle
-
-    // console.log(distToPoint, distF)
     
+    avoidPoints.forEach((ap) => {
+      let avoidAngle = Math.atan2(ap.y - prevPosVal.y, -(ap.x - prevPosVal.x))
+      avoidAngle += PI/2
+      const avoidAngleDiff = randomAngle - avoidAngle
+      const avoidAngleDiffNorm  = Math.atan2(sin(avoidAngleDiff), cos(avoidAngleDiff))
+      const distToAvoidP = prevPosVal.distanceTo(ap)
+      const maxAvoidDistF = 30
+      const minAvoidDistF = 1
+      const avoidDistF = -pow(2, -distToAvoidP) * (maxDistF-minDistF) + maxDistF
+      actualAngle = actualAngle - avoidAngleDiffNorm/avoidDistF
+    })
+    
+    currentAngle = randomAngle
+    
+    // movement speed
     const minSpeed = 0.01
     const maxSpeed = 0.5
     const speed = pow(2,-distToPoint) * (maxSpeed - minSpeed) + minSpeed
-    // const speed = lerp(maxSpeed, minSpeed, distToPoint)
-    // const speed = (1 - smoothstep(distToPoint/10, 0, 1)) * (maxSpeed - minSpeed) + minSpeed
     // const speed = 0.05
-    
-    // console.log(distToPoint, speed)
     // const speed = (ptriangle(t/1 + i*45645)*(maxSpeed - minSpeed) + minSpeed)
 
     const movePos = new THREE.Vector3(
@@ -345,16 +329,17 @@ const swarm1 = (scene, options) => {
       cos(actualAngle)*speed,
       0
     )
-    // console.log(movePos)
     const newPosVal = prevPosVal.clone().add(movePos)
     newPos.push(newPosVal)
-    // console.log(newPosVal)
 
     const sizeVal = seededRandomRange(0.5,2,i)
     const planeG = new THREE.PlaneGeometry(sizeVal * scale, sizeVal * scale)
 
+    // distance from last point
+    // the faster speed of dot, the lower sprite speed
+    // TODO: probably can use the speed defined above
     const dist = (newPosVal.distanceTo(prevPosVal))
-
+    // sprite speed
     const maxSpriteSpeed = 20
     const minSpriteSpeed = 7
     const spriteSpeedThreshold = minSpriteSpeed + (maxSpriteSpeed - minSpriteSpeed)/8
@@ -362,18 +347,14 @@ const swarm1 = (scene, options) => {
     const textureIndex = spriteSpeed < spriteSpeedThreshold ? 0 : floor((t*spriteSpeed + i)%textures.length)
     const texture = textures[textureIndex].clone()
 
-    
+    // rotate the pigeon acrding to where it moves
+    // TODO: probably can use angle defined above currentAngle 
     const dx = newPosVal.x - prevPosVal.x;
     const dy = newPosVal.y - prevPosVal.y;
-    
-
     let angleVal = Math.atan2(dy, dx);
     angleVal = (angleVal + 2*PI) % (2*PI)
-    //angleVal = t%(2*PI)
-    //angleVal = desiredAngle + PI/2
 
     if (angleVal > PI/2 && angleVal < 3*PI/2) {
-      // console.log(angleVal)
       texture.flipY = false
       texture.needsUpdate = true
     } 
@@ -382,17 +363,11 @@ const swarm1 = (scene, options) => {
       texture.needsUpdate = true
     }
 
-    // angleVal += PI
-
 
     const material = new THREE.MeshBasicMaterial({ map: texture, transparent: true })
     const shape = new THREE.Mesh(planeG, material);
 
     shape.rotation.z = angleVal
-    // if (abs(newPosVal.x) > 3 || abs(newPosVal.y) > 3) {
-    //   newPosVal.x = 0
-    //   newPosVal.y = 0
-    // }
     shape.position.set(newPosVal.x, newPosVal.y, newPosVal.z);
     //shape.position.set()
     scene.add(shape);
