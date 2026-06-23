@@ -269,7 +269,7 @@ const swarm1 = (scene, options) => {
   const textures = options?.textures || null
   const scale = options?.scale || 0.4
   const pointToFollow = options?.pointToFollow || new THREE.Vector3(0,0,0)
-  const avoidPoints = options?.avoidPoints || [new THREE.Vector3(0,0.5,0)]
+  const avoidPoints = options?.avoidPoints || [new THREE.Vector3(0,4,0)]
   let previousDesiredAngle = 0
   let currentAngle = 0
   
@@ -293,7 +293,7 @@ const swarm1 = (scene, options) => {
     
     
     
-    const randomAngle = currentAngle + sin(t *wi2*1 +i) * PI
+    const randomAngle = currentAngle + sin(t *wi2/3 +i) * PI
     const randomAngleDiff = randomAngle - desiredAngle
     const randomAngleDiffNorm = Math.atan2(sin(randomAngleDiff), cos(randomAngleDiff))
     // const distF = lerp(30, 1, distToPoint)
@@ -303,7 +303,10 @@ const swarm1 = (scene, options) => {
     let actualAngle = 0
     actualAngle = randomAngle - randomAngleDiffNorm/distF
     
-    avoidPoints.forEach((ap) => {
+    let addSpeed = 0
+    avoidPoints.forEach((avoidPoint) => {
+      const fakePoint = new THREE.Vector3(sin(t*4)*5, cos(t*4)*5, 0)
+      const ap = fakePoint
       let avoidAngle = Math.atan2(ap.y - prevPosVal.y, -(ap.x - prevPosVal.x))
       avoidAngle += PI/2
       const avoidAngleDiff = randomAngle - avoidAngle
@@ -311,8 +314,19 @@ const swarm1 = (scene, options) => {
       const distToAvoidP = prevPosVal.distanceTo(ap)
       const maxAvoidDistF = 30
       const minAvoidDistF = 1
+      // upside down
+      // the closer to point, the less value
       const avoidDistF = -pow(2, -distToAvoidP) * (maxDistF-minDistF) + maxDistF
+      
+      // console.log(avoidDistF)
       actualAngle = actualAngle - avoidAngleDiffNorm/avoidDistF
+      addSpeed += 3/(avoidDistF)
+
+      const circle = new THREE.CircleGeometry(0.5, 32);
+      const material = new THREE.MeshBasicMaterial({ color: "#ffffff" });
+      const shape = new THREE.Mesh(circle, material);
+      shape.position.set(ap.x, ap.y, 0);
+      scene.add(shape);
     })
     
     currentAngle = randomAngle
@@ -320,7 +334,8 @@ const swarm1 = (scene, options) => {
     // movement speed
     const minSpeed = 0.01
     const maxSpeed = 0.5
-    const speed = pow(2,-distToPoint) * (maxSpeed - minSpeed) + minSpeed
+    let speed = pow(2,-distToPoint) * (maxSpeed - minSpeed) + minSpeed
+    speed += addSpeed
     // const speed = 0.05
     // const speed = (ptriangle(t/1 + i*45645)*(maxSpeed - minSpeed) + minSpeed)
 

@@ -44,9 +44,9 @@ const main = async () => {
   const scene = new THREE.Scene();
   // const camera = new THREE.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 0.1, 1000);
   
-  const camera = new THREE.PerspectiveCamera(35, 1, 0.1, 1000);
+  const camera = new THREE.PerspectiveCamera(35, totalWidth / totalHeight, 0.1, 1000);
 
-  camera.position.z = 15;
+  camera.position.z = 40;
   camera.position.x = 0
 
   const renderer = new THREE.WebGLRenderer({
@@ -180,7 +180,8 @@ const main = async () => {
   // const backColor = new THREE.Color("#E2725B")
   // const backColor = new THREE.Color("#0B4F6C")
   // const backColor = new THREE.Color("#D18B47")
-  const backColor = new THREE.Color("#00B4D8")
+  // const backColor = new THREE.Color("#00B4D8")
+  const backColor = new THREE.Color("#44ff99")
   console.log("backColor", backColor)
   scene.background = backColor
   let t = 0;
