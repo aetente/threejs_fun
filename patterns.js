@@ -269,7 +269,7 @@ const swarm1 = (scene, options) => {
   const textures = options?.textures || null
   const scale = options?.scale || 0.4
   const pointToFollow = options?.pointToFollow || new THREE.Vector3(0,0,0)
-  const avoidPoints = options?.avoidPoints || [new THREE.Vector3(0,4,0)]
+  const avoidPoints = options?.avoidPoints || [new THREE.Vector3(0,4,0), new THREE.Vector3(0,4,0)]
   let previousDesiredAngle = 0
   let currentAngle = 0
   
@@ -293,7 +293,7 @@ const swarm1 = (scene, options) => {
     
     
     
-    const randomAngle = currentAngle + sin(t *wi2/3 +i) * PI
+    const randomAngle = currentAngle + sin(t *wi2*1 +i) * PI
     const randomAngleDiff = randomAngle - desiredAngle
     const randomAngleDiffNorm = Math.atan2(sin(randomAngleDiff), cos(randomAngleDiff))
     // const distF = lerp(30, 1, distToPoint)
@@ -305,7 +305,7 @@ const swarm1 = (scene, options) => {
     
     let addSpeed = 0
     avoidPoints.forEach((avoidPoint) => {
-      const fakePoint = new THREE.Vector3(sin(t*4)*5, cos(t*4)*5, 0)
+      const fakePoint = new THREE.Vector3(sin(t*4)*5, cos(t*3)*5, 0)
       const ap = fakePoint
       let avoidAngle = Math.atan2(ap.y - prevPosVal.y, -(ap.x - prevPosVal.x))
       avoidAngle += PI/2
@@ -316,15 +316,20 @@ const swarm1 = (scene, options) => {
       const minAvoidDistF = 1
       // upside down
       // the closer to point, the less value
-      //const avoidDistF = -pow(2, -distToAvoidP) * (maxDistF-minDistF) + maxDistF
-      const avoidDistF  = smoothstep(distToAvoidP)
+      // const avoidDistF = -pow(2, -distToAvoidP) * (maxDistF-minDistF) + maxDistF
+      const alterDist = pow(distToAvoidP/8, 0.5)
+      const avoidDistF  = smoothstep(distToAvoidP, 0, 1)  * (maxDistF-minDistF) + minDistF
       
-      // console.log(avoidDistF)
-      actualAngle = actualAngle - avoidAngleDiffNorm/avoidDistF
-      addSpeed += 3/(avoidDistF)
+      // actualAngle = actualAngle - avoidAngleDiffNorm/avoidDistF
+      // addSpeed += 1/avoidDistF
+      // console.log(addSpeed)
+      if (distToAvoidP < 2) {
+        addSpeed += 0.1
+        actualAngle = avoidAngle
+      }
 
       const circle = new THREE.CircleGeometry(0.5, 32);
-      const material = new THREE.MeshBasicMaterial({ color: "#ffffff" });
+      const material = new THREE.MeshBasicMaterial({ color: "#ff0000" });
       const shape = new THREE.Mesh(circle, material);
       shape.position.set(ap.x, ap.y, 0);
       scene.add(shape);
