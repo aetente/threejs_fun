@@ -316,7 +316,8 @@ const swarm1 = (scene, options) => {
       const minAvoidDistF = 1
       // upside down
       // the closer to point, the less value
-      const avoidDistF = -pow(2, -distToAvoidP) * (maxDistF-minDistF) + maxDistF
+      //const avoidDistF = -pow(2, -distToAvoidP) * (maxDistF-minDistF) + maxDistF
+      const avoidDistF  = smoothstep(distToAvoidP)
       
       // console.log(avoidDistF)
       actualAngle = actualAngle - avoidAngleDiffNorm/avoidDistF
