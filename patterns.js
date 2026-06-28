@@ -269,7 +269,7 @@ const swarm1 = (scene, options) => {
   const textures = options?.textures || null
   const scale = options?.scale || 0.4
   const pointToFollow = options?.pointToFollow || new THREE.Vector3(0,0,0)
-  const avoidPoints = options?.avoidPoints || [new THREE.Vector3(0,4,0), new THREE.Vector3(0,4,0)]
+  const avoidPoints = options?.avoidPoints || [new THREE.Vector3(0,4,0), new THREE.Vector3(0,4,0), 0 ,0,0,0,0,0,0]
   let previousDesiredAngle = 0
   let currentAngle = 0
   
@@ -280,10 +280,10 @@ const swarm1 = (scene, options) => {
     const wi2 = wi * (4 - 1) + 1
     
     // point to follow
-    const moveAngle = sin(t* 1/2+ i*2345) * PI
+    const moveAngle = sin(t* 1/2+ i*1) * PI
     const newPointToFollow = new THREE.Vector3(
-      sin(moveAngle)*0,
-      cos(moveAngle)*0,
+      sin(moveAngle)*1,
+      cos(moveAngle)*1,
       0
     )
     let desiredAngle = Math.atan2(newPointToFollow.y - prevPosVal.y, -(newPointToFollow.x - prevPosVal.x))
@@ -304,8 +304,8 @@ const swarm1 = (scene, options) => {
     actualAngle = randomAngle - randomAngleDiffNorm/distF
     
     let addSpeed = 0
-    avoidPoints.forEach((avoidPoint) => {
-      const fakePoint = new THREE.Vector3(sin(t*4)*5, cos(t*3)*5, 0)
+    avoidPoints.forEach((avoidPoint, j) => {
+      const fakePoint = new THREE.Vector3(sin(j + t*4)*5, cos(1.2*j + t*4)*5, 0)
       const ap = fakePoint
       let avoidAngle = Math.atan2(ap.y - prevPosVal.y, -(ap.x - prevPosVal.x))
       avoidAngle += PI/2
@@ -323,12 +323,12 @@ const swarm1 = (scene, options) => {
       // actualAngle = actualAngle - avoidAngleDiffNorm/avoidDistF
       // addSpeed += 1/avoidDistF
       // console.log(addSpeed)
-      if (distToAvoidP < 2) {
+      if (distToAvoidP < 1) {
         addSpeed += 0.1
         actualAngle = avoidAngle
       }
 
-      const circle = new THREE.CircleGeometry(0.5, 32);
+      const circle = new THREE.CircleGeometry(0.125, 32);
       const material = new THREE.MeshBasicMaterial({ color: "#ff0000" });
       const shape = new THREE.Mesh(circle, material);
       shape.position.set(ap.x, ap.y, 0);
@@ -338,8 +338,8 @@ const swarm1 = (scene, options) => {
     currentAngle = randomAngle
     
     // movement speed
-    const minSpeed = 0.01
-    const maxSpeed = 0.5
+    const minSpeed = 0.1
+    const maxSpeed = 0.3
     let speed = pow(2,-distToPoint) * (maxSpeed - minSpeed) + minSpeed
     speed += addSpeed
     // const speed = 0.05
