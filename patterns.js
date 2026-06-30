@@ -8,6 +8,7 @@ import { Vector3, MathUtils } from 'three';
 import {
   isPointInPolygon,
   psin,
+  pcos,
   pCos,
   lerpAlongPath,
   getRandomPointBetweenPoints,
@@ -269,23 +270,32 @@ const swarm1 = (scene, options) => {
   const textures = options?.textures || null
   const scale = options?.scale || 0.4
   const pointToFollow = options?.pointToFollow || new THREE.Vector3(0,0,0)
-  const avoidPoints = options?.avoidPoints || [new THREE.Vector3(0,4,0), new THREE.Vector3(0,4,0), 0 ,0,0,0,0,0,0]
+  const avoidPoints = options?.avoidPoints || [
+    //0
+    //new THREE.Vector3(0,4,0), new THREE.Vector3(0,4,0), 0 ,0,0,0,0,0,0
+    
+  ]
   let previousDesiredAngle = 0
   let currentAngle = 0
   
   
   for (let i = 0; i < amountOfElements; i++) {
+    const isFollow = i != 0 && prevPos[0]
+    const randomDotIndex = floor(seededRandom(i) * amountOfElements)
     const prevPosVal = prevPos[i].clone()
     const wi = smoothstep(i/amountOfElements, 0, 1)
     const wi2 = wi * (4 - 1) + 1
     
     // point to follow
-    const moveAngle = sin(t* 1/2+ i*1) * PI
-    const newPointToFollow = new THREE.Vector3(
-      sin(moveAngle)*1,
-      cos(moveAngle)*1,
+    const moveAngle = sin(t* 1 + i*1) * PI
+    let newPointToFollow = new THREE.Vector3(
+      sin(moveAngle)*4,
+      cos(moveAngle)*4,
       0
     )
+    if (isFollow) {
+      newPointToFollow = prevPos[0]
+    }
     let desiredAngle = Math.atan2(newPointToFollow.y - prevPosVal.y, -(newPointToFollow.x - prevPosVal.x))
     desiredAngle -= PI/2
 
@@ -293,13 +303,18 @@ const swarm1 = (scene, options) => {
     
     
     
-    const randomAngle = currentAngle + sin(t *wi2*1 +i) * PI
+    const randomAngle = 
+      //currentAngle + i*0.6
+      currentAngle + sin(t *wi2*2 +i) * PI
     const randomAngleDiff = randomAngle - desiredAngle
     const randomAngleDiffNorm = Math.atan2(sin(randomAngleDiff), cos(randomAngleDiff))
     // const distF = lerp(30, 1, distToPoint)
     const maxDistF = 30
     const minDistF = 1
-    const distF = pow(2, -distToPoint) * (maxDistF-minDistF) + minDistF
+    let distF = pow(2 + (20*pcos(i + t)), -distToPoint) * (maxDistF-minDistF) + minDistF
+    if (!isFollow) {
+      distF = pow(2, -distToPoint) * (maxDistF-minDistF) + minDistF
+    }
     let actualAngle = 0
     actualAngle = randomAngle - randomAngleDiffNorm/distF
     
@@ -392,6 +407,13 @@ const swarm1 = (scene, options) => {
     shape.position.set(newPosVal.x, newPosVal.y, newPosVal.z);
     //shape.position.set()
     scene.add(shape);
+    if (!isFollow) {
+      const circle = new THREE.CircleGeometry(0.25, 32);
+      const material = new THREE.MeshBasicMaterial({ color: "#ff0000" });
+      const shape = new THREE.Mesh(circle, material);
+      shape.position.set(newPosVal.x, newPosVal.y, -1);
+      scene.add(shape);
+    }
     prevPos[i] = newPosVal.clone()
   }
 }

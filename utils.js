@@ -135,6 +135,10 @@ function psin(x) {
   return (sin(x) + 1) / 2
 }
 
+function pcos(x) {
+  return (sin(x) + 1) / 2
+}
+
 function getPerpendicularPoint(posA, posB, distance = 1) {
   // 1. Get the direction from A to B
   const dir = new THREE.Vector3().subVectors(posB, posA);
@@ -337,6 +341,7 @@ export {
   fractionValue,
   isPointInPolygon,
   psin,
+  pcos,
   getAngleXYfrom3D,
   getAngle360,
   getAngle2DRadians,
