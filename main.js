@@ -46,7 +46,7 @@ const main = async () => {
   
   const camera = new THREE.PerspectiveCamera(35, totalWidth / totalHeight, 0.1, 1000);
 
-  camera.position.z = 40;
+  camera.position.z = 20;
   camera.position.x = 0
 
   const renderer = new THREE.WebGLRenderer({
@@ -67,8 +67,8 @@ const main = async () => {
   //fl1.colorSpace = THREE.SRGBColorSpace;
   const fl2 = await loadTextureF('/assets/flowers/fl2.png')
   //fl2.colorSpace = THREE.SRGBColorSpace;
-  const pigeonTexture1 = await loadTextureF('/assets/textures/pigeon/Pigeon1.png')
-  const pigeonTexture2 = await loadTextureF('/assets/textures/pigeon/Pigeon2.png')
+  const pigeonTexture1 = await loadTextureF('/assets/textures/pigeon/Pigeon1Saturated.png')
+  const pigeonTexture2 = await loadTextureF('/assets/textures/pigeon/Pigeon2Saturated.png')
   
   function doDymanicsLines(lines) {
     lines.forEach((line,i) => {
@@ -182,7 +182,8 @@ const main = async () => {
   // const backColor = new THREE.Color("#D18B47")
   // const backColor = new THREE.Color("#00B4D8")
   // const backColor = new THREE.Color("#44ff99")
-  const backColor = new THREE.Color("#0F141C")
+  // const backColor = new THREE.Color("#0F141C")
+  const backColor = new THREE.Color("#3300FF")
   console.log("backColor", backColor)
   scene.background = backColor
   let t = 0;

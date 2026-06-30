@@ -289,8 +289,8 @@ const swarm1 = (scene, options) => {
     // point to follow
     const moveAngle = sin(t* 1 + i*1) * PI
     let newPointToFollow = new THREE.Vector3(
-      sin(moveAngle)*4,
-      cos(moveAngle)*4,
+      sin(moveAngle)*2,
+      cos(moveAngle)*2 + 4,
       0
     )
     if (isFollow) {
@@ -409,7 +409,7 @@ const swarm1 = (scene, options) => {
     scene.add(shape);
     if (!isFollow) {
       const circle = new THREE.CircleGeometry(0.25, 32);
-      const material = new THREE.MeshBasicMaterial({ color: "#ff0000" });
+      const material = new THREE.MeshBasicMaterial({ color: "#CCFF00" });
       const shape = new THREE.Mesh(circle, material);
       shape.position.set(newPosVal.x, newPosVal.y, -1);
       scene.add(shape);
