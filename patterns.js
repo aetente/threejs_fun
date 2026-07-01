@@ -313,7 +313,7 @@ const swarm1 = (scene, options) => {
     const minDistF = 1
     let distF = pow(2 + (20*pcos(i + t)), -distToPoint) * (maxDistF-minDistF) + minDistF
     if (!isFollow) {
-      distF = pow(5, -distToPoint) * (maxDistF-minDistF) + minDistF
+      distF = pow(50, -distToPoint) * (maxDistF-minDistF) + minDistF
     }
     let actualAngle = 0
     actualAngle = randomAngle - randomAngleDiffNorm/distF
@@ -353,11 +353,11 @@ const swarm1 = (scene, options) => {
     currentAngle = randomAngle
     
     // movement speed
-    const minSpeed = 0.1
-    const maxSpeed = 0.3
+    const minSpeed = 0.05
+    const maxSpeed = 0.15
     let speed = pow(2,-distToPoint) * (maxSpeed - minSpeed) + minSpeed
     if (!isFollow) {
-      speed += 0.3
+      speed += 0.05
     }
     speed += addSpeed
     // const speed = 0.05
@@ -382,7 +382,8 @@ const swarm1 = (scene, options) => {
     const maxSpriteSpeed = 20
     const minSpriteSpeed = 7
     const spriteSpeedThreshold = minSpriteSpeed + (maxSpriteSpeed - minSpriteSpeed)/8
-    const spriteSpeed = pow(100,-dist) * (maxSpriteSpeed - minSpriteSpeed) + minSpriteSpeed
+    let spriteSpeed = pow(100,-dist) * (maxSpriteSpeed - minSpriteSpeed) + minSpriteSpeed
+    spriteSpeed *= 3
     const textureIndex = spriteSpeed < spriteSpeedThreshold ? 0 : floor((t*spriteSpeed + i)%textures.length)
     const texture = textures[textureIndex].clone()
 
@@ -412,15 +413,21 @@ const swarm1 = (scene, options) => {
     scene.add(shape);
     if (!isFollow) {
       const circle = new THREE.CircleGeometry(0.25, 32);
-      const material = new THREE.MeshBasicMaterial({ color: "#CCFF00" });
+      const material = new THREE.MeshBasicMaterial({ color:
+        // "#CCFF00"
+        "#44FF99"
+      });
       const shape = new THREE.Mesh(circle, material);
       shape.position.set(newPosVal.x, newPosVal.y, -1);
       scene.add(shape);
       /////
-      const circle2 = new THREE.CircleGeometry(0.1, 32);
-      const material2 = new THREE.MeshBasicMaterial({ color: "#ff007f" });
+      const circle2 = new THREE.CircleGeometry(1, 32);
+      const material2 = new THREE.MeshBasicMaterial({ color: 
+        // "#ff007f"
+        "#FF7700"
+      });
       const shape2 = new THREE.Mesh(circle2, material2);
-      shape2.position.set(newPointToFollow.x, newPointToFollow.y, -1);
+      shape2.position.set(newPointToFollow.x, newPointToFollow.y, -2);
       scene.add(shape2);
     }
     prevPos[i] = newPosVal.clone()

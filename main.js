@@ -183,7 +183,8 @@ const main = async () => {
   // const backColor = new THREE.Color("#00B4D8")
   // const backColor = new THREE.Color("#44ff99")
   // const backColor = new THREE.Color("#0F141C")
-  const backColor = new THREE.Color("#3300FF")
+  // const backColor = new THREE.Color("#3300FF")
+  const backColor = new THREE.Color("#FF44AA")
   console.log("backColor", backColor)
   scene.background = backColor
   let t = 0;
@@ -360,7 +361,7 @@ const main = async () => {
     const si = 3
     const testPointsOffset =
       new Vector3(
-        0,-4,
+        si*sin(ni*PI*2),-4,
         //si*sin(ni*PI*2),
         //si*cos(ni*PI*2),
         0
@@ -372,7 +373,7 @@ const main = async () => {
       p.z += testPointsOffset.z
     })
     //await doText()
-    const rx = 2*sin(10*at + 5*ni)
+    const rx = 2*sin(10*at + sin(at) + 5*ni)
     const ry = 2*cos(10*at + 5*ni)
     const refPoint = new Vector3(0 + rx,0 + ry,0)
     const theAngle = 
@@ -387,10 +388,10 @@ const main = async () => {
       amountOfElements:10
     })
     pattern1(scene, testPoints, {
-      scale:4,
+      scale:2,
       dotScale: 8,
       t: at,
-      maxLines: 80,
+      maxLines: 160,
       limit: 1,
       initAngle: -PI/2,
       lineColor: "#000",
@@ -485,7 +486,7 @@ function clearThree(obj){
   let currentFrame = 0;
   const format = 'image/png';
   const saveFrames = false
-  const startFrame = 100
+  const startFrame = 0
   const framesToSave = 60 * 12; // 60 frames generate 2 seconds, so times 15 it will be 30 seconds
   function animate() {
 
@@ -508,7 +509,7 @@ function clearThree(obj){
     // skeleton.bones[0].rotation.y += -Math.PI / 100;
     bt+=dt
     // at = sin(bt)
-    at = bt/2
+    at = bt/4
     renderer.render(scene, camera);
     if (saveFrames && currentFrame >= startFrame) {
       const dataURL = renderer.domElement.toDataURL(format);
