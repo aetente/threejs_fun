@@ -339,13 +339,13 @@ const main = async () => {
   let dt = 0.03
   
   const testGround = async () => {
-    const maxP = 30
+    const maxP = 1
     for(let i = 0; i < maxP; i++) {
       
     const ni = (i/maxP) + 1
     
     // const avoidPoints = generateAvoidPoints()
-    const scaleRect = new Vector2(4,0)
+    const scaleRect = new Vector2(1,0)
     const testPoints = [
       new Vector3(0,0,0),
       new Vector3(0,scaleRect.y,0),
@@ -360,8 +360,9 @@ const main = async () => {
     const si = 3
     const testPointsOffset =
       new Vector3(
-        si*sin(ni*PI*2),
-        si*cos(ni*PI*2),
+        0,-4,
+        //si*sin(ni*PI*2),
+        //si*cos(ni*PI*2),
         0
       )
     // drawCircle(testPointsOffset, 0xff0000, 0.1)
@@ -371,16 +372,22 @@ const main = async () => {
       p.z += testPointsOffset.z
     })
     //await doText()
-    const rx = 0.1*sin(10*at + 5*ni)
-    const ry = 0.1*cos(10*at + 5*ni)
+    const rx = 2*sin(10*at + 5*ni)
+    const ry = 2*cos(10*at + 5*ni)
     const refPoint = new Vector3(0 + rx,0 + ry,0)
     const theAngle = 
       refPoint.angleTo(testPointsOffset)
       //-PI/2
       //2.0671854475079234
     // drawCircle(refPoint, 0x00ff00, 0.1)
+    swarm1(scene, {
+      t: at,
+      textures: [pigeonTexture1, pigeonTexture2],
+      pointToFollow: refPoint,
+      amountOfElements:10
+    })
     pattern1(scene, testPoints, {
-      scale:1,
+      scale:4,
       dotScale: 8,
       t: at,
       maxLines: 80,
@@ -488,8 +495,8 @@ function clearThree(obj){
     //scene.remove.apply(scene, scene.children);
     clearThree(scene);
     //while(scene.children.length > 0) {scene.remove(scene.children[0])}
-    // testGround()
-    swarm1(scene, {t: at, textures: [pigeonTexture1, pigeonTexture2]})
+    testGround()
+    //swarm1(scene, {t: at, textures: [pigeonTexture1, pigeonTexture2]})
     // dancePerson1(scene, {offset: new Vector3(-1.5,0,2)})
     // dancePerson2(scene, {offset: new Vector3(1.5,0,2)})
     // basicPerson(scene, {pose: testPose5, offset: new Vector3(0,0,2), scale: 1, hasOutline: true})

@@ -269,7 +269,7 @@ const swarm1 = (scene, options) => {
   const newPos = []
   const textures = options?.textures || null
   const scale = options?.scale || 0.4
-  const pointToFollow = options?.pointToFollow || new THREE.Vector3(0,0,0)
+  const pointToFollow = options?.pointToFollow || null
   const avoidPoints = options?.avoidPoints || [
     //0
     //new THREE.Vector3(0,4,0), new THREE.Vector3(0,4,0), 0 ,0,0,0,0,0,0
@@ -288,7 +288,7 @@ const swarm1 = (scene, options) => {
     
     // point to follow
     const moveAngle = sin(t* 1 + i*1) * PI
-    let newPointToFollow = new THREE.Vector3(
+    let newPointToFollow = pointToFollow || new THREE.Vector3(
       sin(moveAngle)*2,
       cos(moveAngle)*2 + 4,
       0
@@ -313,7 +313,7 @@ const swarm1 = (scene, options) => {
     const minDistF = 1
     let distF = pow(2 + (20*pcos(i + t)), -distToPoint) * (maxDistF-minDistF) + minDistF
     if (!isFollow) {
-      distF = pow(2, -distToPoint) * (maxDistF-minDistF) + minDistF
+      distF = pow(5, -distToPoint) * (maxDistF-minDistF) + minDistF
     }
     let actualAngle = 0
     actualAngle = randomAngle - randomAngleDiffNorm/distF
@@ -356,6 +356,9 @@ const swarm1 = (scene, options) => {
     const minSpeed = 0.1
     const maxSpeed = 0.3
     let speed = pow(2,-distToPoint) * (maxSpeed - minSpeed) + minSpeed
+    if (!isFollow) {
+      speed += 0.3
+    }
     speed += addSpeed
     // const speed = 0.05
     // const speed = (ptriangle(t/1 + i*45645)*(maxSpeed - minSpeed) + minSpeed)
@@ -413,6 +416,12 @@ const swarm1 = (scene, options) => {
       const shape = new THREE.Mesh(circle, material);
       shape.position.set(newPosVal.x, newPosVal.y, -1);
       scene.add(shape);
+      /////
+      const circle2 = new THREE.CircleGeometry(0.1, 32);
+      const material2 = new THREE.MeshBasicMaterial({ color: "#ff007f" });
+      const shape2 = new THREE.Mesh(circle2, material2);
+      shape2.position.set(newPointToFollow.x, newPointToFollow.y, -1);
+      scene.add(shape2);
     }
     prevPos[i] = newPosVal.clone()
   }
