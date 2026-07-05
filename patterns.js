@@ -136,6 +136,7 @@ function pattern1(scene, pointsArray, options) {
         //   angleRadians += 4 * Math.PI;
         // } 
         desiredAngle =
+        //Math.atan2(sin(angleRadians), cos(angleRadians))
           // angleRadians
           // angleRadians - PI/2
           (angleRadians + 3*PI/2) % (2*PI)
@@ -160,10 +161,14 @@ function pattern1(scene, pointsArray, options) {
         //console.log(desiredAngle, previousPosV2)
       }
       const avoidAngles = []
+      const angleValDiff = desiredAngle - angleVal
+      const angleValDiffNorm = Math.atan2(sin(angleValDiff), cos(angleValDiff))
       angleVal = 
         //desiredAngle
+        //angleVal
+        //+ (desiredAngle - angleVal%(2*PI))/2
         angleVal
-        + (desiredAngle - angleVal%(2*PI))/2
+        + angleValDiffNorm/2
         //*2
         * (distFactor)
       if (avoidPoints) {
@@ -421,7 +426,7 @@ const swarm1 = (scene, options) => {
       shape.position.set(newPosVal.x, newPosVal.y, -1);
       scene.add(shape);
       /////
-      const circle2 = new THREE.CircleGeometry(1, 32);
+      const circle2 = new THREE.CircleGeometry(0.1, 32);
       const material2 = new THREE.MeshBasicMaterial({ color: 
         // "#ff007f"
         "#FF7700"

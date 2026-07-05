@@ -381,17 +381,19 @@ const main = async () => {
       //-PI/2
       //2.0671854475079234
     // drawCircle(refPoint, 0x00ff00, 0.1)
+    if (i == 0) {
     swarm1(scene, {
       t: at,
       textures: [pigeonTexture1, pigeonTexture2],
       pointToFollow: refPoint,
       amountOfElements:10
     })
+    }
     pattern1(scene, testPoints, {
-      scale:2,
+      scale:4,
       dotScale: 8,
       t: at,
-      maxLines: 160,
+      maxLines: 60,
       limit: 1,
       initAngle: -PI/2,
       lineColor: "#000",
