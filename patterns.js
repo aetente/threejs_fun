@@ -121,12 +121,13 @@ function pattern1(scene, pointsArray, options) {
       //const correctAngle = angleChange + ((desiredAngle - angleChange)%p2)/1
       //let distFactor = min(1,1/(2*distToRef-1))
       //let distFactor = 1
-      const distThreshold = 2
+      const distThreshold = 3
       let distFactor = max(1*min(distThreshold, distToRef - distThreshold),0)
+      // distFactor = pow(1.5, -distToRef) * (200-1) + 1
       angleVal = previousAngle + angleChange
       if (angleToRef) {
         
-        desiredAngle = signedAngle( previousPosV2, refPointV2)
+        // desiredAngle = signedAngle( previousPosV2, refPointV2)
         // Angle of point B relative to point A
         const dx = refPoint.x - previousPos.x;
         const dy = refPoint.y - previousPos.y;
@@ -135,24 +136,24 @@ function pattern1(scene, pointsArray, options) {
         // if (angleRadians < 0) {
         //   angleRadians += 4 * Math.PI;
         // } 
-        desiredAngle =
+        desiredAngle = angleRadians - PI/2
         //Math.atan2(sin(angleRadians), cos(angleRadians))
           // angleRadians
           // angleRadians - PI/2
-          (angleRadians + 3*PI/2) % (2*PI)
+          // (angleRadians + 3*PI/2) % (2*PI)
           // previousPosV2.angleTo(refPointV2)
           // if (desiredAngle < 0) {
           //   desiredAngle += 2 * PI;
           // }
 
         // quick fix for angle jumping
-        if (j > 0) {
-          if (desiredAngle - previousDesiredAngle > PI) {
-            desiredAngle -= 2*PI
-          } else if (desiredAngle - previousDesiredAngle < -PI) {
-            desiredAngle += 2*PI
-          }
-        }
+        // if (j > 0) {
+        //   if (desiredAngle - previousDesiredAngle > PI) {
+        //     desiredAngle -= 2*PI
+        //   } else if (desiredAngle - previousDesiredAngle < -PI) {
+        //     desiredAngle += 2*PI
+        //   }
+        // }
 
         previousDesiredAngle = desiredAngle
         // console.log(previousPosV2, refPointV2, desiredAngle)
@@ -168,7 +169,7 @@ function pattern1(scene, pointsArray, options) {
         //angleVal
         //+ (desiredAngle - angleVal%(2*PI))/2
         angleVal
-        + angleValDiffNorm/2
+        + angleValDiffNorm
         //*2
         * (distFactor)
       if (avoidPoints) {
@@ -420,7 +421,9 @@ const swarm1 = (scene, options) => {
       const circle = new THREE.CircleGeometry(0.25, 32);
       const material = new THREE.MeshBasicMaterial({ color:
         // "#CCFF00"
-        "#44FF99"
+        // "#44FF99"
+        // "#2F4858"
+        "#BC6C25"
       });
       const shape = new THREE.Mesh(circle, material);
       shape.position.set(newPosVal.x, newPosVal.y, -1);
@@ -429,7 +432,9 @@ const swarm1 = (scene, options) => {
       const circle2 = new THREE.CircleGeometry(0.1, 32);
       const material2 = new THREE.MeshBasicMaterial({ color: 
         // "#ff007f"
-        "#FF7700"
+        // "#FF7700"
+        // "#D4A373"
+        "#606C38"
       });
       const shape2 = new THREE.Mesh(circle2, material2);
       shape2.position.set(newPointToFollow.x, newPointToFollow.y, -2);

@@ -184,7 +184,9 @@ const main = async () => {
   // const backColor = new THREE.Color("#44ff99")
   // const backColor = new THREE.Color("#0F141C")
   // const backColor = new THREE.Color("#3300FF")
-  const backColor = new THREE.Color("#FF44AA")
+  // const backColor = new THREE.Color("#FF44AA")
+  // const backColor = new THREE.Color("#F4F1EA")
+  const backColor = new THREE.Color("#FDF8F5")
   console.log("backColor", backColor)
   scene.background = backColor
   let t = 0;
@@ -340,7 +342,7 @@ const main = async () => {
   let dt = 0.03
   
   const testGround = async () => {
-    const maxP = 1
+    const maxP = 10
     for(let i = 0; i < maxP; i++) {
       
     const ni = (i/maxP) + 1
@@ -361,9 +363,9 @@ const main = async () => {
     const si = 3
     const testPointsOffset =
       new Vector3(
-        si*sin(ni*PI*2),-4,
-        //si*sin(ni*PI*2),
-        //si*cos(ni*PI*2),
+        // si*sin(ni*PI*2),-4,
+        si*sin(ni*PI*2),
+        si*cos(ni*PI*2),
         0
       )
     // drawCircle(testPointsOffset, 0xff0000, 0.1)
@@ -373,8 +375,8 @@ const main = async () => {
       p.z += testPointsOffset.z
     })
     //await doText()
-    const rx = 2*sin(10*at + sin(at) + 5*ni)
-    const ry = 2*cos(10*at + 5*ni)
+    const rx = 2*sin(10*at + sin(at))
+    const ry = 2*cos(10*at)
     const refPoint = new Vector3(0 + rx,0 + ry,0)
     const theAngle = 
       refPoint.angleTo(testPointsOffset)
@@ -488,7 +490,7 @@ function clearThree(obj){
   let currentFrame = 0;
   const format = 'image/png';
   const saveFrames = false
-  const startFrame = 0
+  const startFrame = 10
   const framesToSave = 60 * 12; // 60 frames generate 2 seconds, so times 15 it will be 30 seconds
   function animate() {
 
