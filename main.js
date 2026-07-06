@@ -46,7 +46,7 @@ const main = async () => {
   
   const camera = new THREE.PerspectiveCamera(35, totalWidth / totalHeight, 0.1, 1000);
 
-  camera.position.z = 20;
+  camera.position.z = 30;
   camera.position.x = 0
 
   const renderer = new THREE.WebGLRenderer({
@@ -342,7 +342,8 @@ const main = async () => {
   let dt = 0.03
   
   const testGround = async () => {
-    const maxP = 10
+    const maxP = 5
+    let prevPoints = []
     for(let i = 0; i < maxP; i++) {
       
     const ni = (i/maxP) + 1
@@ -363,9 +364,9 @@ const main = async () => {
     const si = 3
     const testPointsOffset =
       new Vector3(
-        // si*sin(ni*PI*2),-4,
-        si*sin(ni*PI*2),
-        si*cos(ni*PI*2),
+        si*sin(ni*PI*2),-4,
+        //si*sin(ni*PI*2),
+        //si*cos(ni*PI*2),
         0
       )
     // drawCircle(testPointsOffset, 0xff0000, 0.1)
@@ -375,7 +376,7 @@ const main = async () => {
       p.z += testPointsOffset.z
     })
     //await doText()
-    const rx = 2*sin(10*at + sin(at))
+    const rx = 4*sin(10*at + sin(at) + ni/maxP*2*PI)
     const ry = 2*cos(10*at)
     const refPoint = new Vector3(0 + rx,0 + ry,0)
     const theAngle = 
@@ -383,7 +384,7 @@ const main = async () => {
       //-PI/2
       //2.0671854475079234
     // drawCircle(refPoint, 0x00ff00, 0.1)
-    if (i == 0) {
+    if (i == 100) {
     swarm1(scene, {
       t: at,
       textures: [pigeonTexture1, pigeonTexture2],
@@ -391,7 +392,12 @@ const main = async () => {
       amountOfElements:10
     })
     }
-    pattern1(scene, testPoints, {
+    const branchPoint = prevPoints[floor(i/maxP*prevPoints.length/2)]
+    const branchPoints = [branchPoint,branchPoint,branchPoint,branchPoint]
+    const startPoints = i == 0 ? testPoints : branchPoints
+    let savePrevPoints
+    if (i == 0 || prevPoints.length > 0) {
+    savePrevPoints = pattern1(scene, startPoints, {
       scale:4,
       dotScale: 8,
       t: at,
@@ -417,6 +423,10 @@ const main = async () => {
       ],*/
       angleToRef: true
     })
+    }
+    if (i == 0) {
+      prevPoints = savePrevPoints
+    }
     }
   }
 

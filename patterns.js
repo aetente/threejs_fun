@@ -123,7 +123,7 @@ function pattern1(scene, pointsArray, options) {
       //let distFactor = 1
       const distThreshold = 3
       let distFactor = max(1*min(distThreshold, distToRef - distThreshold),0)
-      // distFactor = pow(1.5, -distToRef) * (200-1) + 1
+      distFactor = pow(2, -distToRef) * (1-0) + 0
       angleVal = previousAngle + angleChange
       if (angleToRef) {
         
@@ -136,7 +136,8 @@ function pattern1(scene, pointsArray, options) {
         // if (angleRadians < 0) {
         //   angleRadians += 4 * Math.PI;
         // } 
-        desiredAngle = angleRadians - PI/2
+        desiredAngle = angleRadians 
+         - PI/2
         //Math.atan2(sin(angleRadians), cos(angleRadians))
           // angleRadians
           // angleRadians - PI/2
@@ -222,8 +223,9 @@ function pattern1(scene, pointsArray, options) {
       const dotSeed = round(indexId * 1000) + randomSeed
       const maxAmountOfFlowers = 32
       const amountOfFlowers = floor(seededRandom(dotSeed)*maxAmountOfFlowers)
-      const dotsAppearanceByIndexThreshold = maxLines - maxLines/7
-      if (seededRandom(dotSeed) > 0.69 && amountOfFlowers > 0 && j > dotsAppearanceByIndexThreshold) {
+      const dotsAppearanceByIndexThreshold = 0
+      //maxLines - maxLines/7
+      if (seededRandom(dotSeed) > 10.64 + 0.1*j/maxLines && amountOfFlowers > 0 && j > dotsAppearanceByIndexThreshold) {
         for (let ri = 0; ri < amountOfFlowers; ri++) {
           const flowerSize = (randInRange(0.01, 0.04, amountOfFlowers/maxAmountOfFlowers)) * dotScale
           //(0.04 * random() + 0.02)/amountOfFlowers
@@ -250,9 +252,10 @@ function pattern1(scene, pointsArray, options) {
       previousPos.copy(nextPos);
       points.push(nextPos.clone());
     }
-    points = []
+    //points = []
    
   }
+  return points
 }
 
 const genPosArray = (amountOfElements) => {
