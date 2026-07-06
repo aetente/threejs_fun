@@ -384,7 +384,7 @@ const main = async () => {
       //-PI/2
       //2.0671854475079234
     // drawCircle(refPoint, 0x00ff00, 0.1)
-    if (i == 100) {
+    if (i == 0) {
     swarm1(scene, {
       t: at,
       textures: [pigeonTexture1, pigeonTexture2],
@@ -500,7 +500,7 @@ function clearThree(obj){
   let currentFrame = 0;
   const format = 'image/png';
   const saveFrames = false
-  const startFrame = 10
+  const startFrame = 0
   const framesToSave = 60 * 12; // 60 frames generate 2 seconds, so times 15 it will be 30 seconds
   function animate() {
 

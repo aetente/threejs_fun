@@ -263,8 +263,8 @@ const genPosArray = (amountOfElements) => {
   const sizePos = 3
   for (let i = 0; i < amountOfElements; i++) {
     posArray.push(new THREE.Vector3(
-      seededRandomRange(-1,1,i*1351234656)*sizePos,
-      seededRandomRange(-1,1,i*45673464)*sizePos,
+      seededRandomRange(-1,1,i*1351234656)*sizePos + 20,
+      seededRandomRange(-1,1,i*45673464)*sizePos + 20,
     0));
   }
   return posArray
