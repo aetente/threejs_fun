@@ -35,7 +35,7 @@ from "./consts.js"
 
 import {pattern1, swarm1} from "./patterns.js"
 
-import {saveImage} from "./utils.js"
+import {saveImage, drawLine} from "./utils.js"
 
 const {sin, cos, PI, random, pow, floor} = Math;
 
@@ -385,12 +385,12 @@ const main = async () => {
       //2.0671854475079234
     // drawCircle(refPoint, 0x00ff00, 0.1)
     if (i == 100) {
-    swarm1(scene, {
-      t: at,
-      textures: [pigeonTexture1, pigeonTexture2],
-      pointToFollow: refPoint,
-      amountOfElements:10
-    })
+      swarm1(scene, {
+        t: at,
+        textures: [pigeonTexture1, pigeonTexture2],
+        pointToFollow: refPoint,
+        amountOfElements:10
+      })
     }
     const branchPoint = prevPoints[floor(i/maxP*prevPoints.length/2)]
     const branchPoints = [branchPoint,branchPoint,branchPoint,branchPoint]
@@ -428,6 +428,152 @@ const main = async () => {
     if (i == 0) {
       prevPoints = savePrevPoints
     }
+    }
+  }
+
+
+  var globalImage = [];
+  const pictureFactory1 = () => {
+    if (globalImage.length == 0) {
+      const maxP = 2
+      let prevPoints = []
+      for(let i = 0; i < maxP; i++) {
+        
+        const ni = (i/maxP) + 1
+        
+        // const avoidPoints = generateAvoidPoints()
+        const scaleRect = new Vector2(1,0)
+        const testPoints = [
+          new Vector3(0,0,0),
+          new Vector3(0,scaleRect.y,0),
+          new Vector3(scaleRect.x, scaleRect.y,0),
+          new Vector3(scaleRect.x,0,0)
+        ]
+        const middlePoint = testPoints.reduce((a,c) => a.add(c),new Vector3(0,0,0))
+        testPoints.forEach(p => {
+          p.x -= scaleRect.x/2;
+          p.y -= scaleRect.y/2;
+        })
+        const si = 3
+        const testPointsOffset =
+          new Vector3(
+            si*sin(ni*PI*2),-4,
+            //si*sin(ni*PI*2),
+            //si*cos(ni*PI*2),
+            0
+          )
+        testPoints.forEach(p => {
+          p.x += testPointsOffset.x;
+          p.y += testPointsOffset.y;
+          p.z += testPointsOffset.z
+        })
+        const rx = 4*sin(10*at + sin(at) + ni/maxP*2*PI)
+        const ry = 2*cos(10*at)
+        const refPoint = new Vector3(0 + rx,0 + ry,0)
+        const theAngle = 
+          refPoint.angleTo(testPointsOffset)
+        const branchPoint = prevPoints[floor(i/maxP*prevPoints.length/2)]
+        const branchPoints = [branchPoint,branchPoint,branchPoint,branchPoint]
+        const startPoints = i == 0 ? testPoints : branchPoints
+        let savePrevPoints
+        if (i == 0 || prevPoints.length > 0) {
+          savePrevPoints = pattern1(scene, startPoints, {
+            scale:4,
+            dotScale: 8,
+            t: 0,
+            maxLines: 60,
+            limit: 1,
+            initAngle: -PI/2,
+            lineColor: "#000",
+            dotColor: "#ff0000",
+            dotTextures: [fl1,fl2],
+            refPoint: refPoint,
+            noDrawing: true,
+            angleToRef: true
+          })
+        }
+        if (i == 0) {
+          prevPoints = savePrevPoints
+        }
+        globalImage.push(savePrevPoints)
+      }
+    }
+    drawLinesImage(globalImage, {
+      lineWidth: 4,
+      color: "#000",
+      lineOpacity: 1,
+      offset: new Vector3(0,0,0),
+      t: at
+    })
+  }
+
+  const drawLinesImage = (linesArray, options) => {
+    // linesArray is array:
+    // [ [p1,p2,p3], [p4,p5,p6], [p7,p8,p9] ... ]
+    const lineWidth = options.lineWidth || 2
+    const color = options.color || "#000"
+    const lineOpacity = options.lineOpacity || 1
+    const offset = options.offset || new Vector3(0,0,0)
+    const t = options.t || 0
+    const lineDrawSpeed = 1
+    const lineSegmentSpeed = lineDrawSpeed/10
+    const currentLineIndex = floor(t/lineDrawSpeed)
+    // console.log(currentLineIndex, lineSegment)
+    const boringLineOptions = { lineWidth: lineWidth, color: color, opacity: lineOpacity }
+    // currentPoint is just THREE.Vector3
+    let currentPoint
+    let nextPoint
+    let buildUpIndex = 0
+    let currentLine
+    let amountOfLinesDrawn = 0
+    if (currentLineIndex < linesArray.length) {
+      const amountOfLines = linesArray.length
+      const lineSegment = (t/lineSegmentSpeed) % 1
+      for (let m = 0; m < currentLineIndex; m++) {
+        amountOfLinesDrawn += linesArray[m].length
+      }
+        
+      for (let i = 0; i < amountOfLines; i++) {
+        const linesSize = linesArray[i].length
+        if (amountOfLinesDrawn < linesSize + buildUpIndex) {
+          currentLine = linesArray[i]
+          currentPoint = currentLine[amountOfLinesDrawn - buildUpIndex]
+          nextPoint = currentLine[amountOfLinesDrawn - buildUpIndex + 1]
+          break;
+        } else {
+          buildUpIndex += linesSize
+        }
+      }
+      
+      for (let j = 0; j < currentLineIndex; j++) {
+        const nowLine = linesArray[j]
+        // console.log(linesArray, j, nowLine)
+        for (let k = 1; k < nowLine.length; k++) {
+          const previousPos = nowLine[k - 1]
+          const nextPos = nowLine[k]
+          const previousPosWithOffset = previousPos.clone().add(offset)
+          const nextPosWithOffset = nextPos.clone().add(offset)
+          drawLine(scene, [previousPosWithOffset, nextPosWithOffset], boringLineOptions);
+        }
+      }
+
+      if (currentPoint) {
+        // currentPoint is just THREE.Vector3, not array
+        const middlePoint = currentPoint.clone().lerp(nextPoint, lineSegment).add(offset)
+        drawLine(scene, [currentPoint, middlePoint], boringLineOptions);
+      }
+    } else {
+      for (let j = 0; j < linesArray.length; j++) {
+        const nowLine = linesArray[j]
+        // console.log(linesArray, j, nowLine)
+        for (let k = 1; k < nowLine.length; k++) {
+          const previousPos = nowLine[k - 1]
+          const nextPos = nowLine[k]
+          const previousPosWithOffset = previousPos.clone().add(offset)
+          const nextPosWithOffset = nextPos.clone().add(offset)
+          drawLine(scene, [previousPosWithOffset, nextPosWithOffset], boringLineOptions);
+        }
+      }
     }
   }
 
@@ -511,7 +657,8 @@ function clearThree(obj){
     //scene.remove.apply(scene, scene.children);
     clearThree(scene);
     //while(scene.children.length > 0) {scene.remove(scene.children[0])}
-    testGround()
+    // testGround()
+    pictureFactory1()
     //swarm1(scene, {t: at, textures: [pigeonTexture1, pigeonTexture2]})
     // dancePerson1(scene, {offset: new Vector3(-1.5,0,2)})
     // dancePerson2(scene, {offset: new Vector3(1.5,0,2)})
