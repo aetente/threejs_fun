@@ -342,7 +342,7 @@ const main = async () => {
   let dt = 0.03
   
   const testGround = async () => {
-    const maxP = 5
+    const maxP = 1
     let prevPoints = []
     for(let i = 0; i < maxP; i++) {
       
@@ -384,7 +384,7 @@ const main = async () => {
       //-PI/2
       //2.0671854475079234
     // drawCircle(refPoint, 0x00ff00, 0.1)
-    if (i == 0) {
+    if (i == 100) {
     swarm1(scene, {
       t: at,
       textures: [pigeonTexture1, pigeonTexture2],
@@ -409,6 +409,7 @@ const main = async () => {
       dotTextures: [fl1,fl2],
       //refPoint: middlePoint, 
       refPoint: refPoint,
+      //noDrawing: true,
       //desiredAngle: theAngle,
       // avoidPoints: avoidPoints,
       /*[

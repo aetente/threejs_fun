@@ -85,6 +85,8 @@ function pattern1(scene, pointsArray, options) {
   
   const dotTextures = options?.dotTextures || null
   
+  const noDrawing = options?.noDrawing || false
+  
   for (let i = 0; i < limit; i++) {
     
     const insidePoints = []
@@ -219,7 +221,9 @@ function pattern1(scene, pointsArray, options) {
       const color = lineColor || testPalette2[Math.floor(sunsetPalleteIndex)];
       const previousPosWithOffset = previousPos.clone().add(offset);
       const nextPosWithOffset = nextPos.clone().add(offset);
-      drawLine(scene, [previousPosWithOffset, nextPosWithOffset], { lineWidth: lineWidth, color: i === 0 ? color : color, opacity: lineOpacity });
+      if (!noDrawing) {
+        drawLine(scene, [previousPosWithOffset, nextPosWithOffset], { lineWidth: lineWidth, color: i === 0 ? color : color, opacity: lineOpacity });
+      }
       const dotSeed = round(indexId * 1000) + randomSeed
       const maxAmountOfFlowers = 32
       const amountOfFlowers = floor(seededRandom(dotSeed)*maxAmountOfFlowers)
