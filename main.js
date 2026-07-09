@@ -532,8 +532,14 @@ const main = async () => {
       for (let m = 0; m < currentLineIndex; m++) {
         amountOfLinesDrawn += linesArray[m].length
       }
-        
-      for (let i = 0; i < amountOfLines; i++) {
+      
+      currentLine = linesArray[currentLineIndex]
+      const currentLineSegment = floor(((t % lineDrawSpeed)/lineDrawSpeed)*currentLine.length)
+      currentPoint = currentLine[currentLineSegment]
+      nextPoint = currentLine[(currentLineSegment + 1)%currentLine.length]
+      
+      /*
+      for (let i = currentLineIndex; i < amountOfLines; i++) {
         const linesSize = linesArray[i].length
         if (amountOfLinesDrawn < linesSize + buildUpIndex) {
           currentLine = linesArray[i]
@@ -544,6 +550,7 @@ const main = async () => {
           buildUpIndex += linesSize
         }
       }
+      */
       
       for (let j = 0; j < currentLineIndex; j++) {
         const nowLine = linesArray[j]
