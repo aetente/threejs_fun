@@ -435,7 +435,7 @@ const main = async () => {
   var globalImage = [];
   const pictureFactory1 = () => {
     if (globalImage.length == 0) {
-      const maxP = 2
+      const maxP = 1
       let prevPoints = []
       for(let i = 0; i < maxP; i++) {
         
@@ -457,7 +457,7 @@ const main = async () => {
         const si = 3
         const testPointsOffset =
           new Vector3(
-            si*sin(ni*PI*2),-4,
+            si*sin(123),-4,
             //si*sin(ni*PI*2),
             //si*cos(ni*PI*2),
             0
@@ -507,6 +507,44 @@ const main = async () => {
     })
   }
 
+
+  var robotArmPosition1 = new Vector3(0,0,0)
+  var robotArmRotation1 = 0
+  var robotArmRotation2 = 0
+
+  const robotArm = (scene, options) => {
+    const robotArmLength1 = options.robotArmLength1 || 10
+    const robotArmLength2 = options.robotArmLength2 || 10
+    const drawPosition = options.drawPosition || new Vector3(0,0,0)
+    
+
+    const roborArmPosition2 = new Vector3(
+      robotArmPosition1.x + robotArmLength1 * cos(robotArmRotation1),
+      robotArmPosition1.y + robotArmLength1 * sin(robotArmRotation1),
+      robotArmPosition1.z
+    )
+
+
+    const planeArm1 = new THREE.PlaneGeometry(robotArmLength1, 3)
+    const planeArm2 = new THREE.PlaneGeometry(robotArmLength2, 3)
+    planeArm1.translate(0, robotArmLength1, 0);
+    planeArm2.translate(0, robotArmLength2, 0);
+    const materialArm1 = new THREE.MeshBasicMaterial({ color: "#000000" });
+    const materialArm2 = new THREE.MeshBasicMaterial({ color: "#000000" });
+    const meshArm1 = new THREE.Mesh(planeArm1, materialArm1);
+    const meshArm2 = new THREE.Mesh(planeArm2, materialArm2);
+    // const armAnchor1 = new THREE.Group();
+    // const armAnchor2 = new THREE.Group();
+    meshArm1.position.set(robotArmPosition1.x, robotArmPosition1.y, robotArmPosition1.z);
+    meshArm1.rotation.set(0, robotArmRotation1, 0);
+    scene.add(meshArm1);
+    
+    meshArm2.position.set(roborArmPosition2.x, roborArmPosition2.y, roborArmPosition2.z);
+    meshArm2.rotation.set(0, robotArmRotation2, 0);
+    scene.add(meshArm2);
+  }
+
+
   const drawLinesImage = (linesArray, options) => {
     // linesArray is array:
     // [ [p1,p2,p3], [p4,p5,p6], [p7,p8,p9] ... ]
@@ -515,7 +553,8 @@ const main = async () => {
     const lineOpacity = options.lineOpacity || 1
     const offset = options.offset || new Vector3(0,0,0)
     const t = options.t || 0
-    const lineDrawSpeed = 1
+    let progress = 0
+    const lineDrawSpeed = 0.2
     const lineSegmentSpeed = lineDrawSpeed/10
     const currentLineIndex = floor(t/lineDrawSpeed)
     // console.log(currentLineIndex, lineSegment)
@@ -537,6 +576,10 @@ const main = async () => {
       const currentLineSegment = floor(((t % lineDrawSpeed)/lineDrawSpeed)*currentLine.length)
       currentPoint = currentLine[currentLineSegment]
       nextPoint = currentLine[(currentLineSegment + 1)%currentLine.length]
+
+      robotArm(scene, {
+        
+      })
       
       /*
       for (let i = currentLineIndex; i < amountOfLines; i++) {
@@ -552,10 +595,11 @@ const main = async () => {
       }
       */
       
-      for (let j = 0; j < currentLineIndex; j++) {
+      for (let j = 0; j <= currentLineIndex; j++) {
         const nowLine = linesArray[j]
         // console.log(linesArray, j, nowLine)
-        for (let k = 1; k < nowLine.length; k++) {
+        const lastSegment = j == currentLineIndex ? currentLineSegment + 1 : nowLine.length
+        for (let k = 1; k < lastSegment; k++) {
           const previousPos = nowLine[k - 1]
           const nextPos = nowLine[k]
           const previousPosWithOffset = previousPos.clone().add(offset)
@@ -564,7 +608,7 @@ const main = async () => {
         }
       }
 
-      if (currentPoint) {
+      if (currentPoint && currentLineSegment + 1 < currentLine.length) {
         // currentPoint is just THREE.Vector3, not array
         const middlePoint = currentPoint.clone().lerp(nextPoint, lineSegment).add(offset)
         drawLine(scene, [currentPoint, middlePoint], boringLineOptions);
@@ -573,9 +617,9 @@ const main = async () => {
       for (let j = 0; j < linesArray.length; j++) {
         const nowLine = linesArray[j]
         // console.log(linesArray, j, nowLine)
-        for (let k = 1; k < nowLine.length; k++) {
-          const previousPos = nowLine[k - 1]
-          const nextPos = nowLine[k]
+        for (let k = 0; k < nowLine.length-1; k++) {
+          const previousPos = nowLine[k]
+          const nextPos = nowLine[k+1]
           const previousPosWithOffset = previousPos.clone().add(offset)
           const nextPosWithOffset = nextPos.clone().add(offset)
           drawLine(scene, [previousPosWithOffset, nextPosWithOffset], boringLineOptions);
