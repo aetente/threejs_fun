@@ -125,7 +125,7 @@ function pattern1(scene, pointsArray, options) {
       //let distFactor = 1
       const distThreshold = 3
       let distFactor = max(1*min(distThreshold, distToRef - distThreshold),0)
-      distFactor = pow(2, -distToRef) * (1-0) + 0
+      distFactor = pow(1.9, -distToRef) * (1-0) + 0
       angleVal = previousAngle + angleChange
       if (angleToRef) {
         
