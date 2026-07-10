@@ -434,9 +434,9 @@ const main = async () => {
 
   var globalImage = [];
   const pictureFactory1 = () => {
-    // drawRobotArm(scene, {})
+    drawRobotArm(scene, {})
     if (globalImage.length == 0) {
-      const maxP = 200
+      const maxP = 2
       let prevPoints = []
       for(let i = 0; i < maxP; i++) {
         
@@ -533,7 +533,7 @@ const main = async () => {
     const planeArm2 = new THREE.PlaneGeometry(robotArmLength2, 0.1)
 
     planeArm1.translate(robotArmLength1/2, 0,0);
-    planeArm2.translate(robotArmLength1/2 +robotArmLength2/2, 0, 0);
+    planeArm2.translate(robotArmLength2/2, 0, 0);
 
     const materialArm1 = new THREE.MeshBasicMaterial({ color: "#FF7700" });
     const materialArm2 = new THREE.MeshBasicMaterial({ color: "#44FF99" });
@@ -547,7 +547,7 @@ const main = async () => {
     
     meshArm2.position.set(robotArmPosition2.x, robotArmPosition2.y, -1);
     meshArm2.rotation.z = robotArmRotation2
-    scene.add(meshArm2);
+    meshArm1.add(meshArm2);
   }
 
   const updateRobotArm = (options) => {
@@ -559,8 +559,8 @@ const main = async () => {
     robotArmRotation2 = at
 
     robotArmPosition2 = new Vector3(
-      robotArmPosition1.x + robotArmLength1 * sin(robotArmRotation2 + PI/2),
-      robotArmPosition1.y + robotArmLength1 * cos(robotArmRotation2 + PI/2),
+      robotArmPosition1.x + robotArmLength1 * sin(PI/2),
+      robotArmPosition1.y + robotArmLength1 * cos(PI/2),
       robotArmPosition1.z
     )
 
@@ -729,7 +729,7 @@ function clearThree(obj){
 
     if (saveFrames && currentFrame >= (startFrame + framesToSave)) return;
     requestAnimationFrame(animate);
-    // updateRobotArm()
+    updateRobotArm()
     //scene.remove.apply(scene, scene.children);
     clearThree(scene);
     //while(scene.children.length > 0) {scene.remove(scene.children[0])}
