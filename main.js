@@ -468,14 +468,14 @@ const main = async () => {
           p.y += testPointsOffset.y;
           p.z += testPointsOffset.z
         })
-        const rx = 4*sin(12312+i/maxP*2*PI)
-        const ry = 4*cos(12312+i/maxP*3*PI)
+        const rx = 4*sin(63546+i*125)
+        const ry = 4*cos(23423+i*765)
         const refPoint = new Vector3(0 + rx,0 + ry,0)
         const theAngle = 
           refPoint.angleTo(testPointsOffset)
         const branchPoint = prevPoints[floor(i/maxP*prevPoints.length/2)]
         const branchPoints = [branchPoint,branchPoint,branchPoint,branchPoint]
-        const startPoints = i == 0 ? testPoints : branchPoints
+        const startPoints = i == 0 || true ? testPoints : branchPoints
         let savePrevPoints
         if (i == 0 || prevPoints.length > 0) {
           savePrevPoints = pattern1(scene, startPoints, {
@@ -509,84 +509,113 @@ const main = async () => {
   }
 
 
-  var robotArmPosition1 = new Vector3(0,0,0)
+  var robotArmPosition1 = new Vector3(-3,0,1)
   var robotArmPosition2 = new Vector3(0,0,0)
   var robotArmRotation1 = 0
   var robotArmRotation2 = 0
+  const robotArmWidth1 = 0.3
+  const robotArmWidth2 = 0.1
 
   const drawRobotArm = (scene, options) => {
-    const circle2 = new THREE.PlaneGeometry(1,1);
-          const material2 = new THREE.MeshBasicMaterial({ color: 
-            // "#ff007f"
-            // "#FF7700"
-            // "#D4A373"
-            "#606C38"
-          });
-    const shape2 = new THREE.Mesh(circle2, material2);
-    shape2.position.set(0, 0, -2);
 
     // scene.add(shape2);
     
     const robotArmLength1 = options.robotArmLength1 || 3
     const robotArmLength2 = options.robotArmLength2 || 3
-    const planeArm1 = new THREE.PlaneGeometry(robotArmLength1, 0.1)
-    const planeArm2 = new THREE.PlaneGeometry(robotArmLength2, 0.1)
+    const planeArm1 = new THREE.PlaneGeometry(robotArmLength1, robotArmWidth1)
+    const planeArm2 = new THREE.PlaneGeometry(robotArmLength2, robotArmWidth2)
 
     planeArm1.translate(robotArmLength1/2, 0,0);
     planeArm2.translate(robotArmLength2/2, 0, 0);
 
-    const materialArm1 = new THREE.MeshBasicMaterial({ color: "#FF7700" });
-    const materialArm2 = new THREE.MeshBasicMaterial({ color: "#44FF99" });
+    const materialArm1 = new THREE.MeshBasicMaterial({ color: "#000" });
+    const materialArm2 = new THREE.MeshBasicMaterial({ color: "#000" });
     const meshArm1 = new THREE.Mesh(planeArm1, materialArm1);
     const meshArm2 = new THREE.Mesh(planeArm2, materialArm2);
     // const armAnchor1 = new THREE.Group();
     // const armAnchor2 = new THREE.Group();
-    meshArm1.position.set(robotArmPosition1.x, robotArmPosition1.y, -1);
+    meshArm1.position.set(robotArmPosition1.x, robotArmPosition1.y, robotArmPosition1.z);
     meshArm1.rotation.z = robotArmRotation1
     scene.add(meshArm1);
     
-    meshArm2.position.set(robotArmPosition2.x, robotArmPosition2.y, -1);
+    meshArm2.position.set(robotArmPosition2.x, robotArmPosition2.y, robotArmPosition2.z);
     meshArm2.rotation.z = robotArmRotation2
     meshArm1.add(meshArm2);
+
+    
+
+    
+    const circle2 = new THREE.CircleGeometry(0.3, 16);
+          const material2 = new THREE.MeshBasicMaterial({ color: 
+            // "#ff007f"
+            // "#FF7700"
+            // "#D4A373"
+            "#000"
+          });
+    const shape2 = new THREE.Mesh(circle2, material2);
+    shape2.position.set(robotArmPosition2.x, robotArmPosition2.y, robotArmPosition2.z);
+    meshArm1.add(shape2);
+
+    drawLine(scene, [new Vector3(-14, robotArmPosition1.y, robotArmPosition1.z), new Vector3(14, robotArmPosition1.y, robotArmPosition1.z)], {color: "#000"})
+    drawLine(scene, [new Vector3(robotArmPosition1.x, -24, robotArmPosition1.z), new Vector3(robotArmPosition1.x, 24, robotArmPosition1.z)], {color: "#000"})
+
   }
+
+
+  let nearDrawPoint = robotArmPosition1.clone()
 
   const updateRobotArm = (options) => {
     const drawPosition = options?.drawPosition || new Vector3(0,0,0)
     const robotArmLength1 = options?.robotArmLength1 || 3
     const robotArmLength2 = options?.robotArmLength2 || 3
+
     
-    //robotArmRotation1 = at
-    //robotArmRotation2 = at
-    
-    const dx = drawPosition.x - robotArmPosition1.x
-    const dy = drawPosition.y - robotArmPosition1.y
-    
-    const angleToPoint = Math.atan2(dy, dx)
-    
-    robotArmRotation1 = angleToPoint
-    robotArmRotation2 = 0
     
     const distToPoint = robotArmPosition1.distanceTo(drawPosition)
-    
-    const isInReach = (robotArmLength1 + robotArmLength2) < distToPoint
+    const isInReach = (robotArmLength1 + robotArmLength2) > distToPoint
 
-    const firstDeformAngle = acos((distToPoint*distToPoint + robotArmLength1*robotArmLength1 - robotArmLength2*robotArmLength2)/(2*robotArmLength1*distToPoint))
-    
+    const distToClosePoint = robotArmPosition1.distanceTo(nearDrawPoint)
+
+    if (distToClosePoint > 0.1) {
+      // move slowly toward near draw point
+      // robotArmPosition1 = robotArmPosition1.lerp(nearDrawPoint, at % 1)
+      robotArmPosition1 = nearDrawPoint
+      return false
+    }
+
+
     if (isInReach) {
+      //robotArmRotation1 = at
+      //robotArmRotation2 = at
+      
+      const dx = drawPosition.x - robotArmPosition1.x
+      const dy = drawPosition.y - robotArmPosition1.y
+      
+      const angleToPoint = Math.atan2(dy, dx)
+      
+      robotArmRotation1 = angleToPoint
+      robotArmRotation2 = 0
+      
+
+      const firstDeformAngle = acos((distToPoint*distToPoint + robotArmLength1*robotArmLength1 - robotArmLength2*robotArmLength2)/(2*robotArmLength1*distToPoint))
+      
       robotArmRotation1 = angleToPoint + firstDeformAngle
-    }
-    
-    const secondDeformAngle = acos((robotArmLength1*robotArmLength1 + robotArmLength2*robotArmLength2- distToPoint*distToPoint)/(2*robotArmLength1*robotArmLength2))
-    
-    if (isInReach) {
-      robotArmRotation2 = secondDeformAngle
-    }
+      
+      const secondDeformAngle = acos((robotArmLength1*robotArmLength1 + robotArmLength2*robotArmLength2- distToPoint*distToPoint)/(2*robotArmLength1*robotArmLength2))
+      
+      // not sure why -PI makes it work
+      robotArmRotation2 = secondDeformAngle - PI
 
-    robotArmPosition2 = new Vector3(
-      robotArmPosition1.x + robotArmLength1 * sin(PI/2),
-      robotArmPosition1.y + robotArmLength1 * cos(PI/2),
-      robotArmPosition1.z
-    )
+      robotArmPosition2 = new Vector3(
+        robotArmLength1 * sin(PI/2),
+        robotArmLength1 * cos(PI/2),
+        robotArmPosition1.z
+      )
+      return true
+    } else {
+      nearDrawPoint = drawPosition.clone().add(new Vector3(3*(random()-0.5),3*(random()-0.5),0))
+      return false
+    }
     
     
 
@@ -594,6 +623,7 @@ const main = async () => {
     
   }
 
+  let progress = 0
 
   const drawLinesImage = (linesArray, options) => {
     // linesArray is array:
@@ -603,10 +633,9 @@ const main = async () => {
     const lineOpacity = options.lineOpacity || 1
     const offset = options.offset || new Vector3(0,0,0)
     const t = options.t || 0
-    let progress = 0
     const lineDrawSpeed = 0.5
     const lineSegmentSpeed = lineDrawSpeed/10
-    const currentLineIndex = floor(t/lineDrawSpeed)
+    const currentLineIndex = floor(progress/lineDrawSpeed)
     // console.log(currentLineIndex, lineSegment)
     const boringLineOptions = { lineWidth: lineWidth, color: color, opacity: lineOpacity }
     // currentPoint is just THREE.Vector3
@@ -617,13 +646,13 @@ const main = async () => {
     let amountOfLinesDrawn = 0
     if (currentLineIndex < linesArray.length) {
       const amountOfLines = linesArray.length
-      const lineSegment = (t/lineSegmentSpeed) % 1
+      const lineSegment = (progress/lineSegmentSpeed) % 1
       for (let m = 0; m < currentLineIndex; m++) {
         amountOfLinesDrawn += linesArray[m].length
       }
       
       currentLine = linesArray[currentLineIndex]
-      const currentLineSegment = floor(((t % lineDrawSpeed)/lineDrawSpeed)*currentLine.length)
+      const currentLineSegment = floor(((progress % lineDrawSpeed)/lineDrawSpeed)*currentLine.length)
       currentPoint = currentLine[currentLineSegment]
       nextPoint = currentLine[(currentLineSegment + 1)%currentLine.length]
 
@@ -657,11 +686,16 @@ const main = async () => {
       }
 
       if (currentPoint && currentLineSegment + 1 < currentLine.length) {
-        
-        updateRobotArm({drawPosition: nextPoint})
-        // currentPoint is just THREE.Vector3, not array
         const middlePoint = currentPoint.clone().lerp(nextPoint, lineSegment).add(offset)
-        drawLine(scene, [currentPoint, middlePoint], boringLineOptions);
+        
+        const drawSuccess = updateRobotArm({drawPosition: middlePoint})
+        if (drawSuccess) {
+          // currentPoint is just THREE.Vector3, not array
+          progress += (dt/4)
+          drawLine(scene, [currentPoint, middlePoint], boringLineOptions);
+        }
+      } else {
+        progress += (dt/4)
       }
     } else {
       for (let j = 0; j < linesArray.length; j++) {
