@@ -37,7 +37,7 @@ import {pattern1, swarm1} from "./patterns.js"
 
 import {saveImage, drawLine} from "./utils.js"
 
-const {sin, cos, PI, random, pow, floor} = Math;
+const {sin, cos, PI, random, pow, floor, acos, atan2} = Math;
 
 const main = async () => {
 
@@ -555,14 +555,40 @@ const main = async () => {
     const robotArmLength1 = options?.robotArmLength1 || 3
     const robotArmLength2 = options?.robotArmLength2 || 3
     
-    robotArmRotation1 = at
-    robotArmRotation2 = at
+    //robotArmRotation1 = at
+    //robotArmRotation2 = at
+    
+    const dx = drawPosition.x - robotArmPosition1.x
+    const dy = drawPosition.y - robotArmPosition1.y
+    
+    const angleToPoint = Math.atan2(dy, dx)
+    
+    robotArmRotation1 = angleToPoint
+    robotArmRotation2 = 0
+    
+    const distToPoint = robotArmPosition1.distanceTo(drawPosition)
+    
+    const isInReach = (robotArmLength1 + robotArmLength2) < distToPoint
+
+    const firstDeformAngle = acos((distToPoint*distToPoint + robotArmLength1*robotArmLength1 - robotArmLength2*robotArmLength2)/(2*robotArmLength1*distToPoint))
+    
+    if (isInReach) {
+      robotArmRotation1 = angleToPoint + firstDeformAngle
+    }
+    
+    const secondDeformAngle = acos((robotArmLength1*robotArmLength1 + robotArmLength2*robotArmLength2- distToPoint*distToPoint)/(2*robotArmLength1*robotArmLength2))
+    
+    if (isInReach) {
+      robotArmRotation2 = secondDeformAngle
+    }
 
     robotArmPosition2 = new Vector3(
       robotArmPosition1.x + robotArmLength1 * sin(PI/2),
       robotArmPosition1.y + robotArmLength1 * cos(PI/2),
       robotArmPosition1.z
     )
+    
+    
 
 
     
@@ -578,7 +604,7 @@ const main = async () => {
     const offset = options.offset || new Vector3(0,0,0)
     const t = options.t || 0
     let progress = 0
-    const lineDrawSpeed = 0.1
+    const lineDrawSpeed = 0.5
     const lineSegmentSpeed = lineDrawSpeed/10
     const currentLineIndex = floor(t/lineDrawSpeed)
     // console.log(currentLineIndex, lineSegment)
@@ -632,7 +658,7 @@ const main = async () => {
 
       if (currentPoint && currentLineSegment + 1 < currentLine.length) {
         
-        // updateRobotArm({drawPosition: nextPoint})
+        updateRobotArm({drawPosition: nextPoint})
         // currentPoint is just THREE.Vector3, not array
         const middlePoint = currentPoint.clone().lerp(nextPoint, lineSegment).add(offset)
         drawLine(scene, [currentPoint, middlePoint], boringLineOptions);
@@ -729,7 +755,7 @@ function clearThree(obj){
 
     if (saveFrames && currentFrame >= (startFrame + framesToSave)) return;
     requestAnimationFrame(animate);
-    updateRobotArm()
+    //updateRobotArm()
     //scene.remove.apply(scene, scene.children);
     clearThree(scene);
     //while(scene.children.length > 0) {scene.remove(scene.children[0])}
