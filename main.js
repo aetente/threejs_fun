@@ -563,6 +563,7 @@ const main = async () => {
 
 
   let nearDrawPoint = robotArmPosition1.clone()
+  let angleIsDefined = false
 
   const updateRobotArm = (options) => {
     const drawPosition = options?.drawPosition || new Vector3(0,0,0)
@@ -575,12 +576,36 @@ const main = async () => {
     const isInReach = (robotArmLength1 + robotArmLength2) > distToPoint
 
     const distToClosePoint = robotArmPosition1.distanceTo(nearDrawPoint)
+    
+    
+    
+    const dx = drawPosition.x - robotArmPosition1.x
+    const dy = drawPosition.y - robotArmPosition1.y
+      
+    const angleToPoint = Math.atan2(dy, dx)
 
     if (distToClosePoint > 0.1) {
+      //console.log(distToClosePoint)
       // move slowly toward near draw point
       // robotArmPosition1 = robotArmPosition1.lerp(nearDrawPoint, at % 1)
-      robotArmPosition1 = nearDrawPoint
+      if (angleIsDefined) {
+        const dxc = nearDrawPoint.x - robotArmPosition1.x
+        const dyc = nearDrawPoint.y - robotArmPosition1.y
+      
+        const angleToClose = Math.atan2(dyc, dxc)
+        angleIsDefined = true
+      }
+      const moveSpeed = distToClosePoint/20
+      //console.log(moveSpeed)
+      const directionToMove = new Vector3(
+        moveSpeed*sin(angleToClose+PI/2)  ,
+        moveSpeed*cos(angleToClose-PI/2),
+        0
+      )
+      robotArmPosition1.add(directionToMove)
       return false
+    } else {
+      angleIsDefined = false
     }
 
 
@@ -588,10 +613,7 @@ const main = async () => {
       //robotArmRotation1 = at
       //robotArmRotation2 = at
       
-      const dx = drawPosition.x - robotArmPosition1.x
-      const dy = drawPosition.y - robotArmPosition1.y
       
-      const angleToPoint = Math.atan2(dy, dx)
       
       robotArmRotation1 = angleToPoint
       robotArmRotation2 = 0
