@@ -116,7 +116,7 @@ function pattern1(scene, pointsArray, options) {
 
       const ti = t * (indexId + 1)
       
-      const angleChange = sin( sin(idByPos / 100 + ti/20) * PI * 2 + ti/20) * PI/20 * randomDir
+      const angleChange = sin( sin(idByPos / (indexId/1000 + 0.1) + ti/20) * PI * 2 + ti/20) * PI/20 * randomDir
       //const angleChange = sin(i + idByPos) * angleCap
       //const angleChange = 0
       
