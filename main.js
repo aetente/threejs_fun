@@ -47,7 +47,7 @@ const main = async () => {
   const camera = new THREE.PerspectiveCamera(35, totalWidth / totalHeight, 0.1, 1000);
 
   camera.position.z = 50;
-  camera.position.x = -3
+  camera.position.x = 0
 
   const renderer = new THREE.WebGLRenderer({
     antialias: true,
@@ -436,14 +436,14 @@ const main = async () => {
   const pictureFactory1 = () => {
     drawRobotArm(scene, {})
     if (globalImage.length == 0) {
-      const maxP = 3
+      const maxP = 20
       let prevPoints = []
       for(let i = 0; i < maxP; i++) {
         
         const ni = (i/maxP) + 1
         
         // const avoidPoints = generateAvoidPoints()
-        const scaleRect = new Vector2(1,0)
+        const scaleRect = new Vector2(3,3)
         const testPoints = [
           new Vector3(0,0,0),
           new Vector3(0,scaleRect.y,0),
@@ -455,12 +455,12 @@ const main = async () => {
           p.x -= scaleRect.x/2;
           p.y -= scaleRect.y/2;
         })
-        const si = 3
+        const si = 1
         const testPointsOffset =
           new Vector3(
-            si*sin(123 + i*23542),-4,
-            //si*sin(ni*PI*2),
-            //si*cos(ni*PI*2),
+            //si*sin(123 + i*23542),-4,
+            si*sin(ni*PI*2),
+            si*cos(ni*PI*2),
             0
           )
         testPoints.forEach(p => {
@@ -468,8 +468,12 @@ const main = async () => {
           p.y += testPointsOffset.y;
           p.z += testPointsOffset.z
         })
-        const rx = 4*sin(63546+i*125)
-        const ry = 4*cos(23423+i*765)
+        const rx = 
+        0
+        //4*sin(63546+i*125)
+        const ry = 
+        8
+        //4*cos(23423+i*765)
         const refPoint = new Vector3(0 + rx,0 + ry,0)
         const theAngle = 
           refPoint.angleTo(testPointsOffset)
@@ -479,17 +483,17 @@ const main = async () => {
         let savePrevPoints
         if (i == 0 || prevPoints.length > 0) {
           savePrevPoints = pattern1(scene, startPoints, {
-            scale:8,
+            scale:2,
             dotScale: 8,
             t: 0,
-            maxLines: 60,
+            maxLines: 160,
             limit: 1,
             initAngle: -PI/2,
             lineColor: "#000",
             dotColor: "#ff0000",
             dotTextures: [fl1,fl2],
             refPoint: refPoint,
-            noDrawing: true,
+            noDrawing: false,
             angleToRef: true
           })
         }
@@ -818,7 +822,7 @@ function clearThree(obj){
   function animate() {
 
     if (saveFrames && currentFrame >= (startFrame + framesToSave)) return;
-    requestAnimationFrame(animate);
+    //requestAnimationFrame(animate);
     //updateRobotArm()
     //scene.remove.apply(scene, scene.children);
     clearThree(scene);
