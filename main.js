@@ -431,10 +431,29 @@ const main = async () => {
     }
   }
 
+  const amountOfRobotArms = 3
+  const generateRebotArm = () => {
+    const robotArmsArray = []
+    for (let i = 0; i < amountOfRobotArms; i++) {
+      const robotArm = {
+        position1: new Vector3(-3,0,1),
+        position2: new Vector3(0,0,0),
+        rotation1: 0,
+        rotation2: 0,
+        width1: 0.3,
+        width2: 0.1
+      }
+      robotArmsArray.push(robotArm)
+    }
+    return robotArmsArray
+  }
+  var robotArms = generateRebotArm()
 
   var globalImage = [];
   const pictureFactory1 = () => {
-    drawRobotArm(scene, {})
+    for (let i = 0; i < amountOfRobotArms; i++) {
+      drawRobotArm(scene, {i:i})
+    }
     if (globalImage.length == 0) {
       const maxP = 20
       let prevPoints = []
@@ -455,7 +474,7 @@ const main = async () => {
           p.x -= scaleRect.x/2;
           p.y -= scaleRect.y/2;
         })
-        const si = 1
+        const si = 4
         const testPointsOffset =
           new Vector3(
             //si*sin(123 + i*23542),-4,
@@ -493,7 +512,7 @@ const main = async () => {
             dotColor: "#ff0000",
             dotTextures: [fl1,fl2],
             refPoint: refPoint,
-            noDrawing: false,
+            noDrawing: true,
             angleToRef: true
           })
         }
@@ -513,21 +532,14 @@ const main = async () => {
   }
 
 
-  var robotArmPosition1 = new Vector3(-3,0,1)
-  var robotArmPosition2 = new Vector3(0,0,0)
-  var robotArmRotation1 = 0
-  var robotArmRotation2 = 0
-  const robotArmWidth1 = 0.3
-  const robotArmWidth2 = 0.1
-
   const drawRobotArm = (scene, options) => {
 
     // scene.add(shape2);
-    
+    const i = options.i || 0
     const robotArmLength1 = options.robotArmLength1 || 3
     const robotArmLength2 = options.robotArmLength2 || 3
-    const planeArm1 = new THREE.PlaneGeometry(robotArmLength1, robotArmWidth1)
-    const planeArm2 = new THREE.PlaneGeometry(robotArmLength2, robotArmWidth2)
+    const planeArm1 = new THREE.PlaneGeometry(robotArmLength1, robotArms[i].width1)
+    const planeArm2 = new THREE.PlaneGeometry(robotArmLength2, robotArms[i].width2)
 
     planeArm1.translate(robotArmLength1/2, 0,0);
     planeArm2.translate(robotArmLength2/2, 0, 0);
@@ -538,12 +550,12 @@ const main = async () => {
     const meshArm2 = new THREE.Mesh(planeArm2, materialArm2);
     // const armAnchor1 = new THREE.Group();
     // const armAnchor2 = new THREE.Group();
-    meshArm1.position.set(robotArmPosition1.x, robotArmPosition1.y, robotArmPosition1.z);
-    meshArm1.rotation.z = robotArmRotation1
+    meshArm1.position.set(robotArms[i].position1.x, robotArms[i].position1.y, robotArms[i].position1.z);
+    meshArm1.rotation.z = robotArms[i].rotation1
     scene.add(meshArm1);
     
-    meshArm2.position.set(robotArmPosition2.x, robotArmPosition2.y, robotArmPosition2.z);
-    meshArm2.rotation.z = robotArmRotation2
+    meshArm2.position.set(robotArms[i].position2.x, robotArms[i].position2.y, robotArms[i].position2.z);
+    meshArm2.rotation.z = robotArms[i].rotation2
     meshArm1.add(meshArm2);
 
     
@@ -557,11 +569,11 @@ const main = async () => {
             "#000"
           });
     const shape2 = new THREE.Mesh(circle2, material2);
-    shape2.position.set(robotArmPosition2.x, robotArmPosition2.y, robotArmPosition2.z);
+    shape2.position.set(robotArms[i].position2.x, robotArms[i].position2.y, robotArms[i].position2.z);
     meshArm1.add(shape2);
 
-    drawLine(scene, [new Vector3(-14, robotArmPosition1.y, robotArmPosition1.z), new Vector3(14, robotArmPosition1.y, robotArmPosition1.z)], {color: "#000"})
-    drawLine(scene, [new Vector3(robotArmPosition1.x, -24, robotArmPosition1.z), new Vector3(robotArmPosition1.x, 24, robotArmPosition1.z)], {color: "#000"})
+    drawLine(scene, [new Vector3(-14, robotArms[i].position1.y, robotArms[i].position1.z), new Vector3(14, robotArms[i].position1.y, robotArms[i].position1.z)], {color: "#000"})
+    drawLine(scene, [new Vector3(robotArms[i].position1.x, -24, robotArms[i].position1.z), new Vector3(robotArms[i].position1.x, 24, robotArms[i].position1.z)], {color: "#000"})
 
   }
 
@@ -569,33 +581,34 @@ const main = async () => {
   let nearDrawPoint = null
 
   const updateRobotArm = (options) => {
+    const i = options?.i || 0
     const drawPosition = options?.drawPosition || new Vector3(0,0,0)
     const robotArmLength1 = options?.robotArmLength1 || 3
     const robotArmLength2 = options?.robotArmLength2 || 3
 
     
     
-    const distToPoint = robotArmPosition1.distanceTo(drawPosition)
+    const distToPoint = robotArms[i].position1.distanceTo(drawPosition)
     const isInReach = (robotArmLength1 + robotArmLength2) > distToPoint
 
-    const distToClosePoint = nearDrawPoint ?new THREE.Vector2(robotArmPosition1.x, robotArmPosition1.y).distanceTo(new THREE.Vector2(nearDrawPoint.x, nearDrawPoint.y)) : 0
+    const distToClosePoint = nearDrawPoint ?new THREE.Vector2(robotArms[i].position1.x, robotArms[i].position1.y).distanceTo(new THREE.Vector2(nearDrawPoint.x, nearDrawPoint.y)) : 0
     
     
     
-    const dx = drawPosition.x - robotArmPosition1.x
-    const dy = drawPosition.y - robotArmPosition1.y
+    const dx = drawPosition.x - robotArms[i].position1.x
+    const dy = drawPosition.y - robotArms[i].position1.y
       
     const angleToPoint = Math.atan2(dy, dx)
 
-    const armSpeed1 = 0.8
+    const armSpeed1 = 1
     const armDistanceThreshold = 0.1
 
     if (nearDrawPoint && distToClosePoint > armDistanceThreshold) {
-      // console.log(distToClosePoint, robotArmPosition1, nearDrawPoint)
+      // console.log(distToClosePoint, robotArms[i].position1, nearDrawPoint)
       // move slowly toward near draw point
-      // robotArmPosition1 = robotArmPosition1.lerp(nearDrawPoint, at % 1)
-      const dxc = nearDrawPoint.x - robotArmPosition1.x
-      const dyc = nearDrawPoint.y - robotArmPosition1.y
+      // robotArms[i].position1 = robotArms[i].position1.lerp(nearDrawPoint, at % 1)
+      const dxc = nearDrawPoint.x - robotArms[i].position1.x
+      const dyc = nearDrawPoint.y - robotArms[i].position1.y
     
       const angleToClose = Math.atan2(dyc, dxc)
       let moveSpeed = distToClosePoint > armSpeed1 ? armSpeed1 : armDistanceThreshold
@@ -606,19 +619,19 @@ const main = async () => {
         moveSpeed*cos(angleToClose-PI/2),
         0
       )
-      robotArmPosition1.add(directionToMove)
+      robotArms[i].position1.add(directionToMove)
     } else if (nearDrawPoint && distToClosePoint < armDistanceThreshold) {
-      robotArmPosition1 = nearDrawPoint.clone()
+      robotArms[i].position1 = nearDrawPoint.clone()
     }
 
 
-    //robotArmRotation1 = at
-    //robotArmRotation2 = at
+    //robotArms[i].rotation1 = at
+    //robotArms[i].rotation2 = at
     
     
     
-    robotArmRotation1 = angleToPoint
-    robotArmRotation2 = 0
+    robotArms[i].rotation1 = angleToPoint
+    robotArms[i].rotation2 = 0
     
 
     const firstDeformAngle = acos((distToPoint*distToPoint + robotArmLength1*robotArmLength1 - robotArmLength2*robotArmLength2)/(2*robotArmLength1*distToPoint))
@@ -628,17 +641,17 @@ const main = async () => {
     
     // not sure why -PI makes it work
     if (distToPoint < robotArmLength1 + robotArmLength2) {
-      robotArmRotation1 = angleToPoint + firstDeformAngle
-      robotArmRotation2 = secondDeformAngle - PI
+      robotArms[i].rotation1 = angleToPoint + firstDeformAngle
+      robotArms[i].rotation2 = secondDeformAngle - PI
     } else {
-      // robotArmRotation1 = angleToPoint
-      // robotArmRotation2 = 0
+      // robotArms[i].rotation1 = angleToPoint
+      // robotArms[i].rotation2 = 0
     }
 
-    robotArmPosition2 = new Vector3(
+    robotArms[i].position2 = new Vector3(
       robotArmLength1 * sin(PI/2),
       robotArmLength1 * cos(PI/2),
-      robotArmPosition1.z
+      robotArms[i].position1.z
     )
       
     if (isInReach && distToClosePoint < 0.1) {
@@ -658,6 +671,8 @@ const main = async () => {
   }
 
   let progress = 0
+  let drawnLines = []
+  let drawnIndexes = {}
 
   const drawLinesImage = (linesArray, options) => {
     // linesArray is array:
@@ -667,74 +682,85 @@ const main = async () => {
     const lineOpacity = options.lineOpacity || 1
     const offset = options.offset || new Vector3(0,0,0)
     const t = options.t || 0
-    const lineDrawSpeed = 0.2
-    const lineSegmentSpeed = lineDrawSpeed/10
-    const currentLineIndex = floor(progress/lineDrawSpeed)
-    // console.log(currentLineIndex, lineSegment)
     const boringLineOptions = { lineWidth: lineWidth, color: color, opacity: lineOpacity }
-    // currentPoint is just THREE.Vector3
-    let currentPoint
-    let nextPoint
-    let buildUpIndex = 0
-    let currentLine
-    let amountOfLinesDrawn = 0
-    if (currentLineIndex < linesArray.length) {
-      const amountOfLines = linesArray.length
-      const lineSegment = (progress/lineSegmentSpeed) % 1
-      for (let m = 0; m < currentLineIndex; m++) {
-        amountOfLinesDrawn += linesArray[m].length
-      }
+    for (let i = 0; i < amountOfRobotArms; i++) {
       
-      currentLine = linesArray[currentLineIndex]
-      const currentLineSegment = floor(((progress % lineDrawSpeed)/lineDrawSpeed)*currentLine.length)
-      currentPoint = currentLine[currentLineSegment]
-      nextPoint = currentLine[(currentLineSegment + 1)%currentLine.length]
-
-      
-      /*
-      for (let i = currentLineIndex; i < amountOfLines; i++) {
-        const linesSize = linesArray[i].length
-        if (amountOfLinesDrawn < linesSize + buildUpIndex) {
-          currentLine = linesArray[i]
-          currentPoint = currentLine[amountOfLinesDrawn - buildUpIndex]
-          nextPoint = currentLine[amountOfLinesDrawn - buildUpIndex + 1]
-          break;
-        } else {
-          buildUpIndex += linesSize
+      const lineDrawSpeed = 0.5
+      const lineSegmentSpeed = lineDrawSpeed/10
+      const currentLineIndex = (floor(progress/lineDrawSpeed) + i*11) % linesArray.length
+      const nextLineIndex = (floor((progress + dt/4)/lineDrawSpeed) + i*11) % linesArray.length
+      if (!drawnIndexes[String(currentLineIndex)]) {
+        // console.log(currentLineIndex, lineSegment)
+        // currentPoint is just THREE.Vector3
+        let currentPoint
+        let nextPoint
+        let buildUpIndex = 0
+        let currentLine
+        let amountOfLinesDrawn = 0
+        const amountOfLines = linesArray.length
+        const lineSegment = (progress/lineSegmentSpeed) % 1
+        for (let m = 0; m < currentLineIndex; m++) {
+          amountOfLinesDrawn += linesArray[m].length
         }
-      }
-      */
-      
-      for (let j = 0; j <= currentLineIndex; j++) {
-        const nowLine = linesArray[j]
-        // console.log(linesArray, j, nowLine)
-        const lastSegment = j == currentLineIndex ? currentLineSegment + 1 : nowLine.length
-        for (let k = 1; k < lastSegment; k++) {
-          const previousPos = nowLine[k - 1]
-          const nextPos = nowLine[k]
-          const previousPosWithOffset = previousPos.clone().add(offset)
-          const nextPosWithOffset = nextPos.clone().add(offset)
-          const actualLineSize = (nowLine.length - k)/nowLine.length * (4-1) + 1
-          drawLine(scene, [previousPosWithOffset, nextPosWithOffset], {...boringLineOptions, lineWidth: actualLineSize});
-        }
-      }
-
-      if (currentPoint && currentLineSegment + 1 < currentLine.length) {
-        const middlePoint = currentPoint.clone().lerp(nextPoint, lineSegment).add(offset)
         
-        const drawSuccess = updateRobotArm({drawPosition: middlePoint})
-        if (drawSuccess) {
-          // currentPoint is just THREE.Vector3, not array
+        currentLine = linesArray[currentLineIndex]
+        const currentLineSegment = floor(((progress % lineDrawSpeed)/lineDrawSpeed)*currentLine.length)
+        currentPoint = currentLine[currentLineSegment]
+        nextPoint = currentLine[(currentLineSegment + 1)%currentLine.length]
+
+        
+        /*
+        for (let i = currentLineIndex; i < amountOfLines; i++) {
+          const linesSize = linesArray[i].length
+          if (amountOfLinesDrawn < linesSize + buildUpIndex) {
+            currentLine = linesArray[i]
+            currentPoint = currentLine[amountOfLinesDrawn - buildUpIndex]
+            nextPoint = currentLine[amountOfLinesDrawn - buildUpIndex + 1]
+            break;
+          } else {
+            buildUpIndex += linesSize
+          }
+        }
+        */
+        
+        // for (let j = 0; j <= currentLineIndex; j++) {
+          const nowLine = linesArray[currentLineIndex]
+          // console.log(linesArray, j, nowLine)
+          const lastSegment = currentLineSegment + 1
+          for (let k = 1; k < lastSegment; k++) {
+            const previousPos = nowLine[k - 1]
+            const nextPos = nowLine[k]
+            const previousPosWithOffset = previousPos.clone().add(offset)
+            const nextPosWithOffset = nextPos.clone().add(offset)
+            const actualLineSize = (nowLine.length - k)/nowLine.length * (4-1) + 1
+            drawLine(scene, [previousPosWithOffset, nextPosWithOffset], {...boringLineOptions, lineWidth: actualLineSize});
+          }
+        // }
+
+        if ((currentPoint && currentLineSegment + 1 < currentLine.length) && nextLineIndex == currentLineIndex) {
+          const middlePoint = currentPoint.clone().lerp(nextPoint, lineSegment).add(offset)
+          
+          const drawSuccess = updateRobotArm({drawPosition: middlePoint, i:i})
+          if (drawSuccess) {
+            // currentPoint is just THREE.Vector3, not array
+            progress += (dt/4)
+            drawLine(scene, [currentPoint, middlePoint], boringLineOptions);
+          }
+        } else {
+          // console.log(currentLineSegment, currentLine.length)
+          // if (currentLineSegment + 1 >= currentLine.length) {
+          if (!drawnIndexes[String(currentLineIndex)]) {
+            drawnLines.push(currentLine)
+            drawnIndexes[String(currentLineIndex)] = linesArray[currentLineIndex]
+          }
+          // }
           progress += (dt/4)
-          drawLine(scene, [currentPoint, middlePoint], boringLineOptions);
         }
       } else {
-        progress += (dt/4)
       }
-    } else {
-      for (let j = 0; j < linesArray.length; j++) {
-        const nowLine = linesArray[j]
-        // console.log(linesArray, j, nowLine)
+      
+      for (let j = 0; j < drawnLines.length; j++) {
+        const nowLine = drawnLines[j]
         for (let k = 0; k < nowLine.length-1; k++) {
           const previousPos = nowLine[k]
           const nextPos = nowLine[k+1]
@@ -822,7 +848,7 @@ function clearThree(obj){
   function animate() {
 
     if (saveFrames && currentFrame >= (startFrame + framesToSave)) return;
-    //requestAnimationFrame(animate);
+    requestAnimationFrame(animate);
     //updateRobotArm()
     //scene.remove.apply(scene, scene.children);
     clearThree(scene);
