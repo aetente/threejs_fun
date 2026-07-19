@@ -443,13 +443,16 @@ const main = async () => {
         width1: 0.3,
         width2: 0.1,
         nearDrawPoint: null,
-        progress: 0
+        progress: 0,
+        currentIndex: -1
       }
       robotArmsArray.push(robotArm)
     }
     return robotArmsArray
   }
   var robotArms = generateRebotArm()
+
+  const dumbStoreIndexes = {}
 
   var globalImage = [];
   const pictureFactory1 = () => {
@@ -460,6 +463,7 @@ const main = async () => {
       const maxP = 20
       let prevPoints = []
       for(let i = 0; i < maxP; i++) {
+        // dumbStoreIndexes[String(i)] = true
         
         const ni = (i/maxP) + 1
         
@@ -675,6 +679,7 @@ const main = async () => {
   //let progress = 0
   let drawnLines = []
   let drawnIndexes = {}
+  const inProgressIndexes = {}
 
   const drawLinesImage = (linesArray, options) => {
     // linesArray is array:
@@ -687,10 +692,17 @@ const main = async () => {
     const boringLineOptions = { lineWidth: lineWidth, color: color, opacity: lineOpacity }
     for (let i = 0; i < amountOfRobotArms; i++) {
       let progress = robotArms[i].progress
+      let currentRobotArmDrawingIndex = robotArms[i].currentIndex
+      if (currentRobotArmDrawingIndex === -1) {
+        currentRobotArmDrawingIndex = floor(Math.random()*linesArray.length)
+        robotArms[i].currentIndex = currentRobotArmDrawingIndex
+      }
       const lineDrawSpeed = 0.5
       const lineSegmentSpeed = lineDrawSpeed/10
-      const currentLineIndex = (floor(progress/lineDrawSpeed) + i*11) % linesArray.length
-      const nextLineIndex = (floor((progress + dt/4)/lineDrawSpeed) + i*11) % linesArray.length
+      const indexShift = 3
+      // const init
+      const currentLineIndex = (floor(progress/lineDrawSpeed) + currentRobotArmDrawingIndex) % linesArray.length
+      const nextLineIndex = (floor((progress + dt/4)/lineDrawSpeed) + currentRobotArmDrawingIndex) % linesArray.length
       if (!drawnIndexes[String(currentLineIndex)]) {
         // console.log(currentLineIndex, lineSegment)
         // currentPoint is just THREE.Vector3
@@ -754,11 +766,14 @@ const main = async () => {
           if (!drawnIndexes[String(currentLineIndex)]) {
             //drawnLines.push(currentLine)
             drawnIndexes[String(currentLineIndex)] = linesArray[currentLineIndex]
+            robotArms[i].currentIndex = -1
+            // delete dumbStoreIndexes[String(currentLineIndex)]
           }
           // }
           robotArms[i].progress += (dt/4)
         }
       } else {
+        robotArms[i].currentIndex = -1
       }
       
       const drawKeys = Object.keys(drawnIndexes)
