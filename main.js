@@ -735,7 +735,7 @@ const main = async () => {
         currentRobotArmDrawingIndex = floor(Math.random()*linesArray.length)
         robotArms[i].currentIndex = currentRobotArmDrawingIndex
       }
-      const lineDrawSpeed = 4
+      const lineDrawSpeed = 1
       // TODO fix line breaking. it happens because of lineSegmentSpeed. although it kind of looks cool
       const lineSegmentSpeed = lineDrawSpeed/10
       const indexShift = 3
@@ -938,7 +938,7 @@ function clearThree(obj){
   }
 
   animate();
-  //setInterval(animate,1000 /60)
+  // setInterval(animate,1000 /10)
   //saveImage(renderer)
   // renderer.render( scene, camera );
 }
