@@ -35,12 +35,19 @@ from "./consts.js"
 
 import {pattern1, swarm1} from "./patterns.js"
 
-import {saveImage, drawLine} from "./utils.js"
+import {saveImage, drawLine, updateLineGeometryPositions} from "./utils.js"
 
 const {sin, cos, PI, random, pow, floor, acos, atan2} = Math;
 
 const main = async () => {
 
+  let currentFrame = 0;
+  const format = 'image/png';
+  const saveFrames = false
+  const reconstruct = false
+  const startFrame = 0
+  const framesToSave = 60 * 12; // 60 frames generate 2 seconds, so times 15 it will be 30 seconds
+  
   const scene = new THREE.Scene();
   // const camera = new THREE.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 0.1, 1000);
   
@@ -181,12 +188,12 @@ const main = async () => {
   // const backColor = new THREE.Color("#0B4F6C")
   // const backColor = new THREE.Color("#D18B47")
   // const backColor = new THREE.Color("#00B4D8")
-  // const backColor = new THREE.Color("#44ff99")
-  // const backColor = new THREE.Color("#0F141C")
-  // const backColor = new THREE.Color("#3300FF")
-  // const backColor = new THREE.Color("#FF44AA")
-  // const backColor = new THREE.Color("#F4F1EA")
-  const backColor = new THREE.Color("#FDF8F5")
+  const backColor = new THREE.Color("#44ff99")
+  //const backColor = new THREE.Color("#0F141C")
+  //const backColor = new THREE.Color("#3300FF")
+  //const backColor = new THREE.Color("#FF44AA")
+  //const backColor = new THREE.Color("#F4F1EA")
+  //const backColor = new THREE.Color("#FDF8F5")
   console.log("backColor", backColor)
   scene.background = backColor
   let t = 0;
@@ -431,7 +438,7 @@ const main = async () => {
     }
   }
 
-  const amountOfRobotArms = 3
+  const amountOfRobotArms = 4
   const generateRebotArm = () => {
     const robotArmsArray = []
     for (let i = 0; i < amountOfRobotArms; i++) {
@@ -444,7 +451,12 @@ const main = async () => {
         width2: 0.1,
         nearDrawPoint: null,
         progress: 0,
-        currentIndex: -1
+        currentIndex: -1,
+        meshArm1: null,
+        meshArm2: null,
+        circle: null,
+        line1Geometry: null,
+        line2Geometry: null
       }
       robotArmsArray.push(robotArm)
     }
@@ -460,7 +472,7 @@ const main = async () => {
       drawRobotArm(scene, {i:i})
     }
     if (globalImage.length == 0) {
-      const maxP = 20
+      const maxP = 200
       let prevPoints = []
       for(let i = 0; i < maxP; i++) {
         // dumbStoreIndexes[String(i)] = true
@@ -508,10 +520,10 @@ const main = async () => {
         let savePrevPoints
         if (i == 0 || prevPoints.length > 0) {
           savePrevPoints = pattern1(scene, startPoints, {
-            scale:2,
+            scale:4,
             dotScale: 8,
             t: 0,
-            maxLines: 60,
+            maxLines: 160,
             limit: 1,
             initAngle: -PI/2,
             lineColor: "#000",
@@ -544,6 +556,8 @@ const main = async () => {
     const i = options.i || 0
     const robotArmLength1 = options.robotArmLength1 || 3
     const robotArmLength2 = options.robotArmLength2 || 3
+    
+    if (!robotArms[i].meshArm1) {
     const planeArm1 = new THREE.PlaneGeometry(robotArmLength1, robotArms[i].width1)
     const planeArm2 = new THREE.PlaneGeometry(robotArmLength2, robotArms[i].width2)
 
@@ -577,9 +591,33 @@ const main = async () => {
     const shape2 = new THREE.Mesh(circle2, material2);
     shape2.position.set(robotArms[i].position2.x, robotArms[i].position2.y, robotArms[i].position2.z);
     meshArm1.add(shape2);
+    
+    robotArms[i].meshArm1 = meshArm1
+    robotArms[i].meshArm2 = meshArm2
+    robotArms[i].circle = shape2
 
-    drawLine(scene, [new Vector3(-14, robotArms[i].position1.y, robotArms[i].position1.z), new Vector3(14, robotArms[i].position1.y, robotArms[i].position1.z)], {color: "#000"})
-    drawLine(scene, [new Vector3(robotArms[i].position1.x, -24, robotArms[i].position1.z), new Vector3(robotArms[i].position1.x, 24, robotArms[i].position1.z)], {color: "#000"})
+    const line1 = drawLine(scene, [new Vector3(-14, robotArms[i].position1.y, robotArms[i].position1.z), new Vector3(14, robotArms[i].position1.y, robotArms[i].position1.z)], {color: "#000"})
+    const line2 = drawLine(scene, [new Vector3(robotArms[i].position1.x, -24, robotArms[i].position1.z), new Vector3(robotArms[i].position1.x, 24, robotArms[i].position1.z)], {color: "#000"})
+    
+      robotArms[i].line1Geometry = line1.geometry
+      robotArms[i].line2Geometry = line2.geometry
+    } else {
+      const {meshArm1, meshArm2, circle, line1Geometry, line2Geometry} = robotArms[i]
+      
+      meshArm1.position.set(robotArms[i].position1.x, robotArms[i].position1.y, robotArms[i].position1.z);
+      meshArm1.rotation.z = robotArms[i].rotation1
+      //scene.add(meshArm1);
+    
+      meshArm2.position.set(robotArms[i].position2.x, robotArms[i].position2.y, robotArms[i].position2.z);
+      meshArm2.rotation.z = robotArms[i].rotation2
+      //meshArm1.add(meshArm2);
+      
+      circle.position.set(robotArms[i].position2.x, robotArms[i].position2.y, robotArms[i].position2.z);
+      
+      updateLineGeometryPositions(line1Geometry, [new Vector3(-14, robotArms[i].position1.y, robotArms[i].position1.z), new Vector3(14, robotArms[i].position1.y, robotArms[i].position1.z)])
+      updateLineGeometryPositions(line2Geometry, [new Vector3(robotArms[i].position1.x, -24, robotArms[i].position1.z), new Vector3(robotArms[i].position1.x, 24, robotArms[i].position1.z)])
+      
+    }
 
   }
 
@@ -606,7 +644,7 @@ const main = async () => {
       
     const angleToPoint = Math.atan2(dy, dx)
 
-    const armSpeed1 = 1
+    const armSpeed1 = 10
     const armDistanceThreshold = 0.1
 
     if (robotArms[i].nearDrawPoint && distToClosePoint > armDistanceThreshold) {
@@ -697,7 +735,8 @@ const main = async () => {
         currentRobotArmDrawingIndex = floor(Math.random()*linesArray.length)
         robotArms[i].currentIndex = currentRobotArmDrawingIndex
       }
-      const lineDrawSpeed = 0.5
+      const lineDrawSpeed = 4
+      // TODO fix line breaking. it happens because of lineSegmentSpeed. although it kind of looks cool
       const lineSegmentSpeed = lineDrawSpeed/10
       const indexShift = 3
       // const init
@@ -741,6 +780,7 @@ const main = async () => {
           const nowLine = linesArray[currentLineIndex]
           // console.log(linesArray, j, nowLine)
           const lastSegment = currentLineSegment + 1
+          if (reconstruct) {
           for (let k = 1; k < lastSegment; k++) {
             const previousPos = nowLine[k - 1]
             const nextPos = nowLine[k]
@@ -748,6 +788,7 @@ const main = async () => {
             const nextPosWithOffset = nextPos.clone().add(offset)
             const actualLineSize = (nowLine.length - k)/nowLine.length * (4-1) + 1
             drawLine(scene, [previousPosWithOffset, nextPosWithOffset], {...boringLineOptions, lineWidth: actualLineSize});
+          }
           }
         // }
 
@@ -757,8 +798,12 @@ const main = async () => {
           const drawSuccess = updateRobotArm({drawPosition: middlePoint, i:i})
           if (drawSuccess) {
             // currentPoint is just THREE.Vector3, not array
+            const actualLineSize = 
+            (nowLine.length - currentLineSegment)/nowLine.length 
+            //lineSegment 
+            * (4-1) + 1
             robotArms[i].progress += (dt/4)
-            drawLine(scene, [currentPoint, middlePoint], boringLineOptions);
+            drawLine(scene, [currentPoint, middlePoint], {...boringLineOptions, lineWidth: actualLineSize});
           }
         } else {
           // console.log(currentLineSegment, currentLine.length)
@@ -776,6 +821,7 @@ const main = async () => {
         robotArms[i].currentIndex = -1
       }
       
+      if (reconstruct) {
       const drawKeys = Object.keys(drawnIndexes)
       for (let j = 0; j < drawKeys.length; j++) {
         const nowLine = drawnIndexes[drawKeys[j]]
@@ -787,6 +833,7 @@ const main = async () => {
           const nextPosWithOffset = nextPos.clone().add(offset)
           drawLine(scene, [previousPosWithOffset, nextPosWithOffset], {...boringLineOptions, lineWidth: actualLineSize});
         }
+      }
       }
     }
   }
@@ -858,19 +905,14 @@ function clearThree(obj){
     document.body.removeChild(link);
   }
 
-  let currentFrame = 0;
-  const format = 'image/png';
-  const saveFrames = false
-  const reconstruct  = true 
-  const startFrame = 0
-  const framesToSave = 60 * 12; // 60 frames generate 2 seconds, so times 15 it will be 30 seconds
+  
   function animate() {
 
     if (saveFrames && currentFrame >= (startFrame + framesToSave)) return;
     requestAnimationFrame(animate);
     //updateRobotArm()
     //scene.remove.apply(scene, scene.children);
-    clearThree(scene);
+    if (reconstruct) clearThree(scene);
     //while(scene.children.length > 0) {scene.remove(scene.children[0])}
     // testGround()
     pictureFactory1()

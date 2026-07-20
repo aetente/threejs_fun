@@ -293,6 +293,28 @@ function drawLine(scene, points, options) {
 
   const line = new Line2(geometry, material);
   scene.add(line);
+  return {
+    mesh: line,
+    geometry,
+    material
+  }
+}
+
+const updateLineGeometryPositions = (lineGeometry, points) => {
+  const positionAttribute = lineGeometry.getAttribute("position")
+  const flatPath = points.flatMap(v => [v.x, v.y, v.z]);
+  lineGeometry.setPositions(flatPath);
+  /*
+  for (let i = 0; i < points.length; i++) {
+    const p = points[i]
+    //
+    positionAttribute.setXYZ(i, p.x, p.y, p.z)
+    
+  }
+  positionAttribute.needsUpdate = true
+  */
+  //console.log(points)
+  return lineGeometry
 }
 
 function saveImage(renderer) {
@@ -351,5 +373,6 @@ export {
   getPointBetweenPoints,
   drawLine,
   saveImage,
-  signedAngle
+  signedAngle,
+  updateLineGeometryPositions
 }
