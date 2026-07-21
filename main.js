@@ -45,7 +45,7 @@ const main = async () => {
   const format = 'image/png';
   const saveFrames = false
   const reconstruct = false
-  const startFrame = 0
+  const startFrame = 10
   const framesToSave = 60 * 12; // 60 frames generate 2 seconds, so times 15 it will be 30 seconds
   
   const scene = new THREE.Scene();
@@ -188,13 +188,14 @@ const main = async () => {
   // const backColor = new THREE.Color("#0B4F6C")
   // const backColor = new THREE.Color("#D18B47")
   // const backColor = new THREE.Color("#00B4D8")
-  const backColor = new THREE.Color("#44ff99")
+  // const backColor = new THREE.Color("#44ff99")
   //const backColor = new THREE.Color("#0F141C")
   //const backColor = new THREE.Color("#3300FF")
   //const backColor = new THREE.Color("#FF44AA")
   //const backColor = new THREE.Color("#F4F1EA")
   //const backColor = new THREE.Color("#FDF8F5")
-  console.log("backColor", backColor)
+  const backColor = new THREE.Color("#E2ECC8")
+  
   scene.background = backColor
   let t = 0;
   let pos = {
@@ -452,6 +453,7 @@ const main = async () => {
         nearDrawPoint: null,
         progress: 0,
         currentIndex: -1,
+        base: null,
         meshArm1: null,
         meshArm2: null,
         circle: null,
@@ -463,6 +465,13 @@ const main = async () => {
     return robotArmsArray
   }
   var robotArms = generateRebotArm()
+  const middleArm = {
+    armsPositions: [],
+    armsLines: Array(amountOfRobotArms).fill(null),
+    base: null,
+    width: 8,
+    middlePoint: robotArms.reduce((a,c) => a.add(c.position1), new Vector3(0,0,0)).divideScalar(amountOfRobotArms),
+  }
 
   const dumbStoreIndexes = {}
 
@@ -471,6 +480,7 @@ const main = async () => {
     for (let i = 0; i < amountOfRobotArms; i++) {
       drawRobotArm(scene, {i:i})
     }
+    drawMiddlePointBase(scene)
     if (globalImage.length == 0) {
       const maxP = 200
       let prevPoints = []
@@ -550,6 +560,20 @@ const main = async () => {
   }
 
 
+  const drawMiddlePointBase = (scene) => {
+    if (!middleArm.base) {
+      const middlePoint = middleArm.middlePoint
+      const middleBaseCircle = new THREE.CircleGeometry(0.3, 16);
+      const middleBaseMaterial = new THREE.MeshBasicMaterial({ color:"#000"});
+      const middleBaseShape = new THREE.Mesh(middleBaseCircle, middleBaseMaterial);
+      middleBaseShape.position.set(middlePoint.x, middlePoint.y, middlePoint.z);
+      scene.add(middleBaseShape);
+      middleArm.base = middleBaseShape
+    } else {
+      middleArm.base.position.set(middleArm.middlePoint.x, middleArm.middlePoint.y, middleArm.middlePoint.z);
+    }
+  }
+
   const drawRobotArm = (scene, options) => {
 
     // scene.add(shape2);
@@ -557,52 +581,63 @@ const main = async () => {
     const robotArmLength1 = options.robotArmLength1 || 3
     const robotArmLength2 = options.robotArmLength2 || 3
     
-    if (!robotArms[i].meshArm1) {
-    const planeArm1 = new THREE.PlaneGeometry(robotArmLength1, robotArms[i].width1)
-    const planeArm2 = new THREE.PlaneGeometry(robotArmLength2, robotArms[i].width2)
+    if (!robotArms[i].meshArm1 || !middleArm.armsLines[i]) {
+      const planeArm1 = new THREE.PlaneGeometry(robotArmLength1, robotArms[i].width1)
+      const planeArm2 = new THREE.PlaneGeometry(robotArmLength2, robotArms[i].width2)
 
-    planeArm1.translate(robotArmLength1/2, 0,0);
-    planeArm2.translate(robotArmLength2/2, 0, 0);
+      planeArm1.translate(robotArmLength1/2, 0,0);
+      planeArm2.translate(robotArmLength2/2, 0, 0);
 
-    const materialArm1 = new THREE.MeshBasicMaterial({ color: "#000" });
-    const materialArm2 = new THREE.MeshBasicMaterial({ color: "#000" });
-    const meshArm1 = new THREE.Mesh(planeArm1, materialArm1);
-    const meshArm2 = new THREE.Mesh(planeArm2, materialArm2);
-    // const armAnchor1 = new THREE.Group();
-    // const armAnchor2 = new THREE.Group();
-    meshArm1.position.set(robotArms[i].position1.x, robotArms[i].position1.y, robotArms[i].position1.z);
-    meshArm1.rotation.z = robotArms[i].rotation1
-    scene.add(meshArm1);
-    
-    meshArm2.position.set(robotArms[i].position2.x, robotArms[i].position2.y, robotArms[i].position2.z);
-    meshArm2.rotation.z = robotArms[i].rotation2
-    meshArm1.add(meshArm2);
+      const materialArm1 = new THREE.MeshBasicMaterial({ color: "#000" });
+      const materialArm2 = new THREE.MeshBasicMaterial({ color: "#000" });
+      const meshArm1 = new THREE.Mesh(planeArm1, materialArm1);
+      const meshArm2 = new THREE.Mesh(planeArm2, materialArm2);
+      // const armAnchor1 = new THREE.Group();
+      // const armAnchor2 = new THREE.Group();
+      meshArm1.position.set(robotArms[i].position1.x, robotArms[i].position1.y, robotArms[i].position1.z);
+      meshArm1.rotation.z = robotArms[i].rotation1
+      scene.add(meshArm1);
+      
+      meshArm2.position.set(robotArms[i].position2.x, robotArms[i].position2.y, robotArms[i].position2.z);
+      meshArm2.rotation.z = robotArms[i].rotation2
+      meshArm1.add(meshArm2);
 
-    
+      
+      const circle = new THREE.CircleGeometry(0.3, 16);
+      const material = new THREE.MeshBasicMaterial({ color:"#000"});
+      const shape = new THREE.Mesh(circle, material);
+      shape.position.set(robotArms[i].position1.x, robotArms[i].position1.y, robotArms[i].position1.z);
+      scene.add(shape);
 
-    
-    const circle2 = new THREE.CircleGeometry(0.3, 16);
-          const material2 = new THREE.MeshBasicMaterial({ color: 
-            // "#ff007f"
-            // "#FF7700"
-            // "#D4A373"
-            "#000"
-          });
-    const shape2 = new THREE.Mesh(circle2, material2);
-    shape2.position.set(robotArms[i].position2.x, robotArms[i].position2.y, robotArms[i].position2.z);
-    meshArm1.add(shape2);
-    
-    robotArms[i].meshArm1 = meshArm1
-    robotArms[i].meshArm2 = meshArm2
-    robotArms[i].circle = shape2
+      
+      const circle2 = new THREE.CircleGeometry(0.3, 16);
+      const material2 = new THREE.MeshBasicMaterial({ color:"#000"});
+      const shape2 = new THREE.Mesh(circle2, material2);
+      shape2.position.set(robotArms[i].position2.x, robotArms[i].position2.y, robotArms[i].position2.z);
+      meshArm1.add(shape2);
+      
+      robotArms[i].base = shape
+      robotArms[i].meshArm1 = meshArm1
+      robotArms[i].meshArm2 = meshArm2
+      robotArms[i].circle = shape2
 
-    const line1 = drawLine(scene, [new Vector3(-14, robotArms[i].position1.y, robotArms[i].position1.z), new Vector3(14, robotArms[i].position1.y, robotArms[i].position1.z)], {color: "#000"})
-    const line2 = drawLine(scene, [new Vector3(robotArms[i].position1.x, -24, robotArms[i].position1.z), new Vector3(robotArms[i].position1.x, 24, robotArms[i].position1.z)], {color: "#000"})
+      const line1 = drawLine(scene, [new Vector3(-14, robotArms[i].position1.y, robotArms[i].position1.z), new Vector3(14, robotArms[i].position1.y, robotArms[i].position1.z)], {color: "#000"})
+      const line2 = drawLine(scene, [new Vector3(robotArms[i].position1.x, -24, robotArms[i].position1.z), new Vector3(robotArms[i].position1.x, 24, robotArms[i].position1.z)], {color: "#000"})
     
       robotArms[i].line1Geometry = line1.geometry
       robotArms[i].line2Geometry = line2.geometry
+
+      const middlePoint = middleArm.middlePoint
+      const middleArmLine = drawLine(scene, [new Vector3(robotArms[i].position1.x, robotArms[i].position1.y, robotArms[i].position1.z), new Vector3(middlePoint.x, middlePoint.y, middlePoint.z)], {color: "#000", lineWidth: middleArm.width})
+
+      
+
+      middleArm.armsLines[i] = middleArmLine.geometry
     } else {
-      const {meshArm1, meshArm2, circle, line1Geometry, line2Geometry} = robotArms[i]
+      const {base, meshArm1, meshArm2, circle, line1Geometry, line2Geometry} = robotArms[i]
+      const middlePoint = middleArm.middlePoint
+
+      base.position.set(robotArms[i].position1.x, robotArms[i].position1.y, robotArms[i].position1.z);
       
       meshArm1.position.set(robotArms[i].position1.x, robotArms[i].position1.y, robotArms[i].position1.z);
       meshArm1.rotation.z = robotArms[i].rotation1
@@ -613,10 +648,12 @@ const main = async () => {
       //meshArm1.add(meshArm2);
       
       circle.position.set(robotArms[i].position2.x, robotArms[i].position2.y, robotArms[i].position2.z);
+
       
+      // console.log(middleArm)
       updateLineGeometryPositions(line1Geometry, [new Vector3(-14, robotArms[i].position1.y, robotArms[i].position1.z), new Vector3(14, robotArms[i].position1.y, robotArms[i].position1.z)])
       updateLineGeometryPositions(line2Geometry, [new Vector3(robotArms[i].position1.x, -24, robotArms[i].position1.z), new Vector3(robotArms[i].position1.x, 24, robotArms[i].position1.z)])
-      
+      updateLineGeometryPositions(middleArm.armsLines[i], [new Vector3(robotArms[i].position1.x, robotArms[i].position1.y, robotArms[i].position1.z), new Vector3(middlePoint.x, middlePoint.y, middlePoint.z)])
     }
 
   }
@@ -644,7 +681,7 @@ const main = async () => {
       
     const angleToPoint = Math.atan2(dy, dx)
 
-    const armSpeed1 = 10
+    const armSpeed1 = 1
     const armDistanceThreshold = 0.1
 
     if (robotArms[i].nearDrawPoint && distToClosePoint > armDistanceThreshold) {
@@ -735,14 +772,15 @@ const main = async () => {
         currentRobotArmDrawingIndex = floor(Math.random()*linesArray.length)
         robotArms[i].currentIndex = currentRobotArmDrawingIndex
       }
-      const lineDrawSpeed = 1
+      const lineDrawSpeed = 0.5
       // TODO fix line breaking. it happens because of lineSegmentSpeed. although it kind of looks cool
-      const lineSegmentSpeed = lineDrawSpeed/10
       const indexShift = 3
       // const init
+
       const currentLineIndex = (floor(progress/lineDrawSpeed) + currentRobotArmDrawingIndex) % linesArray.length
       const nextLineIndex = (floor((progress + dt/4)/lineDrawSpeed) + currentRobotArmDrawingIndex) % linesArray.length
       if (!drawnIndexes[String(currentLineIndex)]) {
+        const lineSegmentSpeed = lineDrawSpeed/1
         // console.log(currentLineIndex, lineSegment)
         // currentPoint is just THREE.Vector3
         let currentPoint
@@ -751,12 +789,12 @@ const main = async () => {
         let currentLine
         let amountOfLinesDrawn = 0
         const amountOfLines = linesArray.length
-        const lineSegment = (progress/lineSegmentSpeed) % 1
         for (let m = 0; m < currentLineIndex; m++) {
           amountOfLinesDrawn += linesArray[m].length
         }
         
         currentLine = linesArray[currentLineIndex]
+        const lineSegment = (progress*currentLine.length /lineDrawSpeed) % 1
         const currentLineSegment = floor(((progress % lineDrawSpeed)/lineDrawSpeed)*currentLine.length)
         currentPoint = currentLine[currentLineSegment]
         nextPoint = currentLine[(currentLineSegment + 1)%currentLine.length]
@@ -836,6 +874,7 @@ const main = async () => {
       }
       }
     }
+    middleArm.middlePoint = robotArms.reduce((a,b) => a.add(b.position1), new Vector3(0,0,0)).divideScalar(amountOfRobotArms)
   }
 
   const randomPoseData = [
