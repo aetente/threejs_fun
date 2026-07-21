@@ -116,8 +116,10 @@ function pattern1(scene, pointsArray, options) {
 
       const ti = t * (indexId + 1)
       
-      // const angleChange = sin( sin(0.2 * (indexId*100 + 0.1 + i) + ti/20) * PI * 2 + ti/20) * PI/2* randomDir
-      const angleChange = sin(sin(j /10) * idByPos/20) * angleCap* randomDir
+      const angleChange = 
+      0
+      //sin( sin(j/10)*PI + ti/20) * PI* randomDir
+      //const angleChange = sin(sin(j /10) * idByPos/20) * angleCap* randomDir
       //const angleChange = 0
       
       //const correctAngle = angleChange + ((desiredAngle - angleChange)%p2)/1
@@ -125,7 +127,8 @@ function pattern1(scene, pointsArray, options) {
       //let distFactor = 1
       const distThreshold = 12
       let distFactor = max(1*min(distThreshold, distToRef - distThreshold),0)
-      //distFactor = pow(2, -distToRef) * (1-0) + 0
+      distFactor = (1-pow(2, -(distToRef)/40)) * (1-0) + 0
+      //distFactor = 0
       angleVal = previousAngle + angleChange
       if (angleToRef) {
         

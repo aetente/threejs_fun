@@ -520,10 +520,10 @@ const main = async () => {
         let savePrevPoints
         if (i == 0 || prevPoints.length > 0) {
           savePrevPoints = pattern1(scene, startPoints, {
-            scale:4,
+            scale:8,
             dotScale: 8,
-            t: 0,
-            maxLines: 160,
+            t: i/10,
+            maxLines: 60,
             limit: 1,
             initAngle: -PI/2,
             lineColor: "#000",
