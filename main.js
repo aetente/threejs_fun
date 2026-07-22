@@ -477,12 +477,13 @@ const main = async () => {
 
   var globalImage = [];
   const pictureFactory1 = () => {
+    const scaleVal = 8
     for (let i = 0; i < amountOfRobotArms; i++) {
       drawRobotArm(scene, {i:i})
     }
     drawMiddlePointBase(scene)
     if (globalImage.length == 0) {
-      const maxP = 200
+      const maxP = 300
       let prevPoints = []
       for(let i = 0; i < maxP; i++) {
         // dumbStoreIndexes[String(i)] = true
@@ -530,7 +531,7 @@ const main = async () => {
         let savePrevPoints
         if (i == 0 || prevPoints.length > 0) {
           savePrevPoints = pattern1(scene, startPoints, {
-            scale:8,
+            scale:scaleVal,
             dotScale: 8,
             t: i/10,
             maxLines: 60,
@@ -555,7 +556,8 @@ const main = async () => {
       color: "#000",
       lineOpacity: 1,
       offset: new Vector3(0,0,0),
-      t: at
+      t: at,
+      scale: scaleVal
     })
   }
 
@@ -765,6 +767,7 @@ const main = async () => {
     const offset = options.offset || new Vector3(0,0,0)
     const t = options.t || 0
     const boringLineOptions = { lineWidth: lineWidth, color: color, opacity: lineOpacity }
+    const scale = options?.scale || 1
     for (let i = 0; i < amountOfRobotArms; i++) {
       let progress = robotArms[i].progress
       let currentRobotArmDrawingIndex = robotArms[i].currentIndex
@@ -794,8 +797,11 @@ const main = async () => {
         }
         
         currentLine = linesArray[currentLineIndex]
-        const lineSegment = (progress*currentLine.length /lineDrawSpeed) % 1
-        const currentLineSegment = floor(((progress % lineDrawSpeed)/lineDrawSpeed)*currentLine.length)
+        const lineSegment =
+        //(((progress % lineDrawSpeed) / lineDrawSpeed))%1
+        (((progress/lineDrawSpeed) % 1)*currentLine.length)%1
+        const currentLineSegment = floor((((progress/lineDrawSpeed) % 1)*currentLine.length))
+        //floor(((progress % lineDrawSpeed)/lineDrawSpeed)*currentLine.length)
         currentPoint = currentLine[currentLineSegment]
         nextPoint = currentLine[(currentLineSegment + 1)%currentLine.length]
 
@@ -830,14 +836,20 @@ const main = async () => {
           }
         // }
 
-        if ((currentPoint && currentLineSegment + 1 < currentLine.length) && nextLineIndex == currentLineIndex) {
+        if (
+          currentPoint
+          && currentLineSegment + 1 < currentLine.length
+          && nextLineIndex == currentLineIndex
+        ) {
           const middlePoint = currentPoint.clone().lerp(nextPoint, lineSegment).add(offset)
+          
+          //console.log(currentLineSegment, lineSegment)
           
           const drawSuccess = updateRobotArm({drawPosition: middlePoint, i:i})
           if (drawSuccess) {
             // currentPoint is just THREE.Vector3, not array
             const actualLineSize = 
-            (nowLine.length - currentLineSegment)/nowLine.length 
+            (currentLine.length - currentLineSegment)/currentLine.length 
             //lineSegment 
             * (4-1) + 1
             robotArms[i].progress += (dt/4)
