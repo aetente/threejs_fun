@@ -46,7 +46,8 @@ const main = async () => {
   const saveFrames = false
   const reconstruct = false
   const startFrame = 10
-  const framesToSave = 60 * 12; // 60 frames generate 2 seconds, so times 15 it will be 30 seconds
+  let currentFrameName = startFrame;
+  const framesToSave = 60 * 20; // 60 frames generate 2 seconds, so times 15 it will be 30 seconds
   
   const scene = new THREE.Scene();
   // const camera = new THREE.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -194,7 +195,8 @@ const main = async () => {
   //const backColor = new THREE.Color("#FF44AA")
   //const backColor = new THREE.Color("#F4F1EA")
   //const backColor = new THREE.Color("#FDF8F5")
-  const backColor = new THREE.Color("#E2ECC8")
+  // const backColor = new THREE.Color("#E2ECC8")
+  const backColor = new THREE.Color("#FFF338")
   
   scene.background = backColor
   let t = 0;
@@ -347,7 +349,7 @@ const main = async () => {
   
   let at = 0
   let bt = 0
-  let dt = 0.03
+  let dt = saveFrames ? 0.3 : 0.3
   
   const testGround = async () => {
     const maxP = 1
@@ -439,7 +441,7 @@ const main = async () => {
     }
   }
 
-  const amountOfRobotArms = 4
+  const amountOfRobotArms = 3
   const generateRebotArm = () => {
     const robotArmsArray = []
     for (let i = 0; i < amountOfRobotArms; i++) {
@@ -452,6 +454,8 @@ const main = async () => {
         width2: 0.1,
         nearDrawPoint: null,
         progress: 0,
+        upcomingLineSegment: -1,
+        currentLineSegment: -1,
         currentIndex: -1,
         base: null,
         meshArm1: null,
@@ -477,13 +481,13 @@ const main = async () => {
 
   var globalImage = [];
   const pictureFactory1 = () => {
-    const scaleVal = 8
+    const scaleVal = 4
     for (let i = 0; i < amountOfRobotArms; i++) {
       drawRobotArm(scene, {i:i})
     }
     drawMiddlePointBase(scene)
     if (globalImage.length == 0) {
-      const maxP = 300
+      const maxP = 200
       let prevPoints = []
       for(let i = 0; i < maxP; i++) {
         // dumbStoreIndexes[String(i)] = true
@@ -508,7 +512,7 @@ const main = async () => {
           new Vector3(
             //si*sin(123 + i*23542),-4,
             si*sin(ni*PI*2),
-            si*cos(ni*PI*2),
+            si*cos(ni*PI*2) - 4,
             0
           )
         testPoints.forEach(p => {
@@ -534,7 +538,7 @@ const main = async () => {
             scale:scaleVal,
             dotScale: 8,
             t: i/10,
-            maxLines: 60,
+            maxLines: 160,
             limit: 1,
             initAngle: -PI/2,
             lineColor: "#000",
@@ -565,7 +569,7 @@ const main = async () => {
   const drawMiddlePointBase = (scene) => {
     if (!middleArm.base) {
       const middlePoint = middleArm.middlePoint
-      const middleBaseCircle = new THREE.CircleGeometry(0.3, 16);
+      const middleBaseCircle = new THREE.CircleGeometry(0.45, 16);
       const middleBaseMaterial = new THREE.MeshBasicMaterial({ color:"#000"});
       const middleBaseShape = new THREE.Mesh(middleBaseCircle, middleBaseMaterial);
       middleBaseShape.position.set(middlePoint.x, middlePoint.y, middlePoint.z);
@@ -775,8 +779,11 @@ const main = async () => {
         currentRobotArmDrawingIndex = floor(Math.random()*linesArray.length)
         robotArms[i].currentIndex = currentRobotArmDrawingIndex
       }
+      // line break bug happens because of this
+      // if speed is to high (value too low), the next line to draw will already be outside of current line, so it will just leave it as it is unfinished
+      // need to add condition for when the line is going to break, then draw the line to the end
       const lineDrawSpeed = 0.5
-      // TODO fix line breaking. it happens because of lineSegmentSpeed. although it kind of looks cool
+      const pdt = 0.003
       const indexShift = 3
       // const init
 
@@ -800,7 +807,20 @@ const main = async () => {
         const lineSegment =
         //(((progress % lineDrawSpeed) / lineDrawSpeed))%1
         (((progress/lineDrawSpeed) % 1)*currentLine.length)%1
-        const currentLineSegment = floor((((progress/lineDrawSpeed) % 1)*currentLine.length))
+        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        // TODO: the problem with line breaking is because of the "progress" variable
+        // it just too soon to next line if it progresses too fast
+        // need to remove it and rethink how to progress through lines
+        let currentLineSegment = floor((((progress/lineDrawSpeed) % 1)*currentLine.length))
+        let nextLineSegment = floor(((((progress + dt/4)/lineDrawSpeed) % 1)*currentLine.length))
+        // if (robotArms[i].upcomingLineSegment != -1 && currentLineSegment != robotArms[i].upcomingLineSegment) {
+        //   currentLineSegment = robotArms[i].upcomingLineSegment
+        // } else {
+          
+        //   // console.log("LOL")
+        // }
+        // robotArms[i].upcomingLineSegment = currentLineSegment + 1
+        robotArms[i].currentLineSegment = currentLineSegment
         //floor(((progress % lineDrawSpeed)/lineDrawSpeed)*currentLine.length)
         currentPoint = currentLine[currentLineSegment]
         nextPoint = currentLine[(currentLineSegment + 1)%currentLine.length]
@@ -839,20 +859,25 @@ const main = async () => {
         if (
           currentPoint
           && currentLineSegment + 1 < currentLine.length
-          && nextLineIndex == currentLineIndex
         ) {
-          const middlePoint = currentPoint.clone().lerp(nextPoint, lineSegment).add(offset)
+          const lineSeparation = pSin(progress*100) < 0.2 ? 1 : 0.1
+          const actualLineSegment = (nextLineSegment == currentLineSegment ? lineSegment : 1) * lineSeparation
+          const middlePoint = currentPoint.clone().lerp(nextPoint, actualLineSegment).add(offset)
           
-          //console.log(currentLineSegment, lineSegment)
           
           const drawSuccess = updateRobotArm({drawPosition: middlePoint, i:i})
+          
+          // console.log(currentLineSegment, nextLineSegment, robotArms[i].upcomingLineSegment)
           if (drawSuccess) {
+            if (robotArms[i].upcomingLineSegment > currentLine.length) {
+              robotArms[i].upcomingLineSegment = -1
+            }
             // currentPoint is just THREE.Vector3, not array
             const actualLineSize = 
             (currentLine.length - currentLineSegment)/currentLine.length 
             //lineSegment 
             * (4-1) + 1
-            robotArms[i].progress += (dt/4)
+            robotArms[i].progress += (pdt)
             drawLine(scene, [currentPoint, middlePoint], {...boringLineOptions, lineWidth: actualLineSize});
           }
         } else {
@@ -862,10 +887,11 @@ const main = async () => {
             //drawnLines.push(currentLine)
             drawnIndexes[String(currentLineIndex)] = linesArray[currentLineIndex]
             robotArms[i].currentIndex = -1
+            robotArms[i].upcomingLineSegment = -1
             // delete dumbStoreIndexes[String(currentLineIndex)]
           }
           // }
-          robotArms[i].progress += (dt/4)
+          robotArms[i].progress += (pdt)
         }
       } else {
         robotArms[i].currentIndex = -1
@@ -959,8 +985,8 @@ function clearThree(obj){
   
   function animate() {
 
-    if (saveFrames && currentFrame >= (startFrame + framesToSave)) return;
-    requestAnimationFrame(animate);
+    if (saveFrames && currentFrameName >= (startFrame + framesToSave)) return;
+    if (!saveFrames) requestAnimationFrame(animate);
     //updateRobotArm()
     //scene.remove.apply(scene, scene.children);
     if (reconstruct) clearThree(scene);
@@ -981,15 +1007,19 @@ function clearThree(obj){
     // at = sin(bt)
     at = bt/4
     renderer.render(scene, camera);
-    if (saveFrames && currentFrame >= startFrame) {
+    if (saveFrames && currentFrame >= startFrame && currentFrame % 3 == 0) {
       const dataURL = renderer.domElement.toDataURL(format);
-      saveFrame(dataURL, `frame_${String(currentFrame - startFrame).padStart(4, '0')}.png`);
+      saveFrame(dataURL, `frame_${String(currentFrameName - startFrame).padStart(4, '0')}.png`);
+      currentFrameName++;
     }
     currentFrame++;
   }
 
-  animate();
-  // setInterval(animate,1000 /10)
+  if (!saveFrames) {
+    animate();
+  } else {
+    setInterval(animate,1000 /10)
+  }
   //saveImage(renderer)
   // renderer.render( scene, camera );
 }
