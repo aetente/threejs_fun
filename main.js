@@ -45,6 +45,7 @@ const main = async () => {
   const format = 'image/png';
   const saveFrames = false
   const reconstruct = false
+  const precheck = false
   const startFrame = 10
   let currentFrameName = startFrame;
   const framesToSave = 60 * 20; // 60 frames generate 2 seconds, so times 15 it will be 30 seconds
@@ -54,7 +55,7 @@ const main = async () => {
   
   const camera = new THREE.PerspectiveCamera(35, totalWidth / totalHeight, 0.1, 1000);
 
-  camera.position.z = 50;
+  camera.position.z = 70;
   camera.position.x = 0
 
   const renderer = new THREE.WebGLRenderer({
@@ -349,7 +350,7 @@ const main = async () => {
   
   let at = 0
   let bt = 0
-  let dt = saveFrames ? 0.3 : 0.3
+  let dt = saveFrames ? 0.3 : 30
   
   const testGround = async () => {
     const maxP = 1
@@ -507,12 +508,12 @@ const main = async () => {
           p.x -= scaleRect.x/2;
           p.y -= scaleRect.y/2;
         })
-        const si = 4
+        const si =4
         const testPointsOffset =
           new Vector3(
             //si*sin(123 + i*23542),-4,
-            si*sin(ni*PI*2),
-            si*cos(ni*PI*2) - 4,
+            si*sin(ni*PI*2)-6,
+            si*cos(ni*PI*2) - 6,
             0
           )
         testPoints.forEach(p => {
@@ -521,11 +522,13 @@ const main = async () => {
           p.z += testPointsOffset.z
         })
         const rx = 
-        0
-        //4*sin(63546+i*125)
+        6
+        //+4*sin(63546+i*125)
+        +4*sin(ni*PI*2)
         const ry = 
         8
-        //4*cos(23423+i*765)
+        //+4*cos(23423+i*765)
+        +4*cos(ni*PI*2)
         const refPoint = new Vector3(0 + rx,0 + ry,0)
         const theAngle = 
           refPoint.angleTo(testPointsOffset)
@@ -540,12 +543,12 @@ const main = async () => {
             t: i/10,
             maxLines: 160,
             limit: 1,
-            initAngle: -PI/2,
+            initAngle: PI/2,
             lineColor: "#000",
             dotColor: "#ff0000",
             dotTextures: [fl1,fl2],
             refPoint: refPoint,
-            noDrawing: true,
+            noDrawing: !precheck,
             angleToRef: true
           })
         }
@@ -860,8 +863,9 @@ const main = async () => {
           currentPoint
           && currentLineSegment + 1 < currentLine.length
         ) {
-          const lineSeparation = pSin(progress*100) < 0.2 ? 1 : 0.1
-          const actualLineSegment = (nextLineSegment == currentLineSegment ? lineSegment : 1) * lineSeparation
+          const lineSeparation = pSin(progress*100) < 0.2 ? 1 : 1
+          const trueLineSegment = (nextLineSegment == currentLineSegment ? lineSegment : 1)
+          const actualLineSegment = trueLineSegment * lineSeparation
           const middlePoint = currentPoint.clone().lerp(nextPoint, actualLineSegment).add(offset)
           
           
@@ -877,7 +881,9 @@ const main = async () => {
             (currentLine.length - currentLineSegment)/currentLine.length 
             //lineSegment 
             * (4-1) + 1
-            robotArms[i].progress += (pdt)
+            robotArms[i].progress += 
+            pdt
+            //(trueLineSegment/currentLine.length*lineDrawSpeed)
             drawLine(scene, [currentPoint, middlePoint], {...boringLineOptions, lineWidth: actualLineSize});
           }
         } else {
@@ -986,7 +992,7 @@ function clearThree(obj){
   function animate() {
 
     if (saveFrames && currentFrameName >= (startFrame + framesToSave)) return;
-    if (!saveFrames) requestAnimationFrame(animate);
+    if (!saveFrames && !precheck) requestAnimationFrame(animate);
     //updateRobotArm()
     //scene.remove.apply(scene, scene.children);
     if (reconstruct) clearThree(scene);

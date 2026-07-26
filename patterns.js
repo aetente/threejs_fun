@@ -62,6 +62,7 @@ function pattern1(scene, pointsArray, options) {
   const refPoint = options?.refPoint || new Vector3(0,0,0)
   const refPointV2 = new THREE.Vector2(refPoint?.x || 0, refPoint?.y || 0)
   const initAngle = options?.initAngle || 0
+  
   let desiredAngle = options?.desiredAngle || 0;
   let previousDesiredAngle = desiredAngle
   let scaleSize = 0.05 * scale
@@ -118,7 +119,8 @@ function pattern1(scene, pointsArray, options) {
       
       const angleChange = 
       // 0
-      sin(sin(t/200 + idByPos/100 - j/1000)*PI * (pow(j/maxLines,200) + 1)*10) * angleCap* randomDir
+      -sin(pow(sin(j/20+t/2),3)*2*PI)*1
+      //sin(sin(t/200 + idByPos/100 - j/1000)*PI * (pow(j/maxLines,200) + 1)*10) * angleCap* randomDir
       // sin(sin(j /10) * idByPos/20) * angleCap* randomDir
       //const angleChange = 0
       
@@ -127,8 +129,8 @@ function pattern1(scene, pointsArray, options) {
       //let distFactor = 1
       const distThreshold = 1
       let distFactor = max(1*min(distThreshold, distToRef - distThreshold),0)
-      // distFactor = (pow(1.3, -(distToRef))) * (1-0) + 0
-      distFactor = (1-pow(2, -(distToRef)/40)) * (1-0) + 0
+      distFactor = (pow(1.06, -(distToRef))) * (1-0) + 0
+      //distFactor = (1-pow(2, -(distToRef)/40)) * (1-0) + 0
       //distFactor = 0
       angleVal = previousAngle + angleChange
       if (angleToRef) {
