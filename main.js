@@ -48,7 +48,8 @@ const main = async () => {
   const precheck = false
   const startFrame = 10
   let currentFrameName = startFrame;
-  const framesToSave = 60 * 20; // 60 frames generate 2 seconds, so times 15 it will be 30 seconds
+  const framesToSave = 60 * 24; // 60 frames generate 2 seconds, so times 15 it will be 30 seconds
+  const skipFrames = 3
   
   const scene = new THREE.Scene();
   // const camera = new THREE.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -197,7 +198,8 @@ const main = async () => {
   //const backColor = new THREE.Color("#F4F1EA")
   //const backColor = new THREE.Color("#FDF8F5")
   // const backColor = new THREE.Color("#E2ECC8")
-  const backColor = new THREE.Color("#FFF338")
+  // const backColor = new THREE.Color("#FFF338")
+  const backColor = new THREE.Color("#C77DFF")
   
   scene.background = backColor
   let t = 0;
@@ -306,10 +308,10 @@ const main = async () => {
     for (let i = 0; i < amountOfPoints; i++) {
       const avoidPoint = {
         point: new Vector3(
-          randInRange(-3,3,random()),
-          randInRange(-2,2,random()),
+          randInRange(-1,1,random()),
+          randInRange(-6,6,random()),
           0),
-        weight: 0.5
+        weight: 5.5
       }
       avoidPoints.push(avoidPoint)
     }
@@ -442,7 +444,7 @@ const main = async () => {
     }
   }
 
-  const amountOfRobotArms = 3
+  const amountOfRobotArms = 5
   const generateRebotArm = () => {
     const robotArmsArray = []
     for (let i = 0; i < amountOfRobotArms; i++) {
@@ -495,7 +497,7 @@ const main = async () => {
         
         const ni = (i/maxP) + 1
         
-        // const avoidPoints = generateAvoidPoints()
+        const avoidPoints = generateAvoidPoints()
         const scaleRect = new Vector2(3,3)
         const testPoints = [
           new Vector3(0,0,0),
@@ -549,7 +551,8 @@ const main = async () => {
             dotTextures: [fl1,fl2],
             refPoint: refPoint,
             noDrawing: !precheck,
-            angleToRef: true
+            angleToRef: true,
+            avoidPoints: avoidPoints
           })
         }
         if (i == 0) {
@@ -863,7 +866,7 @@ const main = async () => {
           currentPoint
           && currentLineSegment + 1 < currentLine.length
         ) {
-          const lineSeparation = pSin(progress*100) < 0.2 ? 1 : 1
+          const lineSeparation = pSin(progress*100) < 0.2 ? 1 : 0.1
           const trueLineSegment = (nextLineSegment == currentLineSegment ? lineSegment : 1)
           const actualLineSegment = trueLineSegment * lineSeparation
           const middlePoint = currentPoint.clone().lerp(nextPoint, actualLineSegment).add(offset)
@@ -1013,7 +1016,7 @@ function clearThree(obj){
     // at = sin(bt)
     at = bt/4
     renderer.render(scene, camera);
-    if (saveFrames && currentFrame >= startFrame && currentFrame % 3 == 0) {
+    if (saveFrames && currentFrame >= startFrame && currentFrame % skipFrames == 0) {
       const dataURL = renderer.domElement.toDataURL(format);
       saveFrame(dataURL, `frame_${String(currentFrameName - startFrame).padStart(4, '0')}.png`);
       currentFrameName++;
