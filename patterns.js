@@ -130,8 +130,8 @@ function pattern1(scene, pointsArray, options) {
       //let distFactor = 1
       const distThreshold = 1
       let distFactor = max(1*min(distThreshold, distToRef - distThreshold),0)
-      distFactor = (pow(1.06, -(distToRef))) * (1-0) + 0
-      //distFactor = (1-pow(2, -(distToRef)/40)) * (1-0) + 0
+      // distFactor = (pow(1.06, -(distToRef))) * (1-0) + 0
+      distFactor = (1-pow(2, -(distToRef)/20)) * (1-0) + 0
       //distFactor = 0
       angleVal = previousAngle + angleChange
       if (angleToRef) {
@@ -229,8 +229,9 @@ function pattern1(scene, pointsArray, options) {
       const previousPosWithOffset = previousPos.clone().add(offset);
       const nextPosWithOffset = nextPos.clone().add(offset);
       if (!noDrawing) {
+        const actualLineWidth = (maxLines - j)/maxLines * (4-1) + 1
         drawnPoints.push(
-          drawLine(scene, [previousPosWithOffset, nextPosWithOffset], { lineWidth: lineWidth, color: i === 0 ? color : color, opacity: lineOpacity })
+          drawLine(scene, [previousPosWithOffset, nextPosWithOffset], { lineWidth: actualLineWidth, color: i === 0 ? color : color, opacity: lineOpacity })
           
         );
       }
@@ -264,7 +265,8 @@ function pattern1(scene, pointsArray, options) {
       }
       
       previousPos.copy(nextPos);
-      points.push(nextPos.clone());
+      // points.push(nextPos.clone());
+      points.push([previousPosWithOffset, nextPosWithOffset])
     }
     //points = []
    

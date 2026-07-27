@@ -48,15 +48,15 @@ const main = async () => {
   const precheck = false
   const startFrame = 10
   let currentFrameName = startFrame;
-  const framesToSave = 60 * 24; // 60 frames generate 2 seconds, so times 15 it will be 30 seconds
-  const skipFrames = 3
+  const framesToSave = 60 * 12; // 60 frames generate 2 seconds, so times 15 it will be 30 seconds
+  const skipFrames = 1
   
   const scene = new THREE.Scene();
   // const camera = new THREE.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 0.1, 1000);
   
   const camera = new THREE.PerspectiveCamera(35, totalWidth / totalHeight, 0.1, 1000);
 
-  camera.position.z = 40;
+  camera.position.z = 30;
   camera.position.x = 0
 
   const renderer = new THREE.WebGLRenderer({
@@ -199,7 +199,8 @@ const main = async () => {
   //const backColor = new THREE.Color("#FDF8F5")
   // const backColor = new THREE.Color("#E2ECC8")
   // const backColor = new THREE.Color("#FFF338")
-  const backColor = new THREE.Color("#C77DFF")
+  // const backColor = new THREE.Color("#C77DFF")
+  const backColor = new THREE.Color("#FF9F43")
   
   scene.background = backColor
   let t = 0;
@@ -352,12 +353,12 @@ const main = async () => {
   
   let at = 0
   let bt = 0
-  let dt = saveFrames ? 0.3 : 30
+  let dt = saveFrames ? 0.03 : 0.03
   
   const drawnPoints = []
   
   const testGround = async () => {
-    const maxP = 1
+    const maxP = 30
     let prevPoints = []
     for(let i = 0; i < maxP; i++) {
       
@@ -391,15 +392,15 @@ const main = async () => {
       p.z += testPointsOffset.z
     })
     //await doText()
-    const rx = 4*sin(10*at + sin(at) + ni/maxP*2*PI)
-    const ry = 2*cos(10*at)
+    const rx = 4*sin(at + sin(at) + ni*2*PI)
+    const ry = 4*cos(5*at + ni / 2) + 4
     const refPoint = new Vector3(0 + rx,0 + ry,0)
     const theAngle = 
       refPoint.angleTo(testPointsOffset)
       //-PI/2
       //2.0671854475079234
     // drawCircle(refPoint, 0x00ff00, 0.1)
-    if (i == 100) {
+    if (false && i == 100) {
       swarm1(scene, {
         t: at,
         textures: [pigeonTexture1, pigeonTexture2],
@@ -409,14 +410,14 @@ const main = async () => {
     }
     const branchPoint = prevPoints[floor(i/maxP*prevPoints.length/2)]
     const branchPoints = [branchPoint,branchPoint,branchPoint,branchPoint]
-    const startPoints = true || i == 0 ? testPoints : branchPoints
+    const startPoints = true || i == 0 ? testPoints : branchPoints.positions
     let savePrevPoints
-    if (i == 0 || prevPoints.length > 0) {
+    if (true || i == 0 || prevPoints.length > 0) {
     savePrevPoints = pattern1(scene, startPoints, {
       scale:4,
       dotScale: 8,
       t: at,
-      maxLines: 60,
+      maxLines: 160,
       limit: 1,
       initAngle: -PI/2,
       lineColor: "#000",
@@ -424,7 +425,7 @@ const main = async () => {
       dotTextures: [fl1,fl2],
       //refPoint: middlePoint, 
       refPoint: refPoint,
-      //noDrawing: true,
+      noDrawing: drawnPoints.length >= maxP,
       //desiredAngle: theAngle,
       // avoidPoints: avoidPoints,
       /*[
@@ -442,7 +443,7 @@ const main = async () => {
     if (drawnPoints.length < maxP) {
       drawnPoints.push(savePrevPoints)
     } else {
-      updateDrawnPoints(drawnPoints,i,savePrevPoints)
+      updateDrawnPoints(drawnPoints[i],savePrevPoints)
     }
     }
     if (i == 0) {
@@ -451,9 +452,11 @@ const main = async () => {
     }
   }
   
-  const updateDrawnPoints = (drawnPoints,i,savePrevPoints) => {
-    for (let j = 0; j < drawnPoints[i]; j++) {
-      updateLineGeometryPositions(savePrevPoints[i].mesh[j].geometry, savePrevPoints[i].positions[j])
+  const updateDrawnPoints = (drawnPointsVal,savePrevPoints) => {
+    
+    for (let j = 0; j < drawnPointsVal.mesh.length; j++) {
+      // console.log(savePrevPoints.positions[j])
+      drawnPointsVal.mesh[j].geometry = updateLineGeometryPositions(drawnPointsVal.mesh[j].geometry, savePrevPoints.positions[j])
     }
   }
 
