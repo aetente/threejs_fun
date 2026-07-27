@@ -67,6 +67,7 @@ function pattern1(scene, pointsArray, options) {
   let previousDesiredAngle = desiredAngle
   let scaleSize = 0.05 * scale
   let points = [];
+  let drawnPoints = [];
   let angleVal = 0;
   let previousAngle = initAngle;
   const angleToRef = options?.angleToRef || false
@@ -228,7 +229,10 @@ function pattern1(scene, pointsArray, options) {
       const previousPosWithOffset = previousPos.clone().add(offset);
       const nextPosWithOffset = nextPos.clone().add(offset);
       if (!noDrawing) {
-        drawLine(scene, [previousPosWithOffset, nextPosWithOffset], { lineWidth: lineWidth, color: i === 0 ? color : color, opacity: lineOpacity });
+        drawnPoints.push(
+          drawLine(scene, [previousPosWithOffset, nextPosWithOffset], { lineWidth: lineWidth, color: i === 0 ? color : color, opacity: lineOpacity })
+          
+        );
       }
       const dotSeed = round(indexId * 1000) + randomSeed
       const maxAmountOfFlowers = 32
@@ -265,7 +269,7 @@ function pattern1(scene, pointsArray, options) {
     //points = []
    
   }
-  return points
+  return {positions: points, mesh: drawnPoints}
 }
 
 const genPosArray = (amountOfElements) => {

@@ -56,7 +56,7 @@ const main = async () => {
   
   const camera = new THREE.PerspectiveCamera(35, totalWidth / totalHeight, 0.1, 1000);
 
-  camera.position.z = 70;
+  camera.position.z = 40;
   camera.position.x = 0
 
   const renderer = new THREE.WebGLRenderer({
@@ -354,6 +354,8 @@ const main = async () => {
   let bt = 0
   let dt = saveFrames ? 0.3 : 30
   
+  const drawnPoints = []
+  
   const testGround = async () => {
     const maxP = 1
     let prevPoints = []
@@ -407,7 +409,7 @@ const main = async () => {
     }
     const branchPoint = prevPoints[floor(i/maxP*prevPoints.length/2)]
     const branchPoints = [branchPoint,branchPoint,branchPoint,branchPoint]
-    const startPoints = i == 0 ? testPoints : branchPoints
+    const startPoints = true || i == 0 ? testPoints : branchPoints
     let savePrevPoints
     if (i == 0 || prevPoints.length > 0) {
     savePrevPoints = pattern1(scene, startPoints, {
@@ -437,10 +439,21 @@ const main = async () => {
       ],*/
       angleToRef: true
     })
+    if (drawnPoints.length < maxP) {
+      drawnPoints.push(savePrevPoints)
+    } else {
+      updateDrawnPoints(drawnPoints,i,savePrevPoints)
+    }
     }
     if (i == 0) {
       prevPoints = savePrevPoints
     }
+    }
+  }
+  
+  const updateDrawnPoints = (drawnPoints,i,savePrevPoints) => {
+    for (let j = 0; j < drawnPoints[i]; j++) {
+      updateLineGeometryPositions(savePrevPoints[i].mesh[j].geometry, savePrevPoints[i].positions[j])
     }
   }
 
@@ -1000,8 +1013,8 @@ function clearThree(obj){
     //scene.remove.apply(scene, scene.children);
     if (reconstruct) clearThree(scene);
     //while(scene.children.length > 0) {scene.remove(scene.children[0])}
-    // testGround()
-    pictureFactory1()
+    testGround()
+    //pictureFactory1()
     //swarm1(scene, {t: at, textures: [pigeonTexture1, pigeonTexture2]})
     // dancePerson1(scene, {offset: new Vector3(-1.5,0,2)})
     // dancePerson2(scene, {offset: new Vector3(1.5,0,2)})
