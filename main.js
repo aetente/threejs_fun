@@ -56,7 +56,7 @@ const main = async () => {
   
   const camera = new THREE.PerspectiveCamera(35, totalWidth / totalHeight, 0.1, 1000);
 
-  camera.position.z = 30;
+  camera.position.z = 40;
   camera.position.x = 0
 
   const renderer = new THREE.WebGLRenderer({
@@ -79,6 +79,18 @@ const main = async () => {
   //fl2.colorSpace = THREE.SRGBColorSpace;
   const pigeonTexture1 = await loadTextureF('/assets/textures/pigeon/Pigeon1Saturated.png')
   const pigeonTexture2 = await loadTextureF('/assets/textures/pigeon/Pigeon2Saturated.png')
+
+  const photo_test1 = await loadTextureF('/assets/photos/20250611_193541-01.jpeg')
+
+  const doPhotoLayer  = (scene) => {
+    photo_test1.repeat.set( 1, 1 );
+    const photo = new THREE.Mesh(
+      new THREE.BoxGeometry(15, 20, 1),
+      new THREE.MeshBasicMaterial({ map: photo_test1 })
+    );
+    photo.position.set(0, 0, -10);
+    scene.add(photo);
+  }
   
   function doDymanicsLines(lines) {
     lines.forEach((line,i) => {
@@ -200,7 +212,8 @@ const main = async () => {
   // const backColor = new THREE.Color("#E2ECC8")
   // const backColor = new THREE.Color("#FFF338")
   // const backColor = new THREE.Color("#C77DFF")
-  const backColor = new THREE.Color("#FF9F43")
+  // const backColor = new THREE.Color("#FF9F43")
+  const backColor = new THREE.Color("#E5A93B")
   
   scene.background = backColor
   let t = 0;
@@ -353,12 +366,12 @@ const main = async () => {
   
   let at = 0
   let bt = 0
-  let dt = saveFrames ? 0.03 : 0.03
+  let dt = saveFrames ? 0.06 : 0.03
   
   const drawnPoints = []
   
   const testGround = async () => {
-    const maxP = 30
+    const maxP = 3
     let prevPoints = []
     for(let i = 0; i < maxP; i++) {
       
@@ -377,12 +390,12 @@ const main = async () => {
       p.x -= scaleRect.x/2;
       p.y -= scaleRect.y/2;
     })
-    const si = 3
+    const si = 1
     const testPointsOffset =
       new Vector3(
-        si*sin(ni*PI*2),-4,
-        //si*sin(ni*PI*2),
-        //si*cos(ni*PI*2),
+        // si*sin(ni*PI*2),-6,
+        si*sin(ni*PI*2),
+        si*cos(ni*PI*2)-6,
         0
       )
     // drawCircle(testPointsOffset, 0xff0000, 0.1)
@@ -392,8 +405,8 @@ const main = async () => {
       p.z += testPointsOffset.z
     })
     //await doText()
-    const rx = 4*sin(at + sin(at) + ni*2*PI)
-    const ry = 4*cos(5*at + ni / 2) + 4
+    const rx = 0*sin(at + sin(at) + ni*2*PI)
+    const ry = 0*cos(5*at + ni / 2)
     const refPoint = new Vector3(0 + rx,0 + ry,0)
     const theAngle = 
       refPoint.angleTo(testPointsOffset)
@@ -420,7 +433,7 @@ const main = async () => {
       maxLines: 160,
       limit: 1,
       initAngle: -PI/2,
-      lineColor: "#000",
+      lineColor: "#FFFFFF",
       dotColor: "#ff0000",
       dotTextures: [fl1,fl2],
       //refPoint: middlePoint, 
@@ -1007,6 +1020,7 @@ function clearThree(obj){
     document.body.removeChild(link);
   }
 
+  doPhotoLayer(scene)
   
   function animate() {
 
