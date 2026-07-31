@@ -80,16 +80,32 @@ const main = async () => {
   const pigeonTexture1 = await loadTextureF('/assets/textures/pigeon/Pigeon1Saturated.png')
   const pigeonTexture2 = await loadTextureF('/assets/textures/pigeon/Pigeon2Saturated.png')
 
-  const photo_test1 = await loadTextureF('/assets/photos/20250611_193541-01.jpeg')
+  const photo_test1 = await loadTextureF('/assets/photos/20250218_182704-02.jpeg')
+  const photo_test2 = await loadTextureF('/assets/photos/20250218_182704-02_foreground.png')
 
   const doPhotoLayer  = (scene) => {
     photo_test1.repeat.set( 1, 1 );
     const photo = new THREE.Mesh(
-      new THREE.BoxGeometry(15, 20, 1),
+      new THREE.PlaneGeometry(15, 20),
       new THREE.MeshBasicMaterial({ map: photo_test1 })
     );
-    photo.position.set(0, 0, -10);
+    photo.position.set(0, -0.5, -1);
     scene.add(photo);
+
+    photo_test2.repeat.set( 1, 1 );
+    const photo2 = new THREE.Mesh(
+      new THREE.PlaneGeometry(15, 20),
+      new THREE.MeshBasicMaterial({ map: photo_test2, transparent: true })
+    );
+    photo2.position.set(0, 0, 0);
+    scene.add(photo2);
+
+    const block1 = new THREE.Mesh(
+      new THREE.PlaneGeometry(15, 20),
+      new THREE.MeshBasicMaterial({ color: "#000c1b" })
+    );
+    block1.position.set(0, -20, 0);
+    scene.add(block1);
   }
   
   function doDymanicsLines(lines) {
@@ -213,7 +229,8 @@ const main = async () => {
   // const backColor = new THREE.Color("#FFF338")
   // const backColor = new THREE.Color("#C77DFF")
   // const backColor = new THREE.Color("#FF9F43")
-  const backColor = new THREE.Color("#E5A93B")
+  // const backColor = new THREE.Color("#E5A93B")
+  const backColor = new THREE.Color("#01000f")
   
   scene.background = backColor
   let t = 0;
@@ -371,7 +388,7 @@ const main = async () => {
   const drawnPoints = []
   
   const testGround = async () => {
-    const maxP = 3
+    const maxP = 10
     let prevPoints = []
     for(let i = 0; i < maxP; i++) {
       
@@ -395,7 +412,8 @@ const main = async () => {
       new Vector3(
         // si*sin(ni*PI*2),-6,
         si*sin(ni*PI*2),
-        si*cos(ni*PI*2)-6,
+        -10,
+        // si*cos(ni*PI*2)-10,
         0
       )
     // drawCircle(testPointsOffset, 0xff0000, 0.1)
@@ -429,11 +447,11 @@ const main = async () => {
     savePrevPoints = pattern1(scene, startPoints, {
       scale:4,
       dotScale: 8,
-      t: at,
+      t: at + i,
       maxLines: 160,
       limit: 1,
       initAngle: -PI/2,
-      lineColor: "#FFFFFF",
+      lineColor: "#a50aa1",
       dotColor: "#ff0000",
       dotTextures: [fl1,fl2],
       //refPoint: middlePoint, 

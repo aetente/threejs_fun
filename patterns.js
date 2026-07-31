@@ -57,7 +57,7 @@ function pattern1(scene, pointsArray, options) {
   let limit = options?.limit || 170;
   let maxLines = options?.maxLines || 110
   const scale = options?.scale || 2;
-  const offset = options?.offset || new THREE.Vector3(0, 0, 0.1);
+  const offset = options?.offset || new THREE.Vector3(0, 0, -0.5);
   const initPoint = options?.initPoint || getRandomPointBetweenPoints(pointsArray);
   const refPoint = options?.refPoint || new Vector3(0,0,0)
   const refPointV2 = new THREE.Vector2(refPoint?.x || 0, refPoint?.y || 0)
@@ -120,7 +120,7 @@ function pattern1(scene, pointsArray, options) {
       
       const angleChange = 
       // 0
-      -sin(pow(sin(j/200+t/2),1)*2*PI)*1
+      -sin(pow(sin(j/200+t/2),3)*2*PI)*1
       // -sin(pow(sin(j/20+t/2),3)*2*PI)*1
       //sin(sin(t/200 + idByPos/100 - j/1000)*PI * (pow(j/maxLines,200) + 1)*10) * angleCap* randomDir
       // sin(sin(j /10) * idByPos/20) * angleCap* randomDir
@@ -221,7 +221,7 @@ function pattern1(scene, pointsArray, options) {
       const currentPos = new THREE.Vector3(
         sin(angleVal) * scaleSize,
         cos(angleVal) * scaleSize,
-        sin(i) / 10
+        0
       );
       nextPos = previousPos.clone().add(currentPos);
         
@@ -230,7 +230,7 @@ function pattern1(scene, pointsArray, options) {
       const previousPosWithOffset = previousPos.clone().add(offset);
       const nextPosWithOffset = nextPos.clone().add(offset);
       if (!noDrawing) {
-        const actualLineWidth = (maxLines - j)/maxLines * (4-1) + 1
+        const actualLineWidth = ((maxLines - j)/maxLines * (4-1) + 1) * 2
         drawnPoints.push(
           drawLine(scene, [previousPosWithOffset, nextPosWithOffset], { lineWidth: actualLineWidth, color: i === 0 ? color : color, opacity: lineOpacity })
           
