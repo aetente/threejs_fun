@@ -120,7 +120,7 @@ function pattern1(scene, pointsArray, options) {
       
       const angleChange = 
       // 0
-      -sin(pow(sin(j/200+t/2),3)*2*PI)*1
+      -sin(pow(sin(j/200+t/2),1)*2*PI)*PI/4
       // -sin(pow(sin(j/20+t/2),3)*2*PI)*1
       //sin(sin(t/200 + idByPos/100 - j/1000)*PI * (pow(j/maxLines,200) + 1)*10) * angleCap* randomDir
       // sin(sin(j /10) * idByPos/20) * angleCap* randomDir
@@ -230,7 +230,7 @@ function pattern1(scene, pointsArray, options) {
       const previousPosWithOffset = previousPos.clone().add(offset);
       const nextPosWithOffset = nextPos.clone().add(offset);
       if (!noDrawing) {
-        const actualLineWidth = ((maxLines - j)/maxLines * (4-1) + 1) * 2
+        const actualLineWidth = ((maxLines - j)/maxLines * (4-1) + 1) * 1
         drawnPoints.push(
           drawLine(scene, [previousPosWithOffset, nextPosWithOffset], { lineWidth: actualLineWidth, color: i === 0 ? color : color, opacity: lineOpacity })
           

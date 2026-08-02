@@ -56,7 +56,7 @@ const main = async () => {
   
   const camera = new THREE.PerspectiveCamera(35, totalWidth / totalHeight, 0.1, 1000);
 
-  camera.position.z = 40;
+  camera.position.z = 70;
   camera.position.x = 0
 
   const renderer = new THREE.WebGLRenderer({
@@ -228,9 +228,9 @@ const main = async () => {
   // const backColor = new THREE.Color("#E2ECC8")
   // const backColor = new THREE.Color("#FFF338")
   // const backColor = new THREE.Color("#C77DFF")
-  // const backColor = new THREE.Color("#FF9F43")
-  // const backColor = new THREE.Color("#E5A93B")
-  const backColor = new THREE.Color("#01000f")
+  const backColor = new THREE.Color("#FF9F43")
+  //const backColor = new THREE.Color("#E5A93B")
+  //const backColor = new THREE.Color("#01000f")
   
   scene.background = backColor
   let t = 0;
@@ -411,8 +411,8 @@ const main = async () => {
     const testPointsOffset =
       new Vector3(
         // si*sin(ni*PI*2),-6,
-        si*sin(ni*PI*2),
-        -10,
+        4*sin(ni*PI*2),
+        15*cos(ni*PI*2),
         // si*cos(ni*PI*2)-10,
         0
       )
@@ -445,13 +445,13 @@ const main = async () => {
     let savePrevPoints
     if (true || i == 0 || prevPoints.length > 0) {
     savePrevPoints = pattern1(scene, startPoints, {
-      scale:4,
+      scale:8 +4*sin(i + at),
       dotScale: 8,
-      t: at + i,
+      t: at + i/10,
       maxLines: 160,
       limit: 1,
       initAngle: -PI/2,
-      lineColor: "#a50aa1",
+      lineColor: "#000",
       dotColor: "#ff0000",
       dotTextures: [fl1,fl2],
       //refPoint: middlePoint, 
@@ -1038,7 +1038,7 @@ function clearThree(obj){
     document.body.removeChild(link);
   }
 
-  doPhotoLayer(scene)
+  //doPhotoLayer(scene)
   
   function animate() {
 
