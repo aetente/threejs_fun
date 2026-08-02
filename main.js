@@ -228,9 +228,10 @@ const main = async () => {
   // const backColor = new THREE.Color("#E2ECC8")
   // const backColor = new THREE.Color("#FFF338")
   // const backColor = new THREE.Color("#C77DFF")
-  const backColor = new THREE.Color("#FF9F43")
+  // const backColor = new THREE.Color("#FF9F43")
   //const backColor = new THREE.Color("#E5A93B")
   //const backColor = new THREE.Color("#01000f")
+  const backColor = new THREE.Color("#1C2321")
   
   scene.background = backColor
   let t = 0;
@@ -451,7 +452,7 @@ const main = async () => {
       maxLines: 160,
       limit: 1,
       initAngle: -PI/2,
-      lineColor: "#000",
+      lineColor: "#F4F1EA",
       dotColor: "#ff0000",
       dotTextures: [fl1,fl2],
       //refPoint: middlePoint, 
