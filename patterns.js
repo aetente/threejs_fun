@@ -228,7 +228,12 @@ function pattern1(scene, pointsArray, options) {
       const sunsetPalleteIndex = psin(angleVal / angleCap * PI * 2) * (testPalette2.length - 1);
       const color = lineColor || testPalette2[Math.floor(sunsetPalleteIndex)];
       const previousPosWithOffset = previousPos.clone().add(offset);
-      const nextPosWithOffset = nextPos.clone().add(offset);
+      // const nextPosWithOffset = nextPos.clone().add(offset);
+
+
+
+      const lineSeparation = psin(j*100 + t * 1.3) < 0.2 ? 1 : 0.1
+      const nextPosWithOffset = previousPosWithOffset.clone().lerp(nextPos, lineSeparation).add(offset)
       if (!noDrawing) {
         const actualLineWidth = ((maxLines - j)/maxLines * (4-1) + 1) * 1
         drawnPoints.push(

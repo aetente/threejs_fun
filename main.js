@@ -80,32 +80,33 @@ const main = async () => {
   const pigeonTexture1 = await loadTextureF('/assets/textures/pigeon/Pigeon1Saturated.png')
   const pigeonTexture2 = await loadTextureF('/assets/textures/pigeon/Pigeon2Saturated.png')
 
-  const photo_test1 = await loadTextureF('/assets/photos/20250218_182704-02.jpeg')
-  const photo_test2 = await loadTextureF('/assets/photos/20250218_182704-02_foreground.png')
+  const photo_test1 = await loadTextureF('/assets/photos/20260804_224901-01.jpeg')
+  // const photo_test2 = await loadTextureF('/assets/photos/20250218_182704-02_foreground.png')
 
   const doPhotoLayer  = (scene) => {
     photo_test1.repeat.set( 1, 1 );
+    photo_test1.wrapS = THREE.RepeatWrapping;
     const photo = new THREE.Mesh(
-      new THREE.PlaneGeometry(15, 20),
+      new THREE.PlaneGeometry(2.082*13, 3.377*13),
       new THREE.MeshBasicMaterial({ map: photo_test1 })
     );
     photo.position.set(0, -0.5, -1);
     scene.add(photo);
 
-    photo_test2.repeat.set( 1, 1 );
-    const photo2 = new THREE.Mesh(
-      new THREE.PlaneGeometry(15, 20),
-      new THREE.MeshBasicMaterial({ map: photo_test2, transparent: true })
-    );
-    photo2.position.set(0, 0, 0);
-    scene.add(photo2);
+    // photo_test2.repeat.set( 1, 1 );
+    // const photo2 = new THREE.Mesh(
+    //   new THREE.PlaneGeometry(15, 20),
+    //   new THREE.MeshBasicMaterial({ map: photo_test2, transparent: true })
+    // );
+    // photo2.position.set(0, 0, 0);
+    // scene.add(photo2);
 
-    const block1 = new THREE.Mesh(
-      new THREE.PlaneGeometry(15, 20),
-      new THREE.MeshBasicMaterial({ color: "#000c1b" })
-    );
-    block1.position.set(0, -20, 0);
-    scene.add(block1);
+    // const block1 = new THREE.Mesh(
+    //   new THREE.PlaneGeometry(15, 20),
+    //   new THREE.MeshBasicMaterial({ color: "#000c1b" })
+    // );
+    // block1.position.set(0, -20, 0);
+    // scene.add(block1);
   }
   
   function doDymanicsLines(lines) {
@@ -231,7 +232,8 @@ const main = async () => {
   // const backColor = new THREE.Color("#FF9F43")
   //const backColor = new THREE.Color("#E5A93B")
   //const backColor = new THREE.Color("#01000f")
-  const backColor = new THREE.Color("#1C2321")
+  // const backColor = new THREE.Color("#1C2321")
+  const backColor = new THREE.Color("#cd5f0e")
   
   scene.background = backColor
   let t = 0;
@@ -459,7 +461,7 @@ const main = async () => {
       maxLines: 160,
       limit: 1,
       initAngle: -PI/2,
-      lineColor: "#F4F1EA",
+      lineColor: "#FF6B35",
       dotColor: "#ff0000",
       dotTextures: [fl1,fl2],
       //refPoint: middlePoint, 
@@ -1046,7 +1048,7 @@ function clearThree(obj){
     document.body.removeChild(link);
   }
 
-  //doPhotoLayer(scene)
+  doPhotoLayer(scene)
   
   function animate() {
 
