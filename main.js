@@ -387,10 +387,14 @@ const main = async () => {
   let dt = saveFrames ? 0.06 : 0.03
   
   const drawnPoints = []
+  let point
   
   const testGround = async () => {
     const maxP = 10
     let prevPoints = []
+    const gt = at*3
+    const ft =  (gt + sin(gt))
+    const ft2 =  (gt + sin(gt-PI/2))
     for(let i = 0; i < maxP; i++) {
       
     const ni = (i/maxP) + 1
@@ -412,8 +416,8 @@ const main = async () => {
     const testPointsOffset =
       new Vector3(
         // si*sin(ni*PI*2),-6,
-        4*sin(ni*PI*2),
-        15*cos(ni*PI*2),
+        2*sin(ni*PI*2) + 6*sin(ft),
+        2*cos(ni*PI*2) + 15*cos(ft),
         // si*cos(ni*PI*2)-10,
         0
       )
@@ -424,8 +428,11 @@ const main = async () => {
       p.z += testPointsOffset.z
     })
     //await doText()
-    const rx = 0*sin(at + sin(at) + ni*2*PI)
-    const ry = 0*cos(5*at + ni / 2)
+    const tailDist = 14 * pSin(ft + PI/3) + 4
+    const rx = 6*sin(ft2) + 3*sin(ni*PI*2)
+    //0*sin(at + sin(at) + ni*2*PI)
+    const ry = 15*cos(ft2) + 3*cos(ni*PI*2)
+    //0*cos(5*at + ni / 2)
     const refPoint = new Vector3(0 + rx,0 + ry,0)
     const theAngle = 
       refPoint.angleTo(testPointsOffset)
