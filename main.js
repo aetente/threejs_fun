@@ -48,7 +48,7 @@ const main = async () => {
   const precheck = false
   const startFrame = 10
   let currentFrameName = startFrame;
-  const framesToSave = 60 * 12; // 60 frames generate 2 seconds, so times 15 it will be 30 seconds
+  const framesToSave = 60 * 24; // 60 frames generate 2 seconds, so times 15 it will be 30 seconds
   const skipFrames = 1
   
   const scene = new THREE.Scene();
@@ -386,7 +386,7 @@ const main = async () => {
   
   let at = 0
   let bt = 0
-  let dt = saveFrames ? 0.06 : 0.03
+  let dt = saveFrames ? 0.04 : 0.03
   
   const drawnPoints = []
   let point
@@ -418,8 +418,8 @@ const main = async () => {
     const testPointsOffset =
       new Vector3(
         // si*sin(ni*PI*2),-6,
-        2*sin(ni*PI*2) + 6*sin(ft),
-        2*cos(ni*PI*2) + 15*cos(ft),
+        2*sin(ni*PI*2) + 0*sin(ft),
+        2*cos(ni*PI*2) + 0*cos(ft) - 15,
         // si*cos(ni*PI*2)-10,
         0
       )
@@ -431,9 +431,9 @@ const main = async () => {
     })
     //await doText()
     const tailDist = 14 * pSin(ft + PI/3) + 4
-    const rx = 6*sin(ft2) + 3*sin(ni*PI*2)
+    const rx = 6*sin(gt) + 6*sin(ni*PI*2 + gt*3)
     //0*sin(at + sin(at) + ni*2*PI)
-    const ry = 15*cos(ft2) + 3*cos(ni*PI*2)
+    const ry = 6*cos(gt) + 6 + 6*cos(ni*PI*2 + gt*3)
     //0*cos(5*at + ni / 2)
     const refPoint = new Vector3(0 + rx,0 + ry,0)
     const theAngle = 
