@@ -232,8 +232,8 @@ const main = async () => {
   // const backColor = new THREE.Color("#FF9F43")
   //const backColor = new THREE.Color("#E5A93B")
   //const backColor = new THREE.Color("#01000f")
-  // const backColor = new THREE.Color("#1C2321")
-  const backColor = new THREE.Color("#cd5f0e")
+  const backColor = new THREE.Color("#1C2321")
+  //const backColor = new THREE.Color("#cd5f0e")
   
   scene.background = backColor
   let t = 0;
@@ -462,6 +462,7 @@ const main = async () => {
       limit: 1,
       initAngle: -PI/2,
       lineColor: "#FF6B35",
+      colorArray: ["#FF6B35", "#fff"],
       dotColor: "#ff0000",
       dotTextures: [fl1,fl2],
       //refPoint: middlePoint, 
@@ -1048,7 +1049,7 @@ function clearThree(obj){
     document.body.removeChild(link);
   }
 
-  doPhotoLayer(scene)
+  //doPhotoLayer(scene)
   
   function animate() {
 

@@ -89,6 +89,8 @@ function pattern1(scene, pointsArray, options) {
   
   const noDrawing = options?.noDrawing || false
   
+  const colorArray = options?.colorArray || []
+  
   for (let i = 0; i < limit; i++) {
     
     const insidePoints = []
@@ -120,7 +122,7 @@ function pattern1(scene, pointsArray, options) {
       
       const angleChange = 
       // 0
-      -sin(pow(sin(j/200+t/2),1)*2*PI)*PI/4
+      -sin(pow(sin(j/20+t/2),1)*2*PI)*PI/6
       // -sin(pow(sin(j/20+t/2),3)*2*PI)*1
       //sin(sin(t/200 + idByPos/100 - j/1000)*PI * (pow(j/maxLines,200) + 1)*10) * angleCap* randomDir
       // sin(sin(j /10) * idByPos/20) * angleCap* randomDir
@@ -236,8 +238,20 @@ function pattern1(scene, pointsArray, options) {
       const nextPosWithOffset = previousPosWithOffset.clone().lerp(nextPos, lineSeparation).add(offset)
       if (!noDrawing) {
         const actualLineWidth = ((maxLines - j)/maxLines * (4-1) + 1) * 1
+        const colorProgress = psin(j/100)*colorArray.length
+        const colorLerp = colorProgress % 1
+        
+        const currentColorIndex = floor(colorProgress)
+        const nextColorIndex = (currentColorIndex + 1)%colorArray.length
+        
+        const color1 = colorArray[currentColorIndex] ? new THREE.Color(colorArray[currentColorIndex]) : null
+        const color2 = colorArray[nextColorIndex] ? new THREE.Color(colorArray[nextColorIndex]) : null
+        
+        
+        
+        const colorValue = color1?.lerp(color2, colorLerp)
         drawnPoints.push(
-          drawLine(scene, [previousPosWithOffset, nextPosWithOffset], { lineWidth: actualLineWidth, color: i === 0 ? color : color, opacity: lineOpacity })
+          drawLine(scene, [previousPosWithOffset, nextPosWithOffset], { lineWidth: actualLineWidth, color: colorArray.length > 0 ? colorValue : color, opacity: lineOpacity })
           
         );
       }
