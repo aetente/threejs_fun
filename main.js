@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 
-import { Vector2, Vector3 } from 'three';
+import { Vector2, Vector3, MathUtils } from 'three';
 import { randInRange, pSin, pCos, distance3D, loadTextureF, seededRandomRange } from "./utils.js"
 import { heartShape, birdShape } from "./shapes.js"
 import { lisa, dancePerson1, dancePerson2, basicPerson, pattern1Person } from './people.js';
@@ -36,6 +36,7 @@ from "./consts.js"
 import {pattern1, swarm1} from "./patterns.js"
 
 import {saveImage, drawLine, updateLineGeometryPositions} from "./utils.js"
+const {seededRandom, lerp, smoothstep} = MathUtils
 
 const {sin, cos, PI, random, pow, floor, acos, atan2} = Math;
 
@@ -48,7 +49,7 @@ const main = async () => {
   const precheck = false
   const startFrame = 10
   let currentFrameName = startFrame;
-  const framesToSave = 60 * 24; // 60 frames generate 2 seconds, so times 15 it will be 30 seconds
+  const framesToSave = 60 * 12; // 60 frames generate 2 seconds, so times 15 it will be 30 seconds
   const skipFrames = 1
   
   const scene = new THREE.Scene();
@@ -232,8 +233,9 @@ const main = async () => {
   // const backColor = new THREE.Color("#FF9F43")
   //const backColor = new THREE.Color("#E5A93B")
   //const backColor = new THREE.Color("#01000f")
-  const backColor = new THREE.Color("#1C2321")
+  // const backColor = new THREE.Color("#1C2321")
   //const backColor = new THREE.Color("#cd5f0e")
+  const backColor = new THREE.Color("#EDF1D6")
   
   scene.background = backColor
   let t = 0;
@@ -336,14 +338,15 @@ const main = async () => {
     scene.add(root);
   }
 
-  const generateAvoidPoints = () => {
+
+  const generateAvoidPoints = (seedAdd) => {
     const avoidPoints = []
     const amountOfPoints = 3
     for (let i = 0; i < amountOfPoints; i++) {
       const avoidPoint = {
         point: new Vector3(
-          randInRange(-1,1,random()),
-          randInRange(-6,6,random()),
+          randInRange(-6,6,seededRandom(i*234727) + seedAdd),
+          randInRange(-6,6,seededRandom(i*12314) + seedAdd),
           0),
         weight: 5.5
       }
@@ -386,7 +389,7 @@ const main = async () => {
   
   let at = 0
   let bt = 0
-  let dt = saveFrames ? 0.04 : 0.03
+  let dt = saveFrames ? 0.02 : 0.03
   
   const drawnPoints = []
   let point
@@ -401,7 +404,7 @@ const main = async () => {
       
     const ni = (i/maxP) + 1
     
-    // const avoidPoints = generateAvoidPoints()
+    const avoidPoints = generateAvoidPoints(0)
     const scaleRect = new Vector2(1,0)
     const testPoints = [
       new Vector3(0,0,0),
@@ -418,8 +421,8 @@ const main = async () => {
     const testPointsOffset =
       new Vector3(
         // si*sin(ni*PI*2),-6,
-        1*sin(ni*PI*2) + 3*sin(at*5),
-        1*cos(ni*PI*2) + 3*cos(at*5),
+        1*sin(ni*PI*2 + at*5) + 0*sin(at*5),
+        1*cos(ni*PI*2 + at*5) + 0*cos(at*5),
         // si*cos(ni*PI*2)-10,
         0
       )
@@ -431,9 +434,9 @@ const main = async () => {
     })
     //await doText()
     const tailDist = 14 * pSin(ft + PI/3) + 4
-    const rx = 6*sin(gt) + 6*sin(ni*PI*2 + gt*3)
+    const rx = 6*sin(ni*PI*2 + gt*3)
     //0*sin(at + sin(at) + ni*2*PI)
-    const ry = 6*cos(gt) + 6 + 6*cos(ni*PI*2 + gt*3)
+    const ry = 8*cos(ni*PI*2 + gt*3)
     //0*cos(5*at + ni / 2)
     const refPoint = new Vector3(0 + rx,0 + ry,0)
     const theAngle = 
@@ -462,14 +465,14 @@ const main = async () => {
       limit: 1,
       initAngle: -PI/2,
       lineColor: "#FF6B35",
-      colorArray: ["#FF6B35", "#fff"],
+      colorArray: ["#9DC08B", "#609966", "#40513B"],
       dotColor: "#ff0000",
       dotTextures: [fl1,fl2],
       //refPoint: middlePoint, 
       refPoint: refPoint,
       noDrawing: drawnPoints.length >= maxP,
       //desiredAngle: theAngle,
-      // avoidPoints: avoidPoints,
+      avoidPoints: avoidPoints,
       /*[
         {
           point: new Vector3(0,0,0),
@@ -555,7 +558,7 @@ const main = async () => {
         
         const ni = (i/maxP) + 1
         
-        const avoidPoints = generateAvoidPoints()
+        const avoidPoints = generateAvoidPoints(i*25357)
         const scaleRect = new Vector2(3,3)
         const testPoints = [
           new Vector3(0,0,0),
