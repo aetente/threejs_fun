@@ -418,8 +418,8 @@ const main = async () => {
     const testPointsOffset =
       new Vector3(
         // si*sin(ni*PI*2),-6,
-        2*sin(ni*PI*2) + 0*sin(ft),
-        2*cos(ni*PI*2) + 0*cos(ft) - 15,
+        1*sin(ni*PI*2) + 3*sin(at*5),
+        1*cos(ni*PI*2) + 3*cos(at*5),
         // si*cos(ni*PI*2)-10,
         0
       )
