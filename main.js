@@ -235,7 +235,8 @@ const main = async () => {
   //const backColor = new THREE.Color("#01000f")
   // const backColor = new THREE.Color("#1C2321")
   //const backColor = new THREE.Color("#cd5f0e")
-  const backColor = new THREE.Color("#EDF1D6")
+  // const backColor = new THREE.Color("#EDF1D6")
+  const backColor = new THREE.Color("#321E48")
   
   scene.background = backColor
   let t = 0;
@@ -345,8 +346,10 @@ const main = async () => {
     for (let i = 0; i < amountOfPoints; i++) {
       const avoidPoint = {
         point: new Vector3(
-          randInRange(-6,6,seededRandom(i*234727) + seedAdd),
-          randInRange(-6,6,seededRandom(i*12314) + seedAdd),
+          6*sin(seedAdd),
+          6*cos(seedAdd),
+          // randInRange(-6,6,seededRandom(i*234727) + seedAdd),
+          // randInRange(-6,6,seededRandom(i*12314) + seedAdd),
           0),
         weight: 5.5
       }
@@ -389,7 +392,7 @@ const main = async () => {
   
   let at = 0
   let bt = 0
-  let dt = saveFrames ? 0.02 : 0.03
+  let dt = saveFrames ? 0.01 : 0.03
   
   const drawnPoints = []
   let point
@@ -397,14 +400,16 @@ const main = async () => {
   const testGround = async () => {
     const maxP = 10
     let prevPoints = []
+    const nextat = at + dt/4
     const gt = at*3
     const ft =  (gt + sin(gt))
     const ft2 =  (gt + sin(gt-PI/2))
     for(let i = 0; i < maxP; i++) {
       
     const ni = (i/maxP) + 1
+    const nextni = (((i+1)%maxP)/maxP) + 1
     
-    const avoidPoints = generateAvoidPoints(0)
+    const avoidPoints = generateAvoidPoints(i + at)
     const scaleRect = new Vector2(1,0)
     const testPoints = [
       new Vector3(0,0,0),
@@ -426,6 +431,14 @@ const main = async () => {
         // si*cos(ni*PI*2)-10,
         0
       )
+    const nextTestPointsOffset =
+      new Vector3(
+        // si*sin(ni*PI*2),-6,
+        6*sin(nextni*PI + nextat*5) + 0*sin(nextat*5),
+        12*cos(nextni*PI*3.1 + nextat*5) + 0*cos(nextat*5),
+        // si*cos(ni*PI*2)-10,
+        0
+    )
     // drawCircle(testPointsOffset, 0xff0000, 0.1)
     testPoints.forEach(p => {
       p.x += testPointsOffset.x;
@@ -438,7 +451,8 @@ const main = async () => {
     //0*sin(at + sin(at) + ni*2*PI)
     const ry = testPointsOffset.y + 2*cos(ni*PI*2 + gt*3)
     //0*cos(5*at + ni / 2)
-    const refPoint = new Vector3(0 + rx,0 + ry,0)
+    const refPoint = nextTestPointsOffset
+    //  new Vector3(0 + rx,0 + ry,0)
     const theAngle = 
       refPoint.angleTo(testPointsOffset)
       //-PI/2
@@ -465,7 +479,8 @@ const main = async () => {
       limit: 1,
       initAngle: -PI/2,
       lineColor: "#FF6B35",
-      colorArray: ["#9DC08B", "#609966", "#40513B"],
+      // colorArray: ["#9DC08B", "#609966", "#40513B"],
+      colorArray: ["#43637E", "#65DCD5", "#D9FFF4"],
       dotColor: "#ff0000",
       dotTextures: [fl1,fl2],
       //refPoint: middlePoint, 
