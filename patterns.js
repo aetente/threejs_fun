@@ -120,16 +120,18 @@ function pattern1(scene, pointsArray, options) {
 
       const ti = t * (indexId + 1)
       
+      const indexFactor = min(8*j/maxLines,1)
+      
       const angleChange = 
       // 0
-      sin(
+      (sin(
         pow(sin(j/(200 + 1800*psin(t))+t/2),1)
         *PI*(4 + 4*psin(t))
-      )*PI/16
-      *cos(
-        pow(sin(j / (200 + 1800 * psin(t)) + t / 2), 1) *
-        PI * (4 + 4 * psin(t))
       )
+      +cos(
+        pow(cos(j/(200 + 1800 * psin(t)) + t / 2), 1) *PI * (4 + 4 * psin(t))
+      ))*PI/4
+      +(1-indexFactor)*20
       // -sin(pow(sin(j/20+t/2),3)*2*PI)*1
       //sin(sin(t/200 + idByPos/100 - j/1000)*PI * (pow(j/maxLines,200) + 1)*10) * angleCap* randomDir
       // sin(sin(j /10) * idByPos/20) * angleCap* randomDir
@@ -139,10 +141,13 @@ function pattern1(scene, pointsArray, options) {
       //let distFactor = min(1,1/(2*distToRef-1))
       //let distFactor = 1
       const distThreshold = 1
+      
+      
       let distFactor = max(1*min(distThreshold, distToRef - distThreshold),0)
       // distFactor = (pow(1.06, -(distToRef))) * (1-0) + 0
       distFactor = (1-pow(2, -(distToRef)/20)) * (1-0) + 0
       //distFactor = 0
+      distFactor*=indexFactor
       angleVal = previousAngle + angleChange
       if (angleToRef) {
         

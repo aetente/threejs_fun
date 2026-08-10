@@ -421,8 +421,8 @@ const main = async () => {
     const testPointsOffset =
       new Vector3(
         // si*sin(ni*PI*2),-6,
-        1*sin(ni*PI*2 + at*5) + 0*sin(at*5),
-        1*cos(ni*PI*2 + at*5) + 0*cos(at*5),
+        6*sin(ni*PI + at*5) + 0*sin(at*5),
+        12*cos(ni*PI*3.1 + at*5) + 0*cos(at*5),
         // si*cos(ni*PI*2)-10,
         0
       )
@@ -434,9 +434,9 @@ const main = async () => {
     })
     //await doText()
     const tailDist = 14 * pSin(ft + PI/3) + 4
-    const rx = 6*sin(ni*PI*2 + gt*3)
+    const rx = testPointsOffset.x + 2*sin(ni*PI*2 + gt*3)
     //0*sin(at + sin(at) + ni*2*PI)
-    const ry = 8*cos(ni*PI*2 + gt*3)
+    const ry = testPointsOffset.y + 2*cos(ni*PI*2 + gt*3)
     //0*cos(5*at + ni / 2)
     const refPoint = new Vector3(0 + rx,0 + ry,0)
     const theAngle = 
