@@ -623,6 +623,7 @@ const main = async () => {
             limit: 1,
             initAngle: PI/2,
             lineColor: "#000",
+            colorArray: ["#43637E", "#65DCD5", "#D9FFF4"],
             dotColor: "#ff0000",
             dotTextures: [fl1,fl2],
             refPoint: refPoint,
@@ -632,19 +633,22 @@ const main = async () => {
           })
         }
         if (i == 0) {
-          prevPoints = savePrevPoints
+          prevPoints = savePrevPoints.positions
         }
-        globalImage.push(savePrevPoints)
+        globalImage.push(savePrevPoints.positions)
       }
     }
+    if (!precheck || true) {
     drawLinesImage(globalImage, {
       lineWidth: 4,
       color: "#000",
+      colorArray: ["#43637E", "#65DCD5", "#D9FFF4"],
       lineOpacity: 1,
       offset: new Vector3(0,0,0),
       t: at,
       scale: scaleVal
     })
+    }
   }
 
 
@@ -849,6 +853,7 @@ const main = async () => {
     // [ [p1,p2,p3], [p4,p5,p6], [p7,p8,p9] ... ]
     const lineWidth = options.lineWidth || 2
     const color = options.color || "#000"
+    const colorArray = options?.colorArray || []
     const lineOpacity = options.lineOpacity || 1
     const offset = options.offset || new Vector3(0,0,0)
     const t = options.t || 0
@@ -904,8 +909,9 @@ const main = async () => {
         // robotArms[i].upcomingLineSegment = currentLineSegment + 1
         robotArms[i].currentLineSegment = currentLineSegment
         //floor(((progress % lineDrawSpeed)/lineDrawSpeed)*currentLine.length)
-        currentPoint = currentLine[currentLineSegment]
-        nextPoint = currentLine[(currentLineSegment + 1)%currentLine.length]
+        currentPoint = currentLine[currentLineSegment][0]
+        nextPoint = currentLine[currentLineSegment][1]
+        //currentLine[(currentLineSegment + 1)%currentLine.length]
 
         
         /*
@@ -942,6 +948,7 @@ const main = async () => {
           currentPoint
           && currentLineSegment + 1 < currentLine.length
         ) {
+          //console.log(currentPoint)
           const lineSeparation = pSin(progress*100) < 0.2 ? 1 : 0.1
           const trueLineSegment = (nextLineSegment == currentLineSegment ? lineSegment : 1)
           const actualLineSegment = trueLineSegment * lineSeparation
@@ -963,7 +970,18 @@ const main = async () => {
             robotArms[i].progress += 
             pdt
             //(trueLineSegment/currentLine.length*lineDrawSpeed)
-            drawLine(scene, [currentPoint, middlePoint], {...boringLineOptions, lineWidth: actualLineSize});
+            
+            const colorProgress = pSin(currentLineSegment/100)*colorArray.length
+            const colorLerp = colorProgress % 1
+        
+            const currentColorIndex = floor(colorProgress)
+            const nextColorIndex = (currentColorIndex + 1)%colorArray.length
+        
+            const color1 = colorArray[currentColorIndex] ? new THREE.Color(colorArray[currentColorIndex]) : null
+            const color2 = colorArray[nextColorIndex] ? new THREE.Color(colorArray[nextColorIndex]) : null
+        
+            const colorValue = color1?.lerp(color2, colorLerp)
+            drawLine(scene, [currentPoint, middlePoint], {...boringLineOptions, lineWidth: actualLineSize, color: colorArray.length < 0 ? color : colorValue});
           }
         } else {
           // console.log(currentLineSegment, currentLine.length)
@@ -1077,8 +1095,8 @@ function clearThree(obj){
     //scene.remove.apply(scene, scene.children);
     if (reconstruct) clearThree(scene);
     //while(scene.children.length > 0) {scene.remove(scene.children[0])}
-    testGround()
-    //pictureFactory1()
+    //testGround()
+    pictureFactory1()
     //swarm1(scene, {t: at, textures: [pigeonTexture1, pigeonTexture2]})
     // dancePerson1(scene, {offset: new Vector3(-1.5,0,2)})
     // dancePerson2(scene, {offset: new Vector3(1.5,0,2)})
