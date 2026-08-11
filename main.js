@@ -49,7 +49,7 @@ const main = async () => {
   const precheck = false
   const startFrame = 10
   let currentFrameName = startFrame;
-  const framesToSave = 60 * 12; // 60 frames generate 2 seconds, so times 15 it will be 30 seconds
+  const framesToSave = 60 * 24; // 60 frames generate 2 seconds, so times 15 it will be 30 seconds
   const skipFrames = 1
   
   const scene = new THREE.Scene();
@@ -236,7 +236,7 @@ const main = async () => {
   // const backColor = new THREE.Color("#1C2321")
   //const backColor = new THREE.Color("#cd5f0e")
   // const backColor = new THREE.Color("#EDF1D6")
-  const backColor = new THREE.Color("#321E48")
+  const backColor = new THREE.Color("#8B1E2D")
   
   scene.background = backColor
   let t = 0;
@@ -392,7 +392,7 @@ const main = async () => {
   
   let at = 0
   let bt = 0
-  let dt = saveFrames ? 0.01 : 0.03
+  let dt = saveFrames ? 0.04 : 0.03
   
   const drawnPoints = []
   let point
@@ -623,7 +623,7 @@ const main = async () => {
             limit: 1,
             initAngle: PI/2,
             lineColor: "#000",
-            colorArray: ["#43637E", "#65DCD5", "#D9FFF4"],
+            colorArray: ["#E63946", "#F4D35E", "#457B9D"],
             dotColor: "#ff0000",
             dotTextures: [fl1,fl2],
             refPoint: refPoint,
@@ -640,9 +640,9 @@ const main = async () => {
     }
     if (!precheck || true) {
     drawLinesImage(globalImage, {
-      lineWidth: 4,
+      lineWidth: 2,
       color: "#000",
-      colorArray: ["#43637E", "#65DCD5", "#D9FFF4"],
+      colorArray: ["#E63946", "#F4D35E", "#457B9D"],
       lineOpacity: 1,
       offset: new Vector3(0,0,0),
       t: at,
@@ -966,7 +966,7 @@ const main = async () => {
             const actualLineSize = 
             (currentLine.length - currentLineSegment)/currentLine.length 
             //lineSegment 
-            * (4-1) + 1
+            * ((4-1) + 1) * lineWidth
             robotArms[i].progress += 
             pdt
             //(trueLineSegment/currentLine.length*lineDrawSpeed)
