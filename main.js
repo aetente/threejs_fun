@@ -392,7 +392,7 @@ const main = async () => {
   
   let at = 0
   let bt = 0
-  let dt = saveFrames ? 0.04 : 0.03
+  let dt = saveFrames ? 0.04 : 0.3
   
   const drawnPoints = []
   let point
@@ -586,12 +586,12 @@ const main = async () => {
           p.x -= scaleRect.x/2;
           p.y -= scaleRect.y/2;
         })
-        const si =4
+        const si =14
         const testPointsOffset =
           new Vector3(
             //si*sin(123 + i*23542),-4,
-            si*sin(ni*PI*2)-6,
-            si*cos(ni*PI*2) - 6,
+            si*sin(ni*PI*2),
+            si*cos(ni*PI*2),
             0
           )
         testPoints.forEach(p => {
@@ -599,12 +599,12 @@ const main = async () => {
           p.y += testPointsOffset.y;
           p.z += testPointsOffset.z
         })
-        const rx = 
-        6
+        const rx = 0
+        //6
         //+4*sin(63546+i*125)
-        +4*sin(ni*PI*2)
-        const ry = 
-        8
+        //+4*sin(ni*PI*2)
+        const ry = 0
+        //8
         //+4*cos(23423+i*765)
         +4*cos(ni*PI*2)
         const refPoint = new Vector3(0 + rx,0 + ry,0)
