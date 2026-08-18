@@ -47,10 +47,10 @@ const main = async () => {
   const saveFrames = false
   const reconstruct = false
   const precheck = false
-  const startFrame = 10
+  const startFrame = 100
   let currentFrameName = startFrame;
   const framesToSave = 60 * 24; // 60 frames generate 2 seconds, so times 15 it will be 30 seconds
-  const skipFrames = 4
+  const skipFrames = 1
   
   const scene = new THREE.Scene();
   // const camera = new THREE.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -80,6 +80,8 @@ const main = async () => {
   //fl2.colorSpace = THREE.SRGBColorSpace;
   const pigeonTexture1 = await loadTextureF('/assets/textures/pigeon/Pigeon1Saturated.png')
   const pigeonTexture2 = await loadTextureF('/assets/textures/pigeon/Pigeon2Saturated.png')
+  // pigeonTexture1.colorSpace = THREE.SRGBColorSpace;
+  // pigeonTexture2.colorSpace = THREE.SRGBColorSpace;
   
   const pigeonSprite1 = await loadTextureF('/assets/textures/pigeon/pigeon1_sprite.png')
   pigeonSprite1.repeat.set(1/2,1/1)
@@ -240,7 +242,10 @@ const main = async () => {
   //const backColor = new THREE.Color("#cd5f0e")
   // const backColor = new THREE.Color("#EDF1D6")
   // const backColor = new THREE.Color("#8B1E2D")
-  const backColor = new THREE.Color("#1A1423")
+  // const backColor = new THREE.Color("#1A1423")
+  // const backColor = new THREE.Color("#C84630")
+  
+  const backColor = new THREE.Color("#F7E3AF")
   
   scene.background = backColor
   let t = 0;
@@ -396,7 +401,7 @@ const main = async () => {
   
   let at = 0
   let bt = 0
-  let dt = saveFrames ? 0.04 : 0.3
+  let dt = saveFrames ? 0.3 : 0.3
   
   const drawnPoints = []
   let point

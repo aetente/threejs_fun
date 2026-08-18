@@ -337,6 +337,7 @@ const swarm1 = (scene, options) => {
   let previousDesiredAngle = 0
   let currentAngle = 0
   
+  const colorArrTrace = ["#D4A0A7", "#388697", "#4357AD"]
   
   
   for (let i = 0; i < amountOfElements; i++) {
@@ -471,7 +472,77 @@ const swarm1 = (scene, options) => {
 
    if (!pigeons[String(i)]) {
 
-      const material = new THREE.MeshBasicMaterial({ map: texture, transparent: true })
+      const material = new THREE.ShaderMaterial({
+        uniforms: {
+          uTexture: { value: texture },
+          uColor: { value: new THREE.Color(colorArrTrace[floor(random() * (colorArrTrace.length))]) },
+          uThreshold: { value: 0.05 } // Adjust threshold as needed
+        },
+        transparent: true,
+        vertexShader: `
+          varying vec2 vUv;
+          void main() {
+            vUv = uv;
+            gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+          }
+        `,
+        fragmentShader: `
+          uniform sampler2D uTexture;
+          uniform vec3 uColor;
+          uniform float uThreshold;
+          varying vec2 vUv;
+
+          vec3 linearToSRGB(vec3 color) {
+            return pow(color, vec3(1.0 / 2.2));
+          }
+
+          vec3 blendOverlay(vec3 base, vec3 blend) {
+            return vec3(
+              (base.r < 0.5) ? (2.0 * base.r * blend.r) : (1.0 - 2.0 * (1.0 - base.r) * (1.0 - blend.r)),
+              (base.g < 0.5) ? (2.0 * base.g * blend.g) : (1.0 - 2.0 * (1.0 - base.g) * (1.0 - blend.g)),
+              (base.b < 0.5) ? (2.0 * base.b * blend.b) : (1.0 - 2.0 * (1.0 - base.b) * (1.0 - blend.b))
+            );
+          }
+
+          vec3 blendSoftLight(vec3 base, vec3 blend) {
+            return (1.0 - 2.0 * blend) * base * base + 2.0 * blend * base;
+          }
+
+          void main() {
+            vec4 texColor = texture2D(uTexture, vUv);
+            float originalAlpha = texture2D(uTexture, vUv).a;
+
+            vec3 luminanceWeights = vec3(0.2126, 0.7152, 0.0722);
+            float gray = dot(texColor.rgb, luminanceWeights);
+
+            float luminance = dot(texColor.rgb, vec3(0.2126, 0.7152, 0.0722));
+
+            vec3 tintedColor = vec3(gray) * linearToSRGB(uColor);
+            // vec3 tintedColor = uColor * luminance;
+
+            // vec3 blendedColor = blendOverlay(texColor.rgb, uColor);
+            vec3 blendedColor = blendSoftLight(texColor.rgb, uColor);
+
+            // vec3 linearTexColor = linearToSRGB(texColor.rgb);
+            // vec3 linearTexColor = linearToSRGB(tintedColor);
+            // vec3 linearTexColor = linearToSRGB(blendedColor);
+            vec3 linearTexColor = linearToSRGB(uColor);
+
+
+            // vec3 finalColor = linearTexColor.b * uColor;
+            vec3 finalColor = linearTexColor;
+            // vec3 finalColor = mix(texColor.rgb, tintedColor, 0.5);
+            
+            // If alpha > threshold, set it to 1.0 (fully opaque). Otherwise 0.0.
+            float binaryAlpha = step(uThreshold, originalAlpha) * 1.0;
+            
+            gl_FragColor = vec4(finalColor, binaryAlpha);
+
+          }
+        `
+      });
+
+      // const material = new THREE.MeshBasicMaterial({ alphaTest: 0.2, color: colorArrTrace[floor(psin(t/2 + i) * (colorArrTrace.length-1))], alphaMap: texture, transparent: true, depthWrite: false })
       const shape = new THREE.Mesh(planeG, material);
 
       shape.rotation.z = angleVal
@@ -480,17 +551,19 @@ const swarm1 = (scene, options) => {
       scene.add(shape);
       pigeons[String(i)] = shape
     } else {
-      pigeons[String(i)].material.map = texture
+      pigeons[String(i)].material.uniforms.uTexture.value = texture
+      // pigeons[String(i)].material.alphaMap = texture
       pigeons[String(i)].rotation.z = angleVal
       pigeons[String(i)].position.set(newPosVal.x, newPosVal.y, newPosVal.z);
     }
     if (!isFollow) {
+      const randColor = colorArrTrace[floor(random() * (colorArrTrace.length))]
       const circle = new THREE.CircleGeometry(0.05, 8);
       const material = new THREE.MeshBasicMaterial({ color:
         // "#CCFF00"
         // "#44FF99"
         // "#2F4858"
-        "#BC6C25",
+        randColor,
         transparent: true,
         opacity: 0.9
       });
