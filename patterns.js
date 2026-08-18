@@ -312,15 +312,16 @@ const genPosArray = (amountOfElements) => {
   const sizePos = 3
   for (let i = 0; i < amountOfElements; i++) {
     posArray.push(new THREE.Vector3(
-      seededRandomRange(-1,1,i*1351234656)*sizePos + 20,
-      seededRandomRange(-1,1,i*45673464)*sizePos + 20,
+      seededRandomRange(-1,1,i*1351234656)*sizePos,
+      seededRandomRange(-1,1,i*45673464)*sizePos,
     0));
   }
   return posArray
 }
-const hardCodeAmountOfElements = 100
+const hardCodeAmountOfElements = 1000
 let prevPos = genPosArray(hardCodeAmountOfElements)
 
+const pigeons = {}
 const swarm1 = (scene, options) => {
   const amountOfElements = options?.amountOfElements || hardCodeAmountOfElements;
   const t = options?.t || 0
@@ -337,18 +338,19 @@ const swarm1 = (scene, options) => {
   let currentAngle = 0
   
   
+  
   for (let i = 0; i < amountOfElements; i++) {
-    const isFollow = i != 0 && prevPos[0]
+    const isFollow = i != 0 && prevPos[0] || false
     const randomDotIndex = floor(seededRandom(i) * amountOfElements)
     const prevPosVal = prevPos[i].clone()
     const wi = smoothstep(i/amountOfElements, 0, 1)
     const wi2 = wi * (4 - 1) + 1
     
     // point to follow
-    const moveAngle = sin(t* 1 + i*1) * PI
+    const moveAngle = sin(t/10+ i*1) * PI
     let newPointToFollow = pointToFollow || new THREE.Vector3(
       sin(moveAngle)*2,
-      cos(moveAngle)*2 + 4,
+      cos(moveAngle)*2,
       0
     )
     if (isFollow) {
@@ -363,18 +365,23 @@ const swarm1 = (scene, options) => {
     
     const randomAngle = 
       //currentAngle + i*0.6
-      currentAngle + sin(t *wi2*2 +i) * PI
+      currentAngle + sin(t *wi2/20 +i) * PI*2
     const randomAngleDiff = randomAngle - desiredAngle
     const randomAngleDiffNorm = Math.atan2(sin(randomAngleDiff), cos(randomAngleDiff))
     // const distF = lerp(30, 1, distToPoint)
-    const maxDistF = 30
-    const minDistF = 1
-    let distF = pow(2 + (20*pcos(i + t)), -distToPoint) * (maxDistF-minDistF) + minDistF
+    const maxDistF = 1
+    const minDistF = 0
+
+    let distF = pow(1.2 + (0*pcos(i + t)), -distToPoint) * (maxDistF-minDistF) + minDistF
     if (!isFollow) {
-      distF = pow(50, -distToPoint) * (maxDistF-minDistF) + minDistF
+      distF = pow(1.2, -distToPoint) * (maxDistF-minDistF) + minDistF
     }
     let actualAngle = 0
-    actualAngle = randomAngle - randomAngleDiffNorm/distF
+    // distF:
+    // bigger value is random
+    // smaller value is follow
+    //actualAngle = randomAngle - randomAngleDiffNorm/distF
+    actualAngle = desiredAngle + (distF)*randomAngle
     
     let addSpeed = 0
     avoidPoints.forEach((avoidPoint, j) => {
@@ -462,20 +469,30 @@ const swarm1 = (scene, options) => {
     }
 
 
-    const material = new THREE.MeshBasicMaterial({ map: texture, transparent: true })
-    const shape = new THREE.Mesh(planeG, material);
+   if (!pigeons[String(i)]) {
 
-    shape.rotation.z = angleVal
-    shape.position.set(newPosVal.x, newPosVal.y, newPosVal.z);
-    //shape.position.set()
-    scene.add(shape);
+      const material = new THREE.MeshBasicMaterial({ map: texture, transparent: true })
+      const shape = new THREE.Mesh(planeG, material);
+
+      shape.rotation.z = angleVal
+      shape.position.set(newPosVal.x, newPosVal.y, newPosVal.z);
+      //shape.position.set()
+      scene.add(shape);
+      pigeons[String(i)] = shape
+    } else {
+      pigeons[String(i)].material.map = texture
+      pigeons[String(i)].rotation.z = angleVal
+      pigeons[String(i)].position.set(newPosVal.x, newPosVal.y, newPosVal.z);
+    }
     if (!isFollow) {
-      const circle = new THREE.CircleGeometry(0.25, 32);
+      const circle = new THREE.CircleGeometry(0.05, 8);
       const material = new THREE.MeshBasicMaterial({ color:
         // "#CCFF00"
         // "#44FF99"
         // "#2F4858"
-        "#BC6C25"
+        "#BC6C25",
+        transparent: true,
+        opacity: 0.9
       });
       const shape = new THREE.Mesh(circle, material);
       shape.position.set(newPosVal.x, newPosVal.y, -1);
@@ -486,11 +503,12 @@ const swarm1 = (scene, options) => {
         // "#ff007f"
         // "#FF7700"
         // "#D4A373"
-        "#606C38"
+        "#606C38",
+        
       });
       const shape2 = new THREE.Mesh(circle2, material2);
       shape2.position.set(newPointToFollow.x, newPointToFollow.y, -2);
-      scene.add(shape2);
+      //scene.add(shape2);
     }
     prevPos[i] = newPosVal.clone()
   }
