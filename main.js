@@ -57,7 +57,7 @@ const main = async () => {
   
   const camera = new THREE.PerspectiveCamera(35, totalWidth / totalHeight, 0.1, 1000);
 
-  camera.position.z = 70;
+  camera.position.z = 40;
   camera.position.x = 0
 
   const renderer = new THREE.WebGLRenderer({
@@ -80,6 +80,9 @@ const main = async () => {
   //fl2.colorSpace = THREE.SRGBColorSpace;
   const pigeonTexture1 = await loadTextureF('/assets/textures/pigeon/Pigeon1Saturated.png')
   const pigeonTexture2 = await loadTextureF('/assets/textures/pigeon/Pigeon2Saturated.png')
+  
+  const pigeonSprite1 = await loadTextureF('/assets/textures/pigeon/pigeon1_sprite.png')
+  pigeonSprite1.repeat.set(1/2,1/1)
 
   const photo_test1 = await loadTextureF('/assets/photos/20260804_224901-01.jpeg')
   // const photo_test2 = await loadTextureF('/assets/photos/20250218_182704-02_foreground.png')
@@ -106,7 +109,7 @@ const main = async () => {
     //   new THREE.PlaneGeometry(15, 20),
     //   new THREE.MeshBasicMaterial({ color: "#000c1b" })
     // );
-    // block1.position.set(0, -20, 0);
+    // block1.position.set(0, -20,0 0);
     // scene.add(block1);
   }
   
@@ -1096,8 +1099,8 @@ function clearThree(obj){
     if (reconstruct) clearThree(scene);
     //while(scene.children.length > 0) {scene.remove(scene.children[0])}
     //testGround()
-    pictureFactory1()
-    //swarm1(scene, {t: at, textures: [pigeonTexture1, pigeonTexture2]})
+    //pictureFactory1()
+    swarm1(scene, {t: at, textures: [pigeonTexture1, pigeonTexture2]})
     // dancePerson1(scene, {offset: new Vector3(-1.5,0,2)})
     // dancePerson2(scene, {offset: new Vector3(1.5,0,2)})
     // basicPerson(scene, {pose: testPose5, offset: new Vector3(0,0,2), scale: 1, hasOutline: true})
