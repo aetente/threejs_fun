@@ -50,7 +50,7 @@ const main = async () => {
   const startFrame = 10
   let currentFrameName = startFrame;
   const framesToSave = 60 * 24; // 60 frames generate 2 seconds, so times 15 it will be 30 seconds
-  const skipFrames = 1
+  const skipFrames = 4
   
   const scene = new THREE.Scene();
   // const camera = new THREE.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -239,7 +239,8 @@ const main = async () => {
   // const backColor = new THREE.Color("#1C2321")
   //const backColor = new THREE.Color("#cd5f0e")
   // const backColor = new THREE.Color("#EDF1D6")
-  const backColor = new THREE.Color("#8B1E2D")
+  // const backColor = new THREE.Color("#8B1E2D")
+  const backColor = new THREE.Color("#1A1423")
   
   scene.background = backColor
   let t = 0;
@@ -544,7 +545,8 @@ const main = async () => {
         meshArm2: null,
         circle: null,
         line1Geometry: null,
-        line2Geometry: null
+        line2Geometry: null,
+        color: "#0C6291"
       }
       robotArmsArray.push(robotArm)
     }
@@ -626,7 +628,7 @@ const main = async () => {
             limit: 1,
             initAngle: PI/2,
             lineColor: "#000",
-            colorArray: ["#E63946", "#F4D35E", "#457B9D"],
+            colorArray: ["#0C6291", "#F15156", "#FFC07F", "#FFCF99"],
             dotColor: "#ff0000",
             dotTextures: [fl1,fl2],
             refPoint: refPoint,
@@ -645,7 +647,7 @@ const main = async () => {
     drawLinesImage(globalImage, {
       lineWidth: 2,
       color: "#000",
-      colorArray: ["#E63946", "#F4D35E", "#457B9D"],
+      colorArray: ["#0C6291", "#F15156", "#FFC07F", "#FFCF99"],
       lineOpacity: 1,
       offset: new Vector3(0,0,0),
       t: at,
@@ -659,13 +661,13 @@ const main = async () => {
     if (!middleArm.base) {
       const middlePoint = middleArm.middlePoint
       const middleBaseCircle = new THREE.CircleGeometry(0.45, 16);
-      const middleBaseMaterial = new THREE.MeshBasicMaterial({ color:"#000"});
+      const middleBaseMaterial = new THREE.MeshBasicMaterial({ color:"#0C6291"});
       const middleBaseShape = new THREE.Mesh(middleBaseCircle, middleBaseMaterial);
-      middleBaseShape.position.set(middlePoint.x, middlePoint.y, middlePoint.z);
+      middleBaseShape.position.set(middlePoint.x, middlePoint.y, middlePoint.z+1);
       scene.add(middleBaseShape);
       middleArm.base = middleBaseShape
     } else {
-      middleArm.base.position.set(middleArm.middlePoint.x, middleArm.middlePoint.y, middleArm.middlePoint.z);
+      middleArm.base.position.set(middleArm.middlePoint.x, middleArm.middlePoint.y, middleArm.middlePoint.z+1);
     }
   }
 
@@ -683,8 +685,8 @@ const main = async () => {
       planeArm1.translate(robotArmLength1/2, 0,0);
       planeArm2.translate(robotArmLength2/2, 0, 0);
 
-      const materialArm1 = new THREE.MeshBasicMaterial({ color: "#000" });
-      const materialArm2 = new THREE.MeshBasicMaterial({ color: "#000" });
+      const materialArm1 = new THREE.MeshBasicMaterial({ color: robotArms[i].color });
+      const materialArm2 = new THREE.MeshBasicMaterial({ color: robotArms[i].color });
       const meshArm1 = new THREE.Mesh(planeArm1, materialArm1);
       const meshArm2 = new THREE.Mesh(planeArm2, materialArm2);
       // const armAnchor1 = new THREE.Group();
@@ -699,14 +701,14 @@ const main = async () => {
 
       
       const circle = new THREE.CircleGeometry(0.3, 16);
-      const material = new THREE.MeshBasicMaterial({ color:"#000"});
+      const material = new THREE.MeshBasicMaterial({ color:robotArms[i].color});
       const shape = new THREE.Mesh(circle, material);
       shape.position.set(robotArms[i].position1.x, robotArms[i].position1.y, robotArms[i].position1.z);
       scene.add(shape);
 
       
       const circle2 = new THREE.CircleGeometry(0.3, 16);
-      const material2 = new THREE.MeshBasicMaterial({ color:"#000"});
+      const material2 = new THREE.MeshBasicMaterial({ color:robotArms[i].color});
       const shape2 = new THREE.Mesh(circle2, material2);
       shape2.position.set(robotArms[i].position2.x, robotArms[i].position2.y, robotArms[i].position2.z);
       meshArm1.add(shape2);
@@ -716,14 +718,14 @@ const main = async () => {
       robotArms[i].meshArm2 = meshArm2
       robotArms[i].circle = shape2
 
-      const line1 = drawLine(scene, [new Vector3(-14, robotArms[i].position1.y, robotArms[i].position1.z), new Vector3(14, robotArms[i].position1.y, robotArms[i].position1.z)], {color: "#000"})
-      const line2 = drawLine(scene, [new Vector3(robotArms[i].position1.x, -24, robotArms[i].position1.z), new Vector3(robotArms[i].position1.x, 24, robotArms[i].position1.z)], {color: "#000"})
+      const line1 = drawLine(scene, [new Vector3(-14, robotArms[i].position1.y, robotArms[i].position1.z), new Vector3(14, robotArms[i].position1.y, robotArms[i].position1.z)], {color: robotArms[i].color})
+      const line2 = drawLine(scene, [new Vector3(robotArms[i].position1.x, -24, robotArms[i].position1.z), new Vector3(robotArms[i].position1.x, 24, robotArms[i].position1.z)], {color: robotArms[i].color})
     
       robotArms[i].line1Geometry = line1.geometry
       robotArms[i].line2Geometry = line2.geometry
 
       const middlePoint = middleArm.middlePoint
-      const middleArmLine = drawLine(scene, [new Vector3(robotArms[i].position1.x, robotArms[i].position1.y, robotArms[i].position1.z), new Vector3(middlePoint.x, middlePoint.y, middlePoint.z)], {color: "#000", lineWidth: middleArm.width})
+      const middleArmLine = drawLine(scene, [new Vector3(robotArms[i].position1.x, robotArms[i].position1.y, robotArms[i].position1.z), new Vector3(middlePoint.x, middlePoint.y, middlePoint.z)], {color: "#F15156", lineWidth: middleArm.width})
 
       
 
@@ -974,7 +976,7 @@ const main = async () => {
             pdt
             //(trueLineSegment/currentLine.length*lineDrawSpeed)
             
-            const colorProgress = pSin(currentLineSegment/100)*colorArray.length
+            const colorProgress = pSin(at/100 + currentLineIndex)*colorArray.length
             const colorLerp = colorProgress % 1
         
             const currentColorIndex = floor(colorProgress)
