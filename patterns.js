@@ -318,7 +318,7 @@ const genPosArray = (amountOfElements) => {
   }
   return posArray
 }
-const hardCodeAmountOfElements = 1000
+const hardCodeAmountOfElements = 100
 let prevPos = genPosArray(hardCodeAmountOfElements)
 
 const pigeons = {}
@@ -346,6 +346,7 @@ const swarm1 = (scene, options) => {
     const prevPosVal = prevPos[i].clone()
     const wi = smoothstep(i/amountOfElements, 0, 1)
     const wi2 = wi * (4 - 1) + 1
+    const wi3 = (psin(i/2000)*(8-1)+1)/20
     
     // point to follow
     const moveAngle = sin(t/10+ i*1) * PI
@@ -366,14 +367,14 @@ const swarm1 = (scene, options) => {
     
     const randomAngle = 
       //currentAngle + i*0.6
-      currentAngle + sin(t *wi2/20 +i) * PI*2
+      currentAngle + sin(t * wi3+i) * PI*2
     const randomAngleDiff = randomAngle - desiredAngle
     const randomAngleDiffNorm = Math.atan2(sin(randomAngleDiff), cos(randomAngleDiff))
     // const distF = lerp(30, 1, distToPoint)
     const maxDistF = 1
     const minDistF = 0
 
-    let distF = pow(1.2 + (0*pcos(i + t)), -distToPoint) * (maxDistF-minDistF) + minDistF
+    let distF = pow(4 + (0*pcos(i + t)), -distToPoint) * (maxDistF-minDistF) + minDistF
     if (!isFollow) {
       distF = pow(1.2, -distToPoint) * (maxDistF-minDistF) + minDistF
     }
