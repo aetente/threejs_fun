@@ -337,7 +337,7 @@ const swarm1 = (scene, options) => {
   let previousDesiredAngle = 0
   let currentAngle = 0
   
-  const colorArrTrace = ["#D4A0A7", "#388697", "#4357AD"]
+  const colorArrTrace = ["#06D6A0", "#0081A7", "#FCAA67"]
   
   
   for (let i = 0; i < amountOfElements; i++) {
@@ -367,15 +367,15 @@ const swarm1 = (scene, options) => {
     
     const randomAngle = 
       //currentAngle + i*0.6
-      currentAngle + 0.1
-      //+ sin(t * wi3 + PI + i) * PI/20
+      PI*2
+      + sin(t * wi3 + PI) * PI*2
     const randomAngleDiff = randomAngle - desiredAngle
     const randomAngleDiffNorm = Math.atan2(sin(randomAngleDiff), cos(randomAngleDiff))
     // const distF = lerp(30, 1, distToPoint)
     const maxDistF = 1
     const minDistF = 0
 
-    let distF = pow(1.2 + (0*pcos(i + t)), -distToPoint) * (maxDistF-minDistF) + minDistF
+    let distF = pow(1.4 + (0*pcos(i + t)), -distToPoint) * (maxDistF-minDistF) + minDistF
     if (!isFollow) {
       distF = pow(4, -distToPoint) * (maxDistF-minDistF) + minDistF
     }
@@ -427,11 +427,11 @@ const swarm1 = (scene, options) => {
     currentAngle = randomAngle
     
     // movement speed
-    const minSpeed = 0
-    const maxSpeed = 0.5
-    let speed = (pow(1.2,-distToPoint)) * (maxSpeed - minSpeed) + minSpeed
+    const minSpeed = 0.001
+    const maxSpeed = 0.6
+    let speed = (pow(1.3,-distToPoint)) * (maxSpeed - minSpeed) + minSpeed
     if (!isFollow) {
-      speed += 0.05
+      speed = 0.09
     }
     speed += addSpeed
     // const speed = 0.05
@@ -445,7 +445,10 @@ const swarm1 = (scene, options) => {
     const newPosVal = prevPosVal.clone().add(movePos)
     newPos.push(newPosVal)
 
-    const sizeVal = seededRandomRange(0.5,2,i)
+    let sizeVal = seededRandomRange(0.5,2,i)
+    if (!isFollow) {
+      sizeVal = 1
+    }
     const planeG = new THREE.PlaneGeometry(sizeVal * scale, sizeVal * scale)
 
     // distance from last point
@@ -483,7 +486,7 @@ const swarm1 = (scene, options) => {
       const material = new THREE.ShaderMaterial({
         uniforms: {
           uTexture: { value: texture },
-          uColor: { value: new THREE.Color(isFollow ? colorArrTrace[floor(random() * (colorArrTrace.length))] : "#ff0000") },
+          uColor: { value: new THREE.Color(isFollow ? colorArrTrace[floor(random() * (colorArrTrace.length))] : "#E9190F") },
           uThreshold: { value: 0.05 } // Adjust threshold as needed
         },
         transparent: true,
