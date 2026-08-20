@@ -318,7 +318,7 @@ const genPosArray = (amountOfElements) => {
   }
   return posArray
 }
-const hardCodeAmountOfElements = 100
+const hardCodeAmountOfElements = 1000
 let prevPos = genPosArray(hardCodeAmountOfElements)
 
 const pigeons = {}
@@ -346,13 +346,13 @@ const swarm1 = (scene, options) => {
     const prevPosVal = prevPos[i].clone()
     const wi = smoothstep(i/amountOfElements, 0, 1)
     const wi2 = wi * (4 - 1) + 1
-    const wi3 = (psin(i/2000)*(8-1)+1)/20
+    const wi3 = (psin(i/100)*(2-1)+1)/1
     
     // point to follow
-    const moveAngle = sin(t/10+ i*1) * PI
+    const moveAngle = sin(t/1+ i*1) * PI + t*cos(t/100)
     let newPointToFollow = pointToFollow || new THREE.Vector3(
-      sin(moveAngle)*2,
-      cos(moveAngle)*2,
+      sin(moveAngle)*5,
+      cos(moveAngle)*5,
       0
     )
     if (isFollow) {
@@ -367,23 +367,30 @@ const swarm1 = (scene, options) => {
     
     const randomAngle = 
       //currentAngle + i*0.6
-      currentAngle + sin(t * wi3+i) * PI*2
+      currentAngle + 0.1
+      //+ sin(t * wi3 + PI + i) * PI/20
     const randomAngleDiff = randomAngle - desiredAngle
     const randomAngleDiffNorm = Math.atan2(sin(randomAngleDiff), cos(randomAngleDiff))
     // const distF = lerp(30, 1, distToPoint)
     const maxDistF = 1
     const minDistF = 0
 
-    let distF = pow(4 + (0*pcos(i + t)), -distToPoint) * (maxDistF-minDistF) + minDistF
+    let distF = pow(1.2 + (0*pcos(i + t)), -distToPoint) * (maxDistF-minDistF) + minDistF
     if (!isFollow) {
-      distF = pow(1.2, -distToPoint) * (maxDistF-minDistF) + minDistF
+      distF = pow(4, -distToPoint) * (maxDistF-minDistF) + minDistF
+    }
+    if (distF < 0.1) {
+      distF = 0.1
     }
     let actualAngle = 0
     // distF:
     // bigger value is random
     // smaller value is follow
     //actualAngle = randomAngle - randomAngleDiffNorm/distF
-    actualAngle = desiredAngle + (distF)*randomAngle
+    // distF:
+    // bigger value is more random
+    // smaller value is follow
+    actualAngle = (1-distF)*desiredAngle + (distF)*randomAngle
     
     let addSpeed = 0
     avoidPoints.forEach((avoidPoint, j) => {
@@ -420,9 +427,9 @@ const swarm1 = (scene, options) => {
     currentAngle = randomAngle
     
     // movement speed
-    const minSpeed = 0.05
-    const maxSpeed = 0.15
-    let speed = pow(2,-distToPoint) * (maxSpeed - minSpeed) + minSpeed
+    const minSpeed = 0
+    const maxSpeed = 0.5
+    let speed = (pow(1.2,-distToPoint)) * (maxSpeed - minSpeed) + minSpeed
     if (!isFollow) {
       speed += 0.05
     }
@@ -446,7 +453,7 @@ const swarm1 = (scene, options) => {
     // TODO: probably can use the speed defined above
     const dist = (newPosVal.distanceTo(prevPosVal))
     // sprite speed
-    const maxSpriteSpeed = 20
+    const maxSpriteSpeed = 15
     const minSpriteSpeed = 7
     const spriteSpeedThreshold = minSpriteSpeed + (maxSpriteSpeed - minSpriteSpeed)/8
     let spriteSpeed = pow(100,-dist) * (maxSpriteSpeed - minSpriteSpeed) + minSpriteSpeed
@@ -476,7 +483,7 @@ const swarm1 = (scene, options) => {
       const material = new THREE.ShaderMaterial({
         uniforms: {
           uTexture: { value: texture },
-          uColor: { value: new THREE.Color(colorArrTrace[floor(random() * (colorArrTrace.length))]) },
+          uColor: { value: new THREE.Color(isFollow ? colorArrTrace[floor(random() * (colorArrTrace.length))] : "#ff0000") },
           uThreshold: { value: 0.05 } // Adjust threshold as needed
         },
         transparent: true,
