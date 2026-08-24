@@ -337,7 +337,7 @@ const swarm1 = (scene, options) => {
   let previousDesiredAngle = 0
   let currentAngle = 0
   
-  const colorArrTrace = ["#06D6A0", "#0081A7", "#FCAA67"]
+  const colorArrTrace = ["#2364AA", "#73BFB8", "#FEC601"]
   
   
   for (let i = 0; i < amountOfElements; i++) {
@@ -349,10 +349,10 @@ const swarm1 = (scene, options) => {
     const wi3 = (psin(i/1)*(2-1)+1)/1000
     
     // point to follow
-    const moveAngle = sin(t/1+ i*1) * PI + t*cos(t/100)
+    const moveAngle = pow(t,(psin(t/10)*0.5 + 1))/4
     let newPointToFollow = pointToFollow || new THREE.Vector3(
-      sin(moveAngle)*5,
-      cos(moveAngle)*5,
+      sin(moveAngle)*8,
+      cos(moveAngle)*8,
       0
     )
     if (isFollow) {
@@ -369,7 +369,7 @@ const swarm1 = (scene, options) => {
     
     
     const randomAngle = 
-      -PI/2
+      currentAngle + 0.1*random()
       //currentAngle + i*0.6
       //0
       //PI*2 + i/100
@@ -434,9 +434,9 @@ const swarm1 = (scene, options) => {
     // movement speed
     const minSpeed = 0.001
     const maxSpeed = 0.6
-    let speed = (pow(1.3,-distToPoint)) * (maxSpeed - minSpeed) + minSpeed
+    let speed = (psin(t + i/1000) - pow(1.3,-distToPoint)) * (maxSpeed - minSpeed) + minSpeed
     if (!isFollow) {
-      speed = 0.09
+      speed = 0.2
     }
     speed += addSpeed
     // const speed = 0.05
@@ -452,7 +452,7 @@ const swarm1 = (scene, options) => {
 
     let sizeVal = seededRandomRange(0.5,2,i)
     if (!isFollow) {
-      sizeVal = 1
+      sizeVal = 4
     }
     const planeG = new THREE.PlaneGeometry(sizeVal * scale, sizeVal * scale)
 
@@ -491,7 +491,7 @@ const swarm1 = (scene, options) => {
       const material = new THREE.ShaderMaterial({
         uniforms: {
           uTexture: { value: texture },
-          uColor: { value: new THREE.Color(isFollow ? colorArrTrace[floor(random() * (colorArrTrace.length))] : "#E9190F") },
+          uColor: { value: new THREE.Color(isFollow ? colorArrTrace[floor(random() * (colorArrTrace.length))] : "#F03A47") },
           uThreshold: { value: 0.05 } // Adjust threshold as needed
         },
         transparent: true,

@@ -50,7 +50,7 @@ const main = async () => {
   const startFrame = 100
   let currentFrameName = startFrame;
   const framesToSave = 60 * 12; // 60 frames generate 2 seconds, so times 15 it will be 30 seconds
-  const skipFrames = 1
+  const skipFrames = 2
   
   const scene = new THREE.Scene();
   // const camera = new THREE.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -245,7 +245,8 @@ const main = async () => {
   // const backColor = new THREE.Color("#1A1423")
   // const backColor = new THREE.Color("#C84630")
   // const backColor = new THREE.Color("#F7E3AF")
-  const backColor = new THREE.Color("#14342B")
+  // const backColor = new THREE.Color("#14342B")
+  const backColor = new THREE.Color("#171A21")
   
   scene.background = backColor
   let t = 0;
