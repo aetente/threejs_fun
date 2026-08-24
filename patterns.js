@@ -346,7 +346,7 @@ const swarm1 = (scene, options) => {
     const prevPosVal = prevPos[i].clone()
     const wi = smoothstep(i/amountOfElements, 0, 1)
     const wi2 = wi * (4 - 1) + 1
-    const wi3 = (psin(i/100)*(2-1)+1)/1
+    const wi3 = (psin(i/1)*(2-1)+1)/1000
     
     // point to follow
     const moveAngle = sin(t/1+ i*1) * PI + t*cos(t/100)
@@ -360,15 +360,20 @@ const swarm1 = (scene, options) => {
     }
     let desiredAngle = Math.atan2(newPointToFollow.y - prevPosVal.y, -(newPointToFollow.x - prevPosVal.x))
     desiredAngle -= PI/2
+    const desiredAngleDiff = desiredAngle - currentAngle
+    let desiredAngleDiffNorm = Math.atan2(sin(desiredAngleDiff), cos(desiredAngleDiff))
+    //desiredAngleDiffNorm -= PI/2
 
     const distToPoint = prevPosVal.distanceTo(newPointToFollow)
     
     
     
     const randomAngle = 
+      -PI/2
       //currentAngle + i*0.6
-      PI*2
-      + sin(t * wi3 + PI) * PI*2
+      //0
+      //PI*2 + i/100
+      //+ sin(t + wi3 + PI) * PI*2
     const randomAngleDiff = randomAngle - desiredAngle
     const randomAngleDiffNorm = Math.atan2(sin(randomAngleDiff), cos(randomAngleDiff))
     // const distF = lerp(30, 1, distToPoint)
@@ -390,7 +395,7 @@ const swarm1 = (scene, options) => {
     // distF:
     // bigger value is more random
     // smaller value is follow
-    actualAngle = (1-distF)*desiredAngle + (distF)*randomAngle
+    actualAngle = (1-distF)*desiredAngleDiffNorm + (distF)*randomAngle
     
     let addSpeed = 0
     avoidPoints.forEach((avoidPoint, j) => {
