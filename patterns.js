@@ -349,7 +349,7 @@ const swarm1 = (scene, options) => {
     const wi3 = (psin(i/1)*(2-1)+1)/1000
     
     // point to follow
-    const moveAngle = pow(t,(psin(t/10)*0.5 + 1))/4
+    const moveAngle = t+(psin(t/20)*0.5 + 0.5)*100
     let newPointToFollow = pointToFollow || new THREE.Vector3(
       sin(moveAngle)*8,
       cos(moveAngle)*8,
@@ -433,8 +433,9 @@ const swarm1 = (scene, options) => {
     
     // movement speed
     const minSpeed = 0.001
-    const maxSpeed = 0.6
-    let speed = (psin(t + i/1000) - pow(1.3,-distToPoint)) * (maxSpeed - minSpeed) + minSpeed
+    const maxSpeed = i % 2 == 0 ? 10.6 : 0.6
+    const funnyModifySpeed = i % 2 == 0 ? psin(t/1 + 0) : 1
+    let speed = (funnyModifySpeed - pow(1.03,-distToPoint)) * (maxSpeed - minSpeed) + minSpeed
     if (!isFollow) {
       speed = 0.2
     }
