@@ -321,6 +321,9 @@ const genPosArray = (amountOfElements) => {
 const hardCodeAmountOfElements = 1000
 let prevPos = genPosArray(hardCodeAmountOfElements)
 
+let timeCount = 1
+let timeSeed = 0
+
 const pigeons = {}
 const swarm1 = (scene, options) => {
   const amountOfElements = options?.amountOfElements || hardCodeAmountOfElements;
@@ -337,8 +340,13 @@ const swarm1 = (scene, options) => {
   let previousDesiredAngle = 0
   let currentAngle = 0
   
-  const colorArrTrace = ["#2364AA", "#73BFB8", "#FEC601"]
+  const colorArrTrace = ["#FFD25A", "#FF8360", "#758BFD"]
+  timeCount += 1
   
+  if (timeCount > 20) {
+    timeSeed += 1
+    timeCount = 0
+  }
   
   for (let i = 0; i < amountOfElements; i++) {
     const isFollow = i != 0 && prevPos[0] || false
@@ -350,9 +358,13 @@ const swarm1 = (scene, options) => {
     
     // point to follow
     const moveAngle = t+(psin(t/20)*0.5 + 0.5)*100
+    const minPos = -8
+    const maxPos = 8
     let newPointToFollow = pointToFollow || new THREE.Vector3(
-      sin(moveAngle)*8,
-      cos(moveAngle)*8,
+      seededRandom(timeSeed) * (maxPos - minPos) + minPos,
+      seededRandom(timeSeed+100) * (maxPos - minPos) + minPos,
+      // sin(moveAngle)*8,
+      // cos(moveAngle)*8,
       0
     )
     if (isFollow) {
@@ -431,10 +443,11 @@ const swarm1 = (scene, options) => {
     
     currentAngle = randomAngle
     
+    const pickPigeons = i > amountOfElements/8
     // movement speed
     const minSpeed = 0.001
-    const maxSpeed = i % 2 == 0 ? 10.6 : 0.6
-    const funnyModifySpeed = i % 2 == 0 ? psin(t/1 + 0) : 1
+    const maxSpeed = pickPigeons ? 10.6 : 0.6
+    const funnyModifySpeed = pickPigeons ? psin(t/1 + 0) : 1
     let speed = (funnyModifySpeed - pow(1.03,-distToPoint)) * (maxSpeed - minSpeed) + minSpeed
     if (!isFollow) {
       speed = 0.2
@@ -492,7 +505,7 @@ const swarm1 = (scene, options) => {
       const material = new THREE.ShaderMaterial({
         uniforms: {
           uTexture: { value: texture },
-          uColor: { value: new THREE.Color(isFollow ? colorArrTrace[floor(random() * (colorArrTrace.length))] : "#F03A47") },
+          uColor: { value: new THREE.Color(isFollow ? colorArrTrace[floor(random() * (colorArrTrace.length))] : "#EF3E36") },
           uThreshold: { value: 0.05 } // Adjust threshold as needed
         },
         transparent: true,

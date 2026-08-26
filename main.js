@@ -86,15 +86,16 @@ const main = async () => {
   const pigeonSprite1 = await loadTextureF('/assets/textures/pigeon/pigeon1_sprite.png')
   pigeonSprite1.repeat.set(1/2,1/1)
 
-  const photo_test1 = await loadTextureF('/assets/photos/20260804_224901-01.jpeg')
+  const photo_test1 = await loadTextureF('/assets/photos/pe.png')
   // const photo_test2 = await loadTextureF('/assets/photos/20250218_182704-02_foreground.png')
 
   const doPhotoLayer  = (scene) => {
     photo_test1.repeat.set( 1, 1 );
     photo_test1.wrapS = THREE.RepeatWrapping;
     const photo = new THREE.Mesh(
-      new THREE.PlaneGeometry(2.082*13, 3.377*13),
-      new THREE.MeshBasicMaterial({ map: photo_test1 })
+      // new THREE.PlaneGeometry(2.082*1, 3.377*1),
+      new THREE.PlaneGeometry(12,12),
+      new THREE.MeshBasicMaterial({ map: photo_test1, transparent: true })
     );
     photo.position.set(0, -0.5, -1);
     scene.add(photo);
@@ -115,98 +116,6 @@ const main = async () => {
     // scene.add(block1);
   }
   
-  function doDymanicsLines(lines) {
-    lines.forEach((line,i) => {
-      const material = new THREE.LineBasicMaterial({
-        color: 0x0000ff
-      });
-  
-      const points = [];
-      points.push(new THREE.Vector3(- 1, 0, 0));
-      points.push(new THREE.Vector3(0, 1, 0));
-      points.push(new THREE.Vector3(1, 0, 0));
-  
-      const geometry = new THREE.BufferGeometry().setFromPoints(points);
-  
-      const lineVal = new THREE.Line(geometry, material);
-      })
-  }
-
-  function prepLines() {
-    const lines = []
-
-    const material = new THREE.LineBasicMaterial({
-      color: 0x0000ff
-    });
-
-    const points = [];
-    points.push(new THREE.Vector3(- 1, 0, 0));
-    points.push(new THREE.Vector3(0, 1, 0));
-    points.push(new THREE.Vector3(1, 0, 0));
-
-    const geometry = new THREE.BufferGeometry().setFromPoints(points);
-
-    const line = new THREE.Line(geometry, material);
-    scene.add(line);
-    lines.push(line)
-
-    return lines
-  }
-
-  function prepBirds() {
-    const meshArray = []
-    for (let i = 0; i < countBoxes; i++) {
-      const subSize = [];
-      const subPos = [];
-
-      const randomSide = round(pSin(i * 56678) * 2)
-
-      for (let d = 0; d < 3; d++) {
-        const sizeD = randInRange(mnbs[d], mxbs[d], pSin(10*i * randRatio[d]));
-        subSize.push(sizeD)
-
-        // it is a little messed up, maybe there is some easier way to do it
-        let pd = sin(randRatio[d] * i) * dbs[d] / 2;
-        if (i == randomSide && abs(pd) < zs[d] / 2) {
-          pd = zs[d] / 2 * sign(pd);
-        }
-        subPos.push(pd);
-      }
-
-
-      //const geometry = new THREE.BoxGeometry( subSize[0], subSize[0], subSize[0]*2 );
-      const geometry = new THREE.ShapeGeometry(birdShape);
-
-      // let clr = {
-      //   r: 0.8 + pSin(i * 130) * 0.2,
-      //   g: 0.5 + pSin(i * 150) * 0.3,
-      //   b: 0.3 + pSin(i * 180) * 0.5
-      // }
-
-      const pelleteColor = pallete[(i % pallete.length - 1) + 1]
-      //const material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
-      // const material = new THREE.MeshLambertMaterial({ color: new THREE.Color(clr.r, clr.g, clr.b) });
-      
-      const material = new THREE.MeshLambertMaterial({ color: pelleteColor });
-      //const material = new THREE.MeshStandardMaterial({ map: texture, });
-      const shape = new THREE.Mesh(geometry, material);
-
-      shape.position.set(subPos[0], subPos[1], subPos[2]);
-
-      shape.scale.x = subSize[0]
-      shape.scale.y = subSize[0]
-      shape.scale.z = subSize[0]
-
-      shape.up = new THREE.Vector3(0, 0, 1)
-
-      scene.add(shape)
-      meshArray.push(shape)
-
-    }
-
-    //cubeGroup.rotation.x = 1;
-    return meshArray
-  }
 
   const light = new THREE.DirectionalLight(0xff0000, 1);
   light.position.set(2, 2, 2);
@@ -246,7 +155,8 @@ const main = async () => {
   // const backColor = new THREE.Color("#C84630")
   // const backColor = new THREE.Color("#F7E3AF")
   // const backColor = new THREE.Color("#14342B")
-  const backColor = new THREE.Color("#171A21")
+  // const backColor = new THREE.Color("#171A21")
+  const backColor = new THREE.Color("#247BA0")
   
   scene.background = backColor
   let t = 0;
@@ -1096,7 +1006,7 @@ function clearThree(obj){
     document.body.removeChild(link);
   }
 
-  //doPhotoLayer(scene)
+  doPhotoLayer(scene)
   
   function animate() {
 
