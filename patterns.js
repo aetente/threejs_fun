@@ -17,7 +17,8 @@ import {
   signedAngle,
   seededRandomRange,
   triangle,
-  ptriangle
+  ptriangle,
+  loadTextureF
 } from './utils.js';
 
 import {
@@ -45,6 +46,19 @@ from "./consts.js"
 const { sin, cos, PI, random, pow, floor, abs, sqrt, max, min, sign, round } = Math;
 const {seededRandom, lerp, smoothstep} = MathUtils
 const p2 = PI*2
+
+
+const explosion1 = await loadTextureF('/assets/textures/explosion/explosion1.png')
+const explosion2 = await loadTextureF('/assets/textures/explosion/explosion2.png')
+const explosion3 = await loadTextureF('/assets/textures/explosion/explosion3.png')
+const explosion4 = await loadTextureF('/assets/textures/explosion/explosion4.png')
+const explosion5 = await loadTextureF('/assets/textures/explosion/explosion5.png')
+const explosion6 = await loadTextureF('/assets/textures/explosion/explosion6.png')
+const explosion7 = await loadTextureF('/assets/textures/explosion/explosion7.png')
+const explosion8 = await loadTextureF('/assets/textures/explosion/explosion8.png')
+const explosion9 = await loadTextureF('/assets/textures/explosion/explosion9.png')
+
+const explosionsTextureArray = [explosion1, explosion2, explosion3, explosion4, explosion5, explosion6, explosion7, explosion8, explosion9]
 
 function norm(x, base, spread) {
   return base^(-(x*x)/spread)
@@ -307,6 +321,45 @@ function pattern1(scene, pointsArray, options) {
   return {positions: points, mesh: drawnPoints}
 }
 
+const explosions = []
+
+const spawnExplosion = (scene, options) => {
+  const amountOfElements = options?.amountOfElements || 100;
+  const position = options?.position || new THREE.Vector3(0,0,0);
+  const explosionMeterial = new THREE.MeshBasicMaterial({ map: explosion1, transparent: true, opacity: 1 });
+  const explosionGeometry = new THREE.PlaneGeometry(1, 1);
+  const explosionShape = new THREE.Mesh(explosionGeometry, explosionMeterial);
+  explosionShape.position.set(position.x, position.y, position.z);
+  scene.add(explosionShape);
+  explosions.push({
+    amountOfElements,
+    position,
+    time: 0,
+    timeAlive: 20,
+    scale: 0.5 + random()*2,
+    shape: explosionShape
+  })
+}
+
+const processExplosions = (scene) => {
+  for (let i = 0; i < explosions.length; i++) {
+    const explosion = explosions[i]
+    explosion.time += 1
+    explosion.shape.scale.set(
+      explosion.time/explosion.timeAlive * explosion.scale,
+      explosion.time/explosion.timeAlive * explosion.scale,
+      explosion.time/explosion.timeAlive* explosion.scale
+    )
+    const currentExplosionTexture = explosionsTextureArray[floor(explosion.time/explosion.timeAlive*explosionsTextureArray.length)]
+    explosion.shape.material.map = currentExplosionTexture
+    if (explosion.time > explosion.timeAlive) {
+      scene.remove(explosion.shape)
+      explosions.splice(i, 1)
+      i--
+    }
+  }
+}
+
 const genPosArray = (amountOfElements) => {
   const posArray = []
   const sizePos = 3
@@ -326,6 +379,7 @@ let timeSeed = 0
 
 const pigeons = {}
 const swarm1 = (scene, options) => {
+  processExplosions(scene)
   const amountOfElements = options?.amountOfElements || hardCodeAmountOfElements;
   const t = options?.t || 0
   const newPos = []
@@ -340,7 +394,7 @@ const swarm1 = (scene, options) => {
   let previousDesiredAngle = 0
   let currentAngle = 0
   
-  const colorArrTrace = ["#FFD25A", "#FF8360", "#758BFD"]
+  const colorArrTrace = ["#F18F01", "#2191FB", "#FFFFFF"]
   timeCount += 1
   
   if (timeCount > 20) {
@@ -408,6 +462,23 @@ const swarm1 = (scene, options) => {
     // bigger value is more random
     // smaller value is follow
     actualAngle = (1-distF)*desiredAngleDiffNorm + (distF)*randomAngle
+    if (pigeons[String(i)]?.fall) {
+      actualAngle = PI
+    }
+
+    const randomPigeonCheckIndex = floor(random() * amountOfElements)
+    if (isFollow && pigeons[String(randomPigeonCheckIndex)] && pigeons[String(i)] && !pigeons[String(i)]?.fall && !pigeons[String(randomPigeonCheckIndex)]?.fall) {
+      const isFall =
+        pigeons[String(i)].shape.position.distanceTo(pigeons[String(randomPigeonCheckIndex)].shape.position) < 0.01
+        && pigeons[String(i)].shape.position.y > -4
+        && seededRandom(t * 324234234 + i * 344468) > 0.3
+      // seededRandom(t * 324234234 + i * 344468) > 0.999
+      pigeons[String(i)].fall = isFall
+      pigeons[String(randomPigeonCheckIndex)].fall = isFall
+      if (isFall) {
+        spawnExplosion(scene, { position: pigeons[String(i)].shape.position })
+      }
+    }
     
     let addSpeed = 0
     avoidPoints.forEach((avoidPoint, j) => {
@@ -443,7 +514,7 @@ const swarm1 = (scene, options) => {
     
     currentAngle = randomAngle
     
-    const pickPigeons = i > amountOfElements/8
+    const pickPigeons = i > amountOfElements/8 && false
     // movement speed
     const minSpeed = 0.001
     const maxSpeed = pickPigeons ? 10.6 : 0.6
@@ -451,6 +522,9 @@ const swarm1 = (scene, options) => {
     let speed = (funnyModifySpeed - pow(1.03,-distToPoint)) * (maxSpeed - minSpeed) + minSpeed
     if (!isFollow) {
       speed = 0.2
+    }
+    if (pigeons[String(i)]?.fall) {
+      speed = 0.4
     }
     speed += addSpeed
     // const speed = 0.05
@@ -462,6 +536,10 @@ const swarm1 = (scene, options) => {
       0
     )
     const newPosVal = prevPosVal.clone().add(movePos)
+    if (pigeons[String(i)]?.fall && newPosVal.y < -16) {
+      pigeons[String(i)].fall = false
+    }
+
     newPos.push(newPosVal)
 
     let sizeVal = seededRandomRange(0.5,2,i)
@@ -481,7 +559,7 @@ const swarm1 = (scene, options) => {
     let spriteSpeed = pow(100,-dist) * (maxSpriteSpeed - minSpriteSpeed) + minSpriteSpeed
     spriteSpeed *= 3
     const textureIndex = spriteSpeed < spriteSpeedThreshold ? 0 : floor((t*spriteSpeed + i)%textures.length)
-    const texture = textures[textureIndex].clone()
+    const texture = textures[pigeons[String(i)]?.fall ? 0 : textureIndex].clone()
 
     // rotate the pigeon acrding to where it moves
     // TODO: probably can use angle defined above currentAngle 
@@ -500,12 +578,16 @@ const swarm1 = (scene, options) => {
     }
 
 
+    const multiplyColor = pigeons[String(i)]?.fall ? new THREE.Color("#ffeecc") : new THREE.Color("#ffffff")
+    const pigeonColor = new THREE.Color(isFollow ? colorArrTrace[floor(random() * (colorArrTrace.length))] : "#DF2935")
+
    if (!pigeons[String(i)]) {
 
       const material = new THREE.ShaderMaterial({
         uniforms: {
           uTexture: { value: texture },
-          uColor: { value: new THREE.Color(isFollow ? colorArrTrace[floor(random() * (colorArrTrace.length))] : "#EF3E36") },
+          uColor: { value:  pigeonColor },
+          multiplyColor: { value: multiplyColor },
           uThreshold: { value: 0.05 } // Adjust threshold as needed
         },
         transparent: true,
@@ -519,6 +601,7 @@ const swarm1 = (scene, options) => {
         fragmentShader: `
           uniform sampler2D uTexture;
           uniform vec3 uColor;
+          uniform vec3 multiplyColor;
           uniform float uThreshold;
           varying vec2 vUv;
 
@@ -560,7 +643,7 @@ const swarm1 = (scene, options) => {
 
 
             // vec3 finalColor = linearTexColor.b * uColor;
-            vec3 finalColor = linearTexColor;
+            vec3 finalColor = linearTexColor * multiplyColor;
             // vec3 finalColor = mix(texColor.rgb, tintedColor, 0.5);
             
             // If alpha > threshold, set it to 1.0 (fully opaque). Otherwise 0.0.
@@ -579,14 +662,18 @@ const swarm1 = (scene, options) => {
       shape.position.set(newPosVal.x, newPosVal.y, newPosVal.z);
       //shape.position.set()
       scene.add(shape);
-      pigeons[String(i)] = shape
+      pigeons[String(i)] = {
+        fall: false,
+      }
+      pigeons[String(i)].shape = shape
     } else {
-      pigeons[String(i)].material.uniforms.uTexture.value = texture
+      pigeons[String(i)].shape.material.uniforms.multiplyColor.value = multiplyColor
+      pigeons[String(i)].shape.material.uniforms.uTexture.value = texture
       // pigeons[String(i)].material.alphaMap = texture
-      pigeons[String(i)].rotation.z = angleVal
-      pigeons[String(i)].position.set(newPosVal.x, newPosVal.y, newPosVal.z);
+      pigeons[String(i)].shape.rotation.z = angleVal
+      pigeons[String(i)].shape.position.set(newPosVal.x, newPosVal.y, newPosVal.z);
     }
-    if (!isFollow) {
+    if (!isFollow && false) {
       const randColor = colorArrTrace[floor(random() * (colorArrTrace.length))]
       const circle = new THREE.CircleGeometry(0.05, 8);
       const material = new THREE.MeshBasicMaterial({ color:

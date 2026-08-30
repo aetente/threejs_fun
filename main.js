@@ -47,7 +47,7 @@ const main = async () => {
   const saveFrames = false
   const reconstruct = false
   const precheck = false
-  const startFrame = 100
+  const startFrame = 9
   let currentFrameName = startFrame;
   const framesToSave = 60 * 12; // 60 frames generate 2 seconds, so times 15 it will be 30 seconds
   const skipFrames = 2
@@ -156,7 +156,8 @@ const main = async () => {
   // const backColor = new THREE.Color("#F7E3AF")
   // const backColor = new THREE.Color("#14342B")
   // const backColor = new THREE.Color("#171A21")
-  const backColor = new THREE.Color("#247BA0")
+  // const backColor = new THREE.Color("#247BA0")
+  const backColor = new THREE.Color("#3B3561")
   
   scene.background = backColor
   let t = 0;
