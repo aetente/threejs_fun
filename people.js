@@ -622,6 +622,30 @@ function pattern1Person(scene, options) {
     pattern1(scene, bp, boringOptions)
   })
   
+  return [
+  { name: "root", rot: new THREE.Euler(0, 0, randomRange(-0.2, 0.2)) },
+  
+  { name: 'lowerTorso', rot: new THREE.Euler(0, 0, 0) },
+  { name: 'upperTorso', rot: new THREE.Euler(0, 0, randomRange(-0.2, 0.2)) },
+  { name: 'head', rot: new THREE.Euler(0, 0, 0) },
+  
+  { name: 'leftShoulder', rot: new THREE.Euler(0, 0, randomRange(-1.5, 0)) },
+  { name: 'leftElbow', rot: new THREE.Euler(0, 0, leftElbowAngle) },
+  { name: 'leftHand', rot: new THREE.Euler(0, 0, leftElbowAngle - 2) },
+  
+  { name: 'rightShoulder', rot: new THREE.Euler(0, 0, randomRange(0, 1.5)) },
+  { name: 'rightElbow', rot: new THREE.Euler(0, 0, rightElbowAngle) },
+  { name: 'rightHand', rot: new THREE.Euler(0, 0, rightElbowAngle + 2) },
+  
+  { name: 'leftLeg', rot: new THREE.Euler(0, 0, randomRange(0, 1)) },
+  { name: 'leftKnee', rot: new THREE.Euler(0, 0, randomRange(-1, 0)) },
+  { name: 'leftFoot', rot: new THREE.Euler(0, 0, 0) },
+  
+  { name: 'rightLeg', rot: new THREE.Euler(0, 0, randomRange(0, 1)) },
+  { name: 'rightKnee', rot: new THREE.Euler(0, 0, randomRange(-1, 0)) },
+  { name: 'rightFoot', rot: new THREE.Euler(0, 0, 0) }
+]
+  
 }
 
 export { initSkeleton, lisa, dancePerson1, dancePerson2, basicPerson, pattern1Person }

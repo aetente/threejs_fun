@@ -947,7 +947,7 @@ const main = async () => {
     testPose5
   ]
 
-
+  const goodPeople = []
 
   function randomPeople(scene) {
     const amountOfPeople = 4
@@ -1006,7 +1006,7 @@ function clearThree(obj){
     document.body.removeChild(link);
   }
 
-  doPhotoLayer(scene)
+  //doPhotoLayer(scene)
   
   function animate() {
 
