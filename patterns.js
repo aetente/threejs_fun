@@ -403,7 +403,7 @@ const swarm1 = (scene, options) => {
   }
   
   for (let i = 0; i < amountOfElements; i++) {
-    const isFollow = i != 0 && prevPos[0] || false
+    const isFollow = i != 0 && prevPos[0] || true
     const randomDotIndex = floor(seededRandom(i) * amountOfElements)
     const prevPosVal = prevPos[i].clone()
     const wi = smoothstep(i/amountOfElements, 0, 1)
@@ -421,7 +421,7 @@ const swarm1 = (scene, options) => {
       // cos(moveAngle)*8,
       0
     )
-    if (isFollow) {
+    if (isFollow && false) {
       newPointToFollow = prevPos[0]
     }
     let desiredAngle = Math.atan2(newPointToFollow.y - prevPosVal.y, -(newPointToFollow.x - prevPosVal.x))
@@ -435,18 +435,18 @@ const swarm1 = (scene, options) => {
     
     
     const randomAngle = 
-      currentAngle + 0.1*random()
+      //currentAngle + 0.1*random()
       //currentAngle + i*0.6
       //0
       //PI*2 + i/100
-      //+ sin(t + wi3 + PI) * PI*2
+      round(psin(t + i)) * PI + PI/2
     const randomAngleDiff = randomAngle - desiredAngle
     const randomAngleDiffNorm = Math.atan2(sin(randomAngleDiff), cos(randomAngleDiff))
     // const distF = lerp(30, 1, distToPoint)
     const maxDistF = 1
     const minDistF = 0
 
-    let distF = pow(1.4 + (0*pcos(i + t)), -distToPoint) * (maxDistF-minDistF) + minDistF
+    let distF = pow(1.2 + (0*pcos(i + t)), -distToPoint) * (maxDistF-minDistF) + minDistF
     if (!isFollow) {
       distF = pow(4, -distToPoint) * (maxDistF-minDistF) + minDistF
     }
@@ -457,24 +457,32 @@ const swarm1 = (scene, options) => {
     // distF:
     // bigger value is random
     // smaller value is follow
-    //actualAngle = randomAngle - randomAngleDiffNorm/distF
+    actualAngle = randomAngle - randomAngleDiffNorm/distF
     // distF:
     // bigger value is more random
     // smaller value is follow
-    actualAngle = (1-distF)*desiredAngleDiffNorm + (distF)*randomAngle
+    //actualAngle = (1-distF)*desiredAngleDiffNorm + (distF)*randomAngle
     if (pigeons[String(i)]?.fall) {
-      actualAngle = PI
+      pigeons[String(i)].fallAngle += 0.05
+      if (pigeons[String(i)].fallAngle > 1) {
+        pigeons[String(i)].fallAngle = 1
+      }
+      actualAngle = sqrt(pigeons[String(i)].fallAngle)* PI * pigeons[String(i)].fallOrder
     }
 
     const randomPigeonCheckIndex = floor(random() * amountOfElements)
     if (isFollow && pigeons[String(randomPigeonCheckIndex)] && pigeons[String(i)] && !pigeons[String(i)]?.fall && !pigeons[String(randomPigeonCheckIndex)]?.fall) {
       const isFall =
         pigeons[String(i)].shape.position.distanceTo(pigeons[String(randomPigeonCheckIndex)].shape.position) < 0.01
-        && pigeons[String(i)].shape.position.y > -4
+        && pigeons[String(i)].shape.position.y > -40
         && seededRandom(t * 324234234 + i * 344468) > 0.3
       // seededRandom(t * 324234234 + i * 344468) > 0.999
       pigeons[String(i)].fall = isFall
       pigeons[String(randomPigeonCheckIndex)].fall = isFall
+      pigeons[String(i)].fallAngle = 0
+      pigeons[String(randomPigeonCheckIndex)].fallAngle = 0
+      pigeons[String(i)].fallOrder = 1
+      pigeons[String(randomPigeonCheckIndex)].fallOrder = -1
       if (isFall) {
         spawnExplosion(scene, { position: pigeons[String(i)].shape.position })
       }
@@ -578,7 +586,7 @@ const swarm1 = (scene, options) => {
     }
 
 
-    const multiplyColor = pigeons[String(i)]?.fall ? new THREE.Color("#ffeecc") : new THREE.Color("#ffffff")
+    const multiplyColor = pigeons[String(i)]?.fall ? new THREE.Color("#550000") : new THREE.Color("#ffffff")
     const pigeonColor = new THREE.Color(isFollow ? colorArrTrace[floor(random() * (colorArrTrace.length))] : "#DF2935")
 
    if (!pigeons[String(i)]) {
