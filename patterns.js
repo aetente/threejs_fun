@@ -394,7 +394,7 @@ const swarm1 = (scene, options) => {
   let previousDesiredAngle = 0
   let currentAngle = 0
   
-  const colorArrTrace = ["#F18F01", "#2191FB", "#FFFFFF"]
+  const colorArrTrace = ["#FF9000", "#FF5964", "#F71735"]
   timeCount += 1
   
   if (timeCount > 20) {
@@ -475,7 +475,7 @@ const swarm1 = (scene, options) => {
       const isFall =
         pigeons[String(i)].shape.position.distanceTo(pigeons[String(randomPigeonCheckIndex)].shape.position) < 0.01
         && pigeons[String(i)].shape.position.y > -40
-        && seededRandom(t * 324234234 + i * 344468) > 0.3
+        && seededRandom(t * 324234234 + i * 344468) > 0.0
       // seededRandom(t * 324234234 + i * 344468) > 0.999
       pigeons[String(i)].fall = isFall
       pigeons[String(randomPigeonCheckIndex)].fall = isFall
@@ -586,7 +586,7 @@ const swarm1 = (scene, options) => {
     }
 
 
-    const multiplyColor = pigeons[String(i)]?.fall ? new THREE.Color("#550000") : new THREE.Color("#ffffff")
+    const multiplyColor = pigeons[String(i)]?.fall ? new THREE.Color("#b370ff") : new THREE.Color("#ffffff")
     const pigeonColor = new THREE.Color(isFollow ? colorArrTrace[floor(random() * (colorArrTrace.length))] : "#DF2935")
 
    if (!pigeons[String(i)]) {

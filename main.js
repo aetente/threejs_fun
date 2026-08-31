@@ -47,7 +47,7 @@ const main = async () => {
   const saveFrames = false
   const reconstruct = false
   const precheck = false
-  const startFrame = 9
+  const startFrame = 50
   let currentFrameName = startFrame;
   const framesToSave = 60 * 12; // 60 frames generate 2 seconds, so times 15 it will be 30 seconds
   const skipFrames = 2
@@ -94,7 +94,7 @@ const main = async () => {
     photo_test1.wrapS = THREE.RepeatWrapping;
     const photo = new THREE.Mesh(
       // new THREE.PlaneGeometry(2.082*1, 3.377*1),
-      new THREE.PlaneGeometry(12,12),
+      new THREE.PlaneGeometry(14,14),
       new THREE.MeshBasicMaterial({ map: photo_test1, transparent: true })
     );
     photo.position.set(0, -0.5, -1);
@@ -157,7 +157,8 @@ const main = async () => {
   // const backColor = new THREE.Color("#14342B")
   // const backColor = new THREE.Color("#171A21")
   // const backColor = new THREE.Color("#247BA0")
-  const backColor = new THREE.Color("#3B3561")
+  // const backColor = new THREE.Color("#3B3561")
+  const backColor = new THREE.Color("#0A0908")
   
   scene.background = backColor
   let t = 0;
@@ -1007,7 +1008,7 @@ function clearThree(obj){
     document.body.removeChild(link);
   }
 
-  //doPhotoLayer(scene)
+  doPhotoLayer(scene)
   
   function animate() {
 
