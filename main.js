@@ -44,7 +44,7 @@ const main = async () => {
 
   let currentFrame = 0;
   const format = 'image/png';
-  const saveFrames = false
+  const saveFrames = true
   const reconstruct = false
   const precheck = false
   const startFrame = 50
@@ -137,7 +137,7 @@ const main = async () => {
   // const backColor = new THREE.Color("#00B4D8")
   // const backColor = new THREE.Color("#44ff99")
   //const backColor = new THREE.Color("#0F141C")
-  //const backColor = new THREE.Color("#3300FF")
+  // const backColor = new THREE.Color("#3300FF")
   //const backColor = new THREE.Color("#FF44AA")
   //const backColor = new THREE.Color("#F4F1EA")
   //const backColor = new THREE.Color("#FDF8F5")
@@ -158,7 +158,7 @@ const main = async () => {
   // const backColor = new THREE.Color("#171A21")
   // const backColor = new THREE.Color("#247BA0")
   // const backColor = new THREE.Color("#3B3561")
-  const backColor = new THREE.Color("#0A0908")
+  const backColor = new THREE.Color("#0A369D")
   
   scene.background = backColor
   let t = 0;

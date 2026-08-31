@@ -394,7 +394,7 @@ const swarm1 = (scene, options) => {
   let previousDesiredAngle = 0
   let currentAngle = 0
   
-  const colorArrTrace = ["#FF9000", "#FF5964", "#F71735"]
+  const colorArrTrace = ["#177E89", "#00A878", "#FFCB47"]
   timeCount += 1
   
   if (timeCount > 20) {
