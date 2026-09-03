@@ -44,7 +44,7 @@ const main = async () => {
 
   let currentFrame = 0;
   const format = 'image/png';
-  const saveFrames = true
+  const saveFrames = false
   const reconstruct = false
   const precheck = false
   const startFrame = 50
@@ -1008,7 +1008,7 @@ function clearThree(obj){
     document.body.removeChild(link);
   }
 
-  doPhotoLayer(scene)
+  //doPhotoLayer(scene)
   
   function animate() {
 

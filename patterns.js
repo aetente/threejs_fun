@@ -411,14 +411,14 @@ const swarm1 = (scene, options) => {
     const wi3 = (psin(i/1)*(2-1)+1)/1000
     
     // point to follow
-    const moveAngle = t+(psin(t/20)*0.5 + 0.5)*100
+    const moveAngle = t/2+(psin(t/20)*0.5 + 0.5 + i)*2*PI + i
     const minPos = -8
     const maxPos = 8
     let newPointToFollow = pointToFollow || new THREE.Vector3(
-      seededRandom(timeSeed) * (maxPos - minPos) + minPos,
-      seededRandom(timeSeed+100) * (maxPos - minPos) + minPos,
-      // sin(moveAngle)*8,
-      // cos(moveAngle)*8,
+      //seededRandom(timeSeed) * (maxPos - minPos) + minPos,
+      //seededRandom(timeSeed+100) * (maxPos - minPos) + minPos,
+      sin(moveAngle)*8,
+      cos(moveAngle)*8,
       0
     )
     if (isFollow && false) {
@@ -471,7 +471,7 @@ const swarm1 = (scene, options) => {
     }
 
     const randomPigeonCheckIndex = floor(random() * amountOfElements)
-    if (isFollow && pigeons[String(randomPigeonCheckIndex)] && pigeons[String(i)] && !pigeons[String(i)]?.fall && !pigeons[String(randomPigeonCheckIndex)]?.fall) {
+    if (false && isFollow && pigeons[String(randomPigeonCheckIndex)] && pigeons[String(i)] && !pigeons[String(i)]?.fall && !pigeons[String(randomPigeonCheckIndex)]?.fall) {
       const isFall =
         pigeons[String(i)].shape.position.distanceTo(pigeons[String(randomPigeonCheckIndex)].shape.position) < 0.01
         && pigeons[String(i)].shape.position.y > -40
