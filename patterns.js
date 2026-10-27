@@ -394,7 +394,8 @@ const swarm1 = (scene, options) => {
   let previousDesiredAngle = 0
   let currentAngle = 0
   
-  const colorArrTrace = ["#177E89", "#00A878", "#FFCB47"]
+  const colorArrTrace = ["#d58936", "#9e2b25"]
+  //["#177E89", "#00A878", "#FFCB47"]
   timeCount += 1
   
   if (timeCount > 20) {
@@ -411,14 +412,14 @@ const swarm1 = (scene, options) => {
     const wi3 = (psin(i/1)*(2-1)+1)/1000
     
     // point to follow
-    const moveAngle = t/2+(psin(t/20)*0.5 + 0.5 + i)*2*PI + i
-    const minPos = -8
-    const maxPos = 8
+    const moveAngle = t/2+(psin(t/20 + i)*0.05 + 0.5 + i)*2*PI + i + 100000
+    const minPos = -4
+    const maxPos = 4
     let newPointToFollow = pointToFollow || new THREE.Vector3(
       //seededRandom(timeSeed) * (maxPos - minPos) + minPos,
       //seededRandom(timeSeed+100) * (maxPos - minPos) + minPos,
-      sin(moveAngle)*8,
-      cos(moveAngle)*8,
+      sin(moveAngle)*4,
+      cos(moveAngle)*4,
       0
     )
     if (isFollow && false) {
