@@ -384,7 +384,7 @@ const swarm1 = (scene, options) => {
   const t = options?.t || 0
   const newPos = []
   const textures = options?.textures || null
-  const scale = options?.scale || 0.4
+  const scale = options?.scale || 0.8
   const pointToFollow = options?.pointToFollow || null
   const avoidPoints = options?.avoidPoints || [
     //0
@@ -394,7 +394,7 @@ const swarm1 = (scene, options) => {
   let previousDesiredAngle = 0
   let currentAngle = 0
   
-  const colorArrTrace = ["#d58936", "#9e2b25"]
+  const colorArrTrace = ["#DA6556", "#EB895B", "#A14646"]
   //["#177E89", "#00A878", "#FFCB47"]
   timeCount += 1
   
@@ -597,7 +597,9 @@ const swarm1 = (scene, options) => {
           uTexture: { value: texture },
           uColor: { value:  pigeonColor },
           multiplyColor: { value: multiplyColor },
-          uThreshold: { value: 0.05 } // Adjust threshold as needed
+          uThreshold: { value: 0.05 },
+          uOutlineColor: { value: new THREE.Color("#FDB773") },
+          uOutlineWidth: { value: 49.0 }
         },
         transparent: true,
         vertexShader: `
@@ -612,6 +614,8 @@ const swarm1 = (scene, options) => {
           uniform vec3 uColor;
           uniform vec3 multiplyColor;
           uniform float uThreshold;
+          uniform vec3 uOutlineColor;
+          uniform float uOutlineWidth;
           varying vec2 vUv;
 
           vec3 linearToSRGB(vec3 color) {
@@ -649,14 +653,21 @@ const swarm1 = (scene, options) => {
             // vec3 linearTexColor = linearToSRGB(tintedColor);
             // vec3 linearTexColor = linearToSRGB(blendedColor);
             vec3 linearTexColor = linearToSRGB(uColor);
+            vec3 linearOutlineColor = linearToSRGB(uOutlineColor);
 
+            float binaryAlpha = step(uThreshold, originalAlpha) * 1.0;
+
+            float edge = fwidth(originalAlpha) * uOutlineWidth;
+            // 0 is 0
+            // inf is 1
+            float fillMask = smoothstep(uOutlineWidth/50.0, 1.0, originalAlpha);
 
             // vec3 finalColor = linearTexColor.b * uColor;
-            vec3 finalColor = linearTexColor * multiplyColor;
+            vec3 finalColor = mix(linearOutlineColor, linearTexColor * multiplyColor, fillMask);
             // vec3 finalColor = mix(texColor.rgb, tintedColor, 0.5);
             
             // If alpha > threshold, set it to 1.0 (fully opaque). Otherwise 0.0.
-            float binaryAlpha = step(uThreshold, originalAlpha) * 1.0;
+            
             
             gl_FragColor = vec4(finalColor, binaryAlpha);
 

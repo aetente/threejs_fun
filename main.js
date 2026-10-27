@@ -161,7 +161,7 @@ const main = async () => {
   // const backColor = new THREE.Color("#247BA0")
   // const backColor = new THREE.Color("#3B3561")
   //const backColor = new THREE.Color("#0A369D")
-  const backColor = new THREE.Color("#210124")
+  const backColor = new THREE.Color("#FDB773")
   
   scene.background = backColor
   let t = 0;
